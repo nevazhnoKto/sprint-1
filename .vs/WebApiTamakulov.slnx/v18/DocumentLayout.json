@@ -7,6 +7,14 @@
       "RelativeMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|solutionrelative:controllers\\eventcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|d:\\yandex\\1\\interfaces\\ieventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|solutionrelative:interfaces\\ieventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|d:\\yandex\\1\\services\\eventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|solutionrelative:services\\eventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|d:\\yandex\\1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -15,16 +23,8 @@
       "RelativeMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|solutionrelative:webapitamakulov.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|d:\\yandex\\1\\services\\eventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|solutionrelative:services\\eventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|d:\\yandex\\1\\models\\apiresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|solutionrelative:models\\apiresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|d:\\yandex\\1\\interfaces\\ieventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|solutionrelative:interfaces\\ieventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6B18D944-6AC9-3853-A4E2-21D984E8BEAD}|WebApiTamakulov.csproj|d:\\yandex\\1\\models\\event.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -54,7 +54,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\yandex\\1\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -74,7 +74,7 @@
               "RelativeDocumentMoniker": "Controllers\\EventController.cs",
               "ToolTip": "D:\\yandex\\1\\Controllers\\EventController.cs",
               "RelativeToolTip": "Controllers\\EventController.cs",
-              "ViewState": "AgIAAJgAAAAAAAAAAAAswKgAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAH8AAAAAAAAAAAAkwIwAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-03T13:58:47.244Z",
               "IsPinned": true,
@@ -82,7 +82,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "WebApiTamakulov",
               "DocumentMoniker": "D:\\yandex\\1\\WebApiTamakulov.csproj",
               "RelativeDocumentMoniker": "WebApiTamakulov.csproj",
@@ -92,34 +92,6 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2026-03-03T18:22:40.976Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:131:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:130:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
               "$type": "Document",
@@ -136,7 +108,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "ApiResult.cs",
               "DocumentMoniker": "D:\\yandex\\1\\Models\\ApiResult.cs",
               "RelativeDocumentMoniker": "Models\\ApiResult.cs",
@@ -175,26 +147,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "EventService.cs",
               "DocumentMoniker": "D:\\yandex\\1\\Services\\EventService.cs",
               "RelativeDocumentMoniker": "Services\\EventService.cs",
               "ToolTip": "D:\\yandex\\1\\Services\\EventService.cs",
               "RelativeToolTip": "Services\\EventService.cs",
-              "ViewState": "AgIAADMAAAAAAAAAAAAowEAAAAAhAAAAAAAAAA==",
+              "ViewState": "AgIAACAAAAAAAAAAAIAwwC4AAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-03T13:56:10.56Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 1,
               "Title": "IEventService.cs",
               "DocumentMoniker": "D:\\yandex\\1\\Interfaces\\IEventService.cs",
               "RelativeDocumentMoniker": "Interfaces\\IEventService.cs",
               "ToolTip": "D:\\yandex\\1\\Interfaces\\IEventService.cs",
               "RelativeToolTip": "Interfaces\\IEventService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAQAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAgAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-03T13:55:30.75Z",
               "EditorCaption": ""

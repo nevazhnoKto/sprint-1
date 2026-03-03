@@ -1,16 +1,25 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Controllers
 {
+	/// <summary>
+	/// Api контроллер для работы с Событиями.
+	/// </summary>
 	[ApiController]
-	[Route("[controller]")]
+	[Route("[controller]")]	
 	public class EventController : ControllerBase
 	{
 		private readonly IEventService _eventService;
 		private readonly IMapper _mapper;
+		/// <summary>
+		/// Api контроллер для работы с Событиями.
+		/// </summary>
+		/// <param name="eventService">Сервис для работы с Событиями.</param>
+		/// <param name="mapper">Маппер.</param>
 		public EventController(IEventService eventService, IMapper mapper)
 		{
 			_eventService = eventService;
@@ -21,116 +30,116 @@ namespace WebApiTamakulov.Controllers
 		/// Метод возвращает все существующие Event.
 		/// </summary>			
 		[HttpGet("events")]
-		[ProducesResponseType(typeof(ApiBaseResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[Produces("application/json")]
-		public ApiResult<List<EventDto>> GetAllEvents()
+		public IActionResult GetAllEvents()
 		{
-			var result = _eventService.GetAll().Select(e => _mapper.Map<EventDto>(e)).ToList();			
-			return new ApiResult<List<EventDto>>()
+			var events = _eventService.GetAll();
+
+			if (events == null || !events.Any())
+				return NoContent();
+
+			var resultDto = _mapper.Map<List<EventDto>>(events);
+
+			return Ok(new ApiResult<List<EventDto>>()
 			{
 				Success = true,
-				Data = result,
-				StatusCode = System.Net.HttpStatusCode.OK,
+				Data = resultDto,
+				StatusCode = HttpStatusCode.OK,
 				Message = "Вернул все Events"
-			};			
+			});
 		}
 
 		/// <summary>
 		/// Метод возвращает Event по запрашиваемому Id.
 		/// </summary>
 		/// <param name="id">Запрашшиваемый Id события.</param>
-		[HttpGet("events/{id}")]
-		[ProducesResponseType(typeof(ApiBaseResult), StatusCodes.Status200OK)]
-		[ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+		[HttpGet("events/{id:int}")]
+		[ProducesResponseType(typeof(ApiResult<EventDto>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public ApiBaseResult GetByIdEvent(int id)
+		public IActionResult GetByIdEvent(int id)
 		{
-			try
+
+			var eventById = _eventService.GetById(id);
+
+			if (eventById != null)
 			{
-				var eventById = _eventService.GetById(id);
-				
-				return new ApiResult<EventDto>()
+				return Ok(new ApiResult<EventDto>()
 				{
 					Success = true,
 					Data = _mapper.Map<EventDto>(eventById),
-					StatusCode = System.Net.HttpStatusCode.OK,
+					StatusCode = HttpStatusCode.OK,
 					Message = $"Вернул Event по id = {id}"
-				};
-			}
-			catch (Exception ex)
-			{
-				return new ApiResult()
-				{
-					Success = false,					
-					StatusCode = System.Net.HttpStatusCode.NotFound,
-					Message = $"{ex.Message}"
-				};
+				});
 			}			
+
+			return NotFound(new ApiResult()
+			{
+				Success = false,
+				StatusCode = HttpStatusCode.NotFound,
+				Message = $"Event по id = {id} не существует"
+			});
+
 		}
 
 		/// <summary>
 		/// Метод создает новый Event.
 		/// </summary>
-		/// <param name="newEvent">Данные нового Event.</param>		
+		/// <param name="newEventDto">Данные нового Event.</param>		
 		[HttpPost("events")]
-		[ProducesResponseType(typeof(ApiBaseResult), StatusCodes.Status200OK)]
-		[ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(ApiResult<EventDto>), StatusCodes.Status201Created)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[Produces("application/json")]
-		public ApiBaseResult CreateEvent([FromBody] EventDto newEvent)
+		public IActionResult CreateEvent([FromBody] EventDto newEventDto)
 		{
-			try
+			var newEvent = _mapper.Map<Event>(newEventDto);
+			if (_eventService.Create(newEvent))
 			{
-				_eventService.Create(_mapper.Map<Event>(newEvent));
-				return new ApiResult<EventDto>()
+				var response = new ApiResult<EventDto>
 				{
 					Success = true,
-					Data = newEvent,
-					StatusCode = System.Net.HttpStatusCode.Created,
-					Message = $"Создался Event по id = {newEvent.Id}"
+					Data = newEventDto,
+					StatusCode = HttpStatusCode.Created,
+					Message = $"Создался Event по id = {newEventDto.Id}"
 				};
-			}
-			catch(Exception ex)
+				return CreatedAtAction(nameof(GetByIdEvent), new { id = newEvent.Id }, response);				
+			}			
+
+			return BadRequest(new ApiResult()
 			{
-				return new ApiResult()
-				{
-					Success = false,
-					StatusCode = System.Net.HttpStatusCode.BadRequest,
-					Message = $"{ex.Message}"
-				};
-			}
+				Success = false,
+				StatusCode = HttpStatusCode.BadRequest,
+				Message = $"Event по id = {newEvent.Id} уже существует"
+			});
+
 		}
 
 		/// <summary>
 		/// Метод обновляет существующий Event по переданному Id. 
 		/// </summary>
 		/// <param name="id">Id события для обновления.</param>
-		/// <param name="updateEvent">Event для обновления.</param>
+		/// <param name="updateEventDto">Event для обновления.</param>
 		[HttpPut("events/{id}")]
-		[ProducesResponseType(typeof(ApiBaseResult), StatusCodes.Status204NoContent)]
-		[ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public ApiBaseResult UpdateEvent(int id, [FromBody] EventDto updateEvent)
+		public IActionResult UpdateEvent(int id, [FromBody] EventDto updateEventDto)
 		{
-			try
-			{
-				_eventService.Update(id, _mapper.Map<Event>(updateEvent));
 
-				return new ApiResult()
-				{
-					Success = true,					
-					StatusCode = System.Net.HttpStatusCode.NoContent,
-					Message = $"Обновил Event по id = {id}"
-				};
-			}
-			catch (Exception ex)
+			if (_eventService.Update(id, _mapper.Map<Event>(updateEventDto)))
 			{
-				return new ApiResult()
-				{
-					Success = false,
-					StatusCode = System.Net.HttpStatusCode.NotFound,
-					Message = $"{ex.Message}"
-				};
+				return NoContent();
 			}
+
+			return NotFound(new ApiResult()
+			{
+				Success = false,
+				StatusCode = HttpStatusCode.NotFound,
+				Message = $"Event с id = {id} не найден"
+			});
+
 		}
 
 		/// <summary>
@@ -138,31 +147,23 @@ namespace WebApiTamakulov.Controllers
 		/// </summary>
 		/// <param name="id">Id события для удаления.</param>		
 		[HttpDelete("events/{id}")]
-		[ProducesResponseType(typeof(ApiBaseResult), StatusCodes.Status204NoContent)]
-		[ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public ApiBaseResult DeleteEvent(int id)
+		public IActionResult DeleteEvent(int id)
 		{
-			try
-			{
-				_eventService.Delete(id);
 
-				return new ApiResult()
-				{
-					Success = true,
-					StatusCode = System.Net.HttpStatusCode.NoContent,
-					Message = $"Удалил Event по id = {id}"
-				};
-			}
-			catch (Exception ex)
+			if (_eventService.Delete(id))
 			{
-				return new ApiResult()
+				return NoContent();
+			}
+
+			return NotFound(new ApiResult()
 				{
 					Success = false,
-					StatusCode = System.Net.HttpStatusCode.NotFound,
-					Message = $"{ex.Message}"
-				};
-			}
+					StatusCode = HttpStatusCode.NotFound,
+					Message = $"Event с id = {id} не найден"
+				});			
 		}
 	}
 }

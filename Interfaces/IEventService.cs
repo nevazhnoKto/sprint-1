@@ -6,9 +6,9 @@ namespace WebApiTamakulov.Interfaces
 	{
 		List<Event> GetAll();
 		Event? GetById(int id);
-		void Create(Event eventCustom);
-		void Update(int id, Event eventCustom);
-		void Delete(int id);
+		bool Create(Event eventCustom);
+		bool Update(int id, Event eventCustom);
+		bool Delete(int id);
 
 	}
 }
