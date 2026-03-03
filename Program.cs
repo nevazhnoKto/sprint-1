@@ -1,4 +1,6 @@
+using AutoMapper;
 using WebApiTamakulov.Interfaces;
+using WebApiTamakulov.Mappings;
 using WebApiTamakulov.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 
