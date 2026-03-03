@@ -4,6 +4,9 @@ using WebApiTamakulov.Interfaces;
 
 namespace WebApiTamakulov.Models
 {
+	/// <summary>
+	/// Модель EventDto.
+	/// </summary>
 	public class EventDto
 	{
 		/// <summary>
@@ -14,12 +17,12 @@ namespace WebApiTamakulov.Models
 		/// <summary>
 		/// Заголовок события.
 		/// </summary>
-		public string Title { get; set; }
+		public string? Title { get; set; }
 
 		/// <summary>
-		/// Заголовок события.
+		/// Описание события.
 		/// </summary>
-		public string Description { get; set; }
+		public string? Description { get; set; }
 
 		/// <summary>
 		/// Время начала события.

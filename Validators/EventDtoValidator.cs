@@ -3,8 +3,14 @@ using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Validators
 {
+	/// <summary>
+	/// Валидация EventDto.
+	/// </summary>
 	public class EventDtoValidator : AbstractValidator<EventDto>
 	{
+		/// <summary>
+		/// Валидация EventDto.
+		/// </summary>
 		public EventDtoValidator()
 		{
 			RuleFor(x => x.Id)

@@ -2,6 +2,9 @@
 
 namespace WebApiTamakulov.Interfaces
 {
+	/// <summary>
+	/// Интерфейс сервиса обработки событий.
+	/// </summary>
 	public interface IEventService
 	{
 		List<Event> GetAll();

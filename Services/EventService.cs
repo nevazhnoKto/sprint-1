@@ -6,6 +6,9 @@ using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
 {
+	/// <summary>
+	/// Сервис обработки событий.
+	/// </summary>
 	public class EventService : IEventService
 	{
 		private static List<Event> Events { get; set; } =
@@ -28,6 +31,7 @@ namespace WebApiTamakulov.Services
 
 		public List<Event> GetAll()
 		{
+			_logger.LogInformation($"Получение всех событий, количество = {Events.Count}");
 			return Events;
 		}
 

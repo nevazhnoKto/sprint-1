@@ -10,7 +10,7 @@ namespace WebApiTamakulov.Controllers
 	/// Api контроллер для работы с Событиями.
 	/// </summary>
 	[ApiController]
-	[Route("[controller]")]	
+	[Route("api/[controller]")]	
 	public class EventController : ControllerBase
 	{
 		private readonly IEventService _eventService;
@@ -81,7 +81,6 @@ namespace WebApiTamakulov.Controllers
 				StatusCode = HttpStatusCode.NotFound,
 				Message = $"Event по id = {id} не существует"
 			});
-
 		}
 
 		/// <summary>
@@ -113,7 +112,6 @@ namespace WebApiTamakulov.Controllers
 				StatusCode = HttpStatusCode.BadRequest,
 				Message = $"Event по id = {newEvent.Id} уже существует"
 			});
-
 		}
 
 		/// <summary>
@@ -139,7 +137,6 @@ namespace WebApiTamakulov.Controllers
 				StatusCode = HttpStatusCode.NotFound,
 				Message = $"Event с id = {id} не найден"
 			});
-
 		}
 
 		/// <summary>
