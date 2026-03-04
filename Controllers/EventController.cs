@@ -28,7 +28,7 @@ namespace WebApiTamakulov.Controllers
 
 		/// <summary>
 		/// Метод возвращает все существующие Event.
-		/// </summary>			
+		/// </summary>
 		[HttpGet]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
 		[Produces("application/json")]
@@ -81,7 +81,7 @@ namespace WebApiTamakulov.Controllers
 		/// <summary>
 		/// Метод создает новый Event.
 		/// </summary>
-		/// <param name="newEventDto">Данные нового Event.</param>		
+		/// <param name="newEventDto">Данные нового Event.</param>
 		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult<EventDto>), StatusCodes.Status201Created)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
@@ -110,7 +110,7 @@ namespace WebApiTamakulov.Controllers
 		}
 
 		/// <summary>
-		/// Метод обновляет существующий Event по переданному Id. 
+		/// Метод обновляет существующий Event по переданному Id.
 		/// </summary>
 		/// <param name="id">Id события для обновления.</param>
 		/// <param name="updateEventDto">Event для обновления.</param>
@@ -135,9 +135,9 @@ namespace WebApiTamakulov.Controllers
 		}
 
 		/// <summary>
-		/// Метод удаляет существующий Event по переданному Id. 
+		/// Метод удаляет существующий Event по переданному Id.
 		/// </summary>
-		/// <param name="id">Id события для удаления.</param>		
+		/// <param name="id">Id события для удаления.</param>
 		[HttpDelete("{id}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
