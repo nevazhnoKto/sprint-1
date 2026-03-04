@@ -2,12 +2,21 @@
 
 namespace WebApiTamakulov.Models
 {
+	/// <summary>
+	/// Класс с основными параметрами.
+	/// </summary>
+	/// <typeparam name="T">Тип возвращаемых данных.</typeparam>
 	public class ApiResult<T> : ApiBaseResult
 	{
-		// Возвращаемые данные метода
+		/// <summary>
+		/// Возвращаемые данные метода
+		/// </summary>
 		public required T Data { get; set; }
 	}
 
+	/// <summary>
+	/// Класс с основными параметрами.
+	/// </summary>
 	public class ApiResult : ApiBaseResult { }
 
 	/// <summary>

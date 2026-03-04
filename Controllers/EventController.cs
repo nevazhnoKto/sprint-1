@@ -10,7 +10,7 @@ namespace WebApiTamakulov.Controllers
 	/// Api контроллер для работы с Событиями.
 	/// </summary>
 	[ApiController]
-	[Route("events/[controller]")]
+	[Route("events")]
 	public class EventController : ControllerBase
 	{
 		private readonly IEventService _eventService;
