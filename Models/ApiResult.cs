@@ -7,7 +7,7 @@ namespace WebApiTamakulov.Models
 		// Возвращаемые данные метода
 		public required T Data { get; set; }
 	}
-	
+
 	public class ApiResult : ApiBaseResult { }
 
 	/// <summary>

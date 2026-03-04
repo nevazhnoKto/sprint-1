@@ -1,15 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
-using WebApiTamakulov.Interfaces;
-
-namespace WebApiTamakulov.Models
+﻿namespace WebApiTamakulov.Models
 {
 	/// <summary>
 	/// Модель Event.
 	/// </summary>
 	public class Event
 	{
-		//// <summary>
+		/// <summary>
 		/// ID события.
 		/// </summary>
 		public int Id { get; set; }

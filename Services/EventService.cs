@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
-using System.Linq.Expressions;
-using WebApiTamakulov.Controllers;
-using WebApiTamakulov.Interfaces;
+﻿using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
@@ -23,9 +20,9 @@ namespace WebApiTamakulov.Services
 				}
 			];
 
-		private readonly ILogger<EventController> _logger;
-		public EventService(ILogger<EventController> logger) 
-		{ 
+		private readonly ILogger<EventService> _logger;
+		public EventService(ILogger<EventService> logger)
+		{
 			_logger = logger;
 		}
 
@@ -64,13 +61,13 @@ namespace WebApiTamakulov.Services
 		public bool Update(int id, Event eventCustom)
 		{
 			var index = Events.FindIndex(e => e.Id == id);
-			if (index == -1 )
+			if (index == -1)
 			{
 				var message = $"Cобытия с {id} не существует!";
 				_logger.LogInformation(message);
 				return false;
 			}
-			
+
 			Events[index] = eventCustom;
 			_logger.LogInformation($"Cобытие с id = {eventCustom.Id} успешно обновлено");
 			return true;

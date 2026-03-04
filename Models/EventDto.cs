@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
-using WebApiTamakulov.Interfaces;
-
-namespace WebApiTamakulov.Models
+﻿namespace WebApiTamakulov.Models
 {
 	/// <summary>
 	/// Модель EventDto.

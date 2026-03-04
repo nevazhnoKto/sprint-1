@@ -10,7 +10,7 @@ namespace WebApiTamakulov.Controllers
 	/// Api контроллер для работы с Событиями.
 	/// </summary>
 	[ApiController]
-	[Route("api/[controller]")]	
+	[Route("events/[controller]")]
 	public class EventController : ControllerBase
 	{
 		private readonly IEventService _eventService;
@@ -29,17 +29,12 @@ namespace WebApiTamakulov.Controllers
 		/// <summary>
 		/// Метод возвращает все существующие Event.
 		/// </summary>			
-		[HttpGet("events")]
+		[HttpGet]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[Produces("application/json")]
 		public IActionResult GetAllEvents()
 		{
 			var events = _eventService.GetAll();
-
-			if (events == null || !events.Any())
-				return NoContent();
-
 			var resultDto = _mapper.Map<List<EventDto>>(events);
 
 			return Ok(new ApiResult<List<EventDto>>()
@@ -55,7 +50,7 @@ namespace WebApiTamakulov.Controllers
 		/// Метод возвращает Event по запрашиваемому Id.
 		/// </summary>
 		/// <param name="id">Запрашшиваемый Id события.</param>
-		[HttpGet("events/{id:int}")]
+		[HttpGet("{id:int}")]
 		[ProducesResponseType(typeof(ApiResult<EventDto>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
@@ -73,7 +68,7 @@ namespace WebApiTamakulov.Controllers
 					StatusCode = HttpStatusCode.OK,
 					Message = $"Вернул Event по id = {id}"
 				});
-			}			
+			}
 
 			return NotFound(new ApiResult()
 			{
@@ -87,7 +82,7 @@ namespace WebApiTamakulov.Controllers
 		/// Метод создает новый Event.
 		/// </summary>
 		/// <param name="newEventDto">Данные нового Event.</param>		
-		[HttpPost("events")]
+		[HttpPost]
 		[ProducesResponseType(typeof(ApiResult<EventDto>), StatusCodes.Status201Created)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[Produces("application/json")]
@@ -103,8 +98,8 @@ namespace WebApiTamakulov.Controllers
 					StatusCode = HttpStatusCode.Created,
 					Message = $"Создался Event по id = {newEventDto.Id}"
 				};
-				return CreatedAtAction(nameof(GetByIdEvent), new { id = newEvent.Id }, response);				
-			}			
+				return CreatedAtAction(nameof(GetByIdEvent), new { id = newEvent.Id }, response);
+			}
 
 			return BadRequest(new ApiResult()
 			{
@@ -119,7 +114,7 @@ namespace WebApiTamakulov.Controllers
 		/// </summary>
 		/// <param name="id">Id события для обновления.</param>
 		/// <param name="updateEventDto">Event для обновления.</param>
-		[HttpPut("events/{id}")]
+		[HttpPut("{id}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
@@ -143,7 +138,7 @@ namespace WebApiTamakulov.Controllers
 		/// Метод удаляет существующий Event по переданному Id. 
 		/// </summary>
 		/// <param name="id">Id события для удаления.</param>		
-		[HttpDelete("events/{id}")]
+		[HttpDelete("{id}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
@@ -156,11 +151,11 @@ namespace WebApiTamakulov.Controllers
 			}
 
 			return NotFound(new ApiResult()
-				{
-					Success = false,
-					StatusCode = HttpStatusCode.NotFound,
-					Message = $"Event с id = {id} не найден"
-				});			
+			{
+				Success = false,
+				StatusCode = HttpStatusCode.NotFound,
+				Message = $"Event с id = {id} не найден"
+			});
 		}
 	}
 }
