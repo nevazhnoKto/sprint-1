@@ -26,10 +26,22 @@ namespace WebApiTamakulov.Services
 			_logger = logger;
 		}
 
-		public List<Event> GetAll()
+		public List<Event> GetAll(string? title, DateTime? from, DateTime? to)
 		{
-			_logger.LogInformation($"Получение всех событий, количество = {Events.Count}");
-			return Events;
+			var filteredEvent = Events.AsEnumerable();
+
+			if (!string.IsNullOrEmpty(title))
+				filteredEvent = Events.Where(e => e.Title == title);
+			if (from.HasValue)
+			{
+				filteredEvent = Events.Where(e => e.StartAt >= from);
+			}
+			if (to.HasValue)
+			{
+				filteredEvent = Events.Where(e => e.EndAt <= to);
+			}
+			_logger.LogInformation($"Получение всех отфильтрованных событий, количество = {filteredEvent.Count()}");
+			return filteredEvent.ToList();
 		}
 
 		public Event? GetById(int id)

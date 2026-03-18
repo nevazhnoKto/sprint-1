@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using System.Reflection;
+using WebApiTamakulov;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Mappings;
 using WebApiTamakulov.Services;
@@ -27,7 +28,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<EventDtoValidator>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();

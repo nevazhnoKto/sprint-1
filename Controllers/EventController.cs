@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 using System.Net;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
@@ -32,9 +33,11 @@ namespace WebApiTamakulov.Controllers
 		[HttpGet]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
 		[Produces("application/json")]
-		public IActionResult GetAllEvents()
+		public IActionResult GetAllEvents([FromQuery][Description("Поиск по названию события")] string? title,
+													 [FromQuery][Description("Фильтр по дате начала события")] DateTime? from, 
+													 [FromQuery][Description("Фильтр по дате окончания события")] DateTime? to)
 		{
-			var events = _eventService.GetAll();
+			var events = _eventService.GetAll(title, from, to);
 			var resultDto = _mapper.Map<List<EventDto>>(events);
 
 			return Ok(new ApiResult<List<EventDto>>()
@@ -42,7 +45,7 @@ namespace WebApiTamakulov.Controllers
 				Success = true,
 				Data = resultDto,
 				StatusCode = HttpStatusCode.OK,
-				Message = "Вернул все Events"
+				Message = "Вернул все Events с заданными фильтрамиы"
 			});
 		}
 

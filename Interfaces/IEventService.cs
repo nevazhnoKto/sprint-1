@@ -7,7 +7,7 @@ namespace WebApiTamakulov.Interfaces
 	/// </summary>
 	public interface IEventService
 	{
-		List<Event> GetAll();
+		List<Event> GetAll(string? title, DateTime? from, DateTime? to);
 		Event? GetById(int id);
 		bool Create(Event eventCustom);
 		bool Update(int id, Event eventCustom);
