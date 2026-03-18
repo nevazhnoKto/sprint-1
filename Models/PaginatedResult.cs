@@ -1,5 +1,8 @@
 ﻿namespace WebApiTamakulov.Models
 {
+	/// <summary>
+	/// Результата пагинации для поиска событий
+	/// </summary>
 	public class PaginatedResult
 	{
 		/// <summary>

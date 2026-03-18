@@ -1,6 +1,5 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
 using System.Net;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
@@ -33,13 +32,9 @@ namespace WebApiTamakulov.Controllers
 		[HttpGet]
 		[ProducesResponseType(typeof(PaginatedResult), StatusCodes.Status200OK)]
 		[Produces("application/json")]
-		public IActionResult GetAllEvents([FromQuery][Description("Поиск по названию события")] string? title,
-										  [FromQuery][Description("Фильтр по дате начала события")] DateTime? from, 
-										  [FromQuery][Description("Фильтр по дате окончания события")] DateTime? to,
-										  [FromQuery][Description("Номер страницы")] int page = 1,
-										  [FromQuery][Description("Количество элементов на странице")] int pageSize = 10)
+		public IActionResult GetAllEvents(GetEventsRequest eventsRequest)
 		{
-			var events = _eventService.GetAll(title, from, to, page, pageSize);
+			var events = _eventService.GetAll(eventsRequest.Title, eventsRequest.From, eventsRequest.To, eventsRequest.Page, eventsRequest.PageSize);
 
 			return Ok(new ApiResult<PaginatedResult>()
 			{

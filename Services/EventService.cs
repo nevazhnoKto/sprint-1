@@ -3,6 +3,8 @@ using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
 {
+	#pragma warning disable CS1591
+
 	/// <summary>
 	/// Сервис обработки событий.
 	/// </summary>
@@ -31,14 +33,14 @@ namespace WebApiTamakulov.Services
 			var filteredEvent = Events.AsEnumerable();
 
 			if (!string.IsNullOrEmpty(title))
-				filteredEvent = Events.Where(e => e.Title == title);
+				filteredEvent = filteredEvent.Where(e => e.Title?.ToLower() == title.ToLower());
 			if (from.HasValue)
 			{
-				filteredEvent = Events.Where(e => e.StartAt >= from);
+				filteredEvent = filteredEvent.Where(e => e.StartAt >= from);
 			}
 			if (to.HasValue)
 			{
-				filteredEvent = Events.Where(e => e.EndAt <= to);
+				filteredEvent = filteredEvent.Where(e => e.EndAt <= to);
 			}
 			var paginatedFilteredEvent = GetPage(filteredEvent, page, pageSize);
 			_logger.LogInformation($"Получение всех отфильтрованных событий, количество = {filteredEvent.Count()}");
@@ -121,4 +123,5 @@ namespace WebApiTamakulov.Services
 			return true;
 		}
 	}
+	#pragma warning restore CS1591
 }

@@ -25,6 +25,7 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfile>(); }, typeof(Program));
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<EventDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<GetEventsRequestValidator>();
 
 var app = builder.Build();
 

@@ -6,17 +6,29 @@ using OpenQA.Selenium;
 
 namespace WebApiTamakulov
 {
+
+	/// <summary>
+	/// Middleware-обработчик ошибок.
+	/// </summary>
 	public class GlobalExceptionHandlingMiddleware
 	{
 		private readonly RequestDelegate _next;
 		private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
 
+		/// <summary>
+		/// Middleware-обработчик ошибок.
+		/// </summary>
 		public GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlingMiddleware> logger)
 		{
 			_next = next;
 			_logger = logger;
 		}
 
+		/// <summary>
+		/// Выполняет middleware для обработки HTTP-запроса.
+		/// </summary>
+		/// <param name="httpContext"></param>
+		/// <returns></returns>
 		public async Task InvokeAsync(HttpContext httpContext)
 		{
 			try
@@ -25,7 +37,7 @@ namespace WebApiTamakulov
 			}
 			catch (Exception ex)
 			{
-				HandleException(httpContext, ex);
+				await HandleException(httpContext, ex);
 			}
 		}
 

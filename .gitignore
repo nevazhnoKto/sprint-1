@@ -31,7 +31,7 @@ mono_crash.*
 [Rr]eleases/x64/
 bin/x64/
 obj/x64/
-obj/
+obj
 
 [Dd]ebug/x86/
 [Dd]ebugPublic/x86/
@@ -431,3 +431,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 .vs/
+.obj/
