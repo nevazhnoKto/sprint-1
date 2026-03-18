@@ -16,7 +16,7 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="page">Номер страницы.</param>
 		/// <param name="pageSize">Количество событий на странице.</param>
 		/// <returns></returns>
-		PaginatedResult GetAll(string? title, DateTime? from, DateTime? to, int page, int pageSize);
+		PaginatedResult GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10);
 
 		/// <summary>
 		/// Получить событие по Id.
@@ -46,6 +46,11 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Id события.</param>
 		/// <returns>True - елси событие успешно удалено.</returns>
 		bool Delete(int id);
+
+		/// <summary>
+		/// Костыль для тестов, чтобы сбрасывать статик переменную.
+		/// </summary>
+		void Reset();
 
 	}
 }

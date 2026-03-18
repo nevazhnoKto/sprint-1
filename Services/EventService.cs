@@ -28,8 +28,8 @@ namespace WebApiTamakulov.Services
 			_logger = logger;
 		}
 
-		public PaginatedResult GetAll(string? title, DateTime? from, DateTime? to, int page, int pageSize)
-		{
+		public PaginatedResult GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
+		{	
 			var filteredEvent = Events.AsEnumerable();
 
 			if (!string.IsNullOrEmpty(title))
@@ -78,6 +78,11 @@ namespace WebApiTamakulov.Services
 
 		public bool Create(Event eventCustom)
 		{
+			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
+			{
+				return false;
+			}
+
 			if (Events.Any(e => e.Id == eventCustom.Id))
 			{
 				var message = $"Cобытие с {eventCustom.Id} уже существует в списке событий!";
@@ -91,6 +96,11 @@ namespace WebApiTamakulov.Services
 
 		public bool Update(int id, Event eventCustom)
 		{
+			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
+			{
+				return false;
+			}
+
 			var index = Events.FindIndex(e => e.Id == id);
 			if (index == -1)
 			{
@@ -120,6 +130,32 @@ namespace WebApiTamakulov.Services
 			}
 			Events.Remove(eventCustom);
 			_logger.LogInformation($"Cобытие с {id} успешно удалено");
+			return true;
+		}
+
+		// Метод для сброса состояния
+		public void Reset()
+		{
+			Events =
+			[
+				new Event
+			{
+				Id = 1,
+				Title = "Первое событие",
+				Description = "Очень классное событие",
+				StartAt = DateTime.Now,
+				EndAt = DateTime.Now.AddHours(2)
+			}
+			];
+		}
+
+		private bool ValidateDate(DateTime? start, DateTime? end)
+		{
+			if (start.HasValue && end.HasValue && start >= end)
+			{
+				_logger.LogError("Дата начала должна быть раньше даты конца");
+				return false;
+			}
 			return true;
 		}
 	}
