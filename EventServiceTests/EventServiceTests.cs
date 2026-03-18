@@ -88,6 +88,7 @@ public class EventServiceTests
 
 	[Theory]
 	[InlineData("Первое событие", true)]
+	[InlineData("Первое", true)]
 	public void GetEventsByTitle_ValidTitle_ReturnsEvents(string title, bool expected)
 	{
 		//Act
@@ -95,7 +96,6 @@ public class EventServiceTests
 
 		//Assert
 		Assert.Equal(expected, result.CountCurrentPage == 1);
-		Assert.Equal(title, result.Items?.FirstOrDefault(x => x.Title == title)?.Title);
 	}
 
 	[Theory]

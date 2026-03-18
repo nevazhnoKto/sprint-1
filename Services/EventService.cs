@@ -33,15 +33,21 @@ namespace WebApiTamakulov.Services
 			var filteredEvent = Events.AsEnumerable();
 
 			if (!string.IsNullOrEmpty(title))
-				filteredEvent = filteredEvent.Where(e => e.Title?.ToLower() == title.ToLower());
+			{
+				filteredEvent = filteredEvent.Where(e =>
+					e.Title != null && e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+			}	
+				
 			if (from.HasValue)
 			{
 				filteredEvent = filteredEvent.Where(e => e.StartAt >= from);
 			}
+
 			if (to.HasValue)
 			{
 				filteredEvent = filteredEvent.Where(e => e.EndAt <= to);
 			}
+
 			var paginatedFilteredEvent = GetPage(filteredEvent, page, pageSize);
 			_logger.LogInformation($"Получение всех отфильтрованных событий, количество = {filteredEvent.Count()}");
 
