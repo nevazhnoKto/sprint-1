@@ -48,15 +48,17 @@ namespace WebApiTamakulov.Services
 				filteredEvent = filteredEvent.Where(e => e.EndAt <= to);
 			}
 
-			var paginatedFilteredEvent = GetPage(filteredEvent, page, pageSize);
-			_logger.LogInformation($"Получение всех отфильтрованных событий, количество = {filteredEvent.Count()}");
+			var paginatedFilteredEvent = GetPage(filteredEvent, page, pageSize).ToList();
+			var filteredEventCount = filteredEvent.Count();
+
+			_logger.LogInformation($"Получение всех отфильтрованных событий, количество = {filteredEventCount}");
 
 			var paginatedResult = new PaginatedResult()
 			{
-				TotalCount = filteredEvent.Count(),
-				Items = paginatedFilteredEvent.ToList(),
+				TotalCount = filteredEventCount,
+				Items = paginatedFilteredEvent,
 				CurrentPage = page,
-				CountCurrentPage = paginatedFilteredEvent.Count()
+				CountCurrentPage = paginatedFilteredEvent.Count
 			};
 
 			return paginatedResult;

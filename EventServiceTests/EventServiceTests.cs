@@ -107,9 +107,7 @@ public class EventServiceTests
 
 		//Assert
 		Assert.Equal(expected, result.CountCurrentPage == 1);
-	}
-
-	
+	}	
 
 	[Theory]
 	[InlineData(1, 10 , true)]
@@ -177,6 +175,20 @@ public class EventServiceTests
 	}
 
 	[Fact]
+	public void CreateEvent_RepeateId_ReturnsFalse()
+	{
+		//Arrange
+		var newEvent = GetNewEvent();
+		newEvent.Id = 1;
+
+		//Act
+		var result = eventService.Create(newEvent);
+
+		//Assert
+		Assert.False(result);
+	}
+
+	[Fact]
 	public void UpdateEvent_NoValidDatas_ReturnsFalse()
 	{
 		//Arrange
@@ -187,6 +199,19 @@ public class EventServiceTests
 
 		//Act
 		var result = eventService.Update(idEvent, newEvent);
+
+		//Assert
+		Assert.False(result);
+	}
+
+	[Fact]
+	public void RemoveAsync_NoExistingId_ReturnsFalse()
+	{
+		//Arrange
+		var idEvent = 322;
+
+		//Act
+		var result = eventService.Delete(idEvent);
 
 		//Assert
 		Assert.False(result);
