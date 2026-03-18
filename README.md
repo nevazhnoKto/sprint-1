@@ -13,5 +13,7 @@ REST API для управления событиями (Events)
    dotnet restore
    dotnet run
 3. Открыть сваггер по адресу: https://localhost:7208/swagger/index.html
+4. Для запуска тестов в терминале перейдите в папку с проектом (cd ...) , затем выполните:
+    dotnet test ./EventServiceTests/EventServiceTests.csproj
 
-
+Если произойдет ошибка, то вернется сообщение в унифицированном формате ProblemDetails.
