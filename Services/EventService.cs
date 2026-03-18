@@ -26,7 +26,7 @@ namespace WebApiTamakulov.Services
 			_logger = logger;
 		}
 
-		public List<Event> GetAll(string? title, DateTime? from, DateTime? to)
+		public PaginatedResult GetAll(string? title, DateTime? from, DateTime? to, int page, int pageSize)
 		{
 			var filteredEvent = Events.AsEnumerable();
 
@@ -40,8 +40,25 @@ namespace WebApiTamakulov.Services
 			{
 				filteredEvent = Events.Where(e => e.EndAt <= to);
 			}
+			var paginatedFilteredEvent = GetPage(filteredEvent, page, pageSize);
 			_logger.LogInformation($"Получение всех отфильтрованных событий, количество = {filteredEvent.Count()}");
-			return filteredEvent.ToList();
+
+			var paginatedResult = new PaginatedResult()
+			{
+				TotalCount = filteredEvent.Count(),
+				Items = paginatedFilteredEvent.ToList(),
+				CurrentPage = page,
+				CountCurrentPage = paginatedFilteredEvent.Count()
+			};
+
+			return paginatedResult;
+		}
+
+		private IEnumerable<Event> GetPage(IEnumerable<Event> events, int page, int pageSize)
+		{
+			return events.OrderByDescending(e => e.StartAt)
+						 .Skip((page - 1) * pageSize)
+						 .Take(pageSize);
 		}
 
 		public Event? GetById(int id)

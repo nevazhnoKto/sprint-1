@@ -31,19 +31,20 @@ namespace WebApiTamakulov.Controllers
 		/// Метод возвращает все существующие Event.
 		/// </summary>
 		[HttpGet]
-		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(PaginatedResult), StatusCodes.Status200OK)]
 		[Produces("application/json")]
 		public IActionResult GetAllEvents([FromQuery][Description("Поиск по названию события")] string? title,
-													 [FromQuery][Description("Фильтр по дате начала события")] DateTime? from, 
-													 [FromQuery][Description("Фильтр по дате окончания события")] DateTime? to)
+										  [FromQuery][Description("Фильтр по дате начала события")] DateTime? from, 
+										  [FromQuery][Description("Фильтр по дате окончания события")] DateTime? to,
+										  [FromQuery][Description("Номер страницы")] int page = 1,
+										  [FromQuery][Description("Количество элементов на странице")] int pageSize = 10)
 		{
-			var events = _eventService.GetAll(title, from, to);
-			var resultDto = _mapper.Map<List<EventDto>>(events);
+			var events = _eventService.GetAll(title, from, to, page, pageSize);
 
-			return Ok(new ApiResult<List<EventDto>>()
+			return Ok(new ApiResult<PaginatedResult>()
 			{
 				Success = true,
-				Data = resultDto,
+				Data = events,
 				StatusCode = HttpStatusCode.OK,
 				Message = "Вернул все Events с заданными фильтрамиы"
 			});
