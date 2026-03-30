@@ -5,6 +5,7 @@ using WebApiTamakulov;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Mappings;
 using WebApiTamakulov.Services;
+using WebApiTamakulov.Services.BackgroundServices;
 using WebApiTamakulov.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,10 +23,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfile>(); }, typeof(Program));
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<EventDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GetEventsRequestValidator>();
+builder.Services.AddHostedService<ConfirmBookingBackgroundService>();
 
 var app = builder.Build();
 

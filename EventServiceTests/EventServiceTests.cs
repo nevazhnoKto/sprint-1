@@ -47,7 +47,7 @@ public class EventServiceTests
 	public void GetEventById_ExistingId_ReturnsEvent()
 	{
 		//Arrange
-		var idEvent = 1;
+		var idEvent = new Guid("00000000-0000-0000-0000-000000000001");
 		var expectedTitle = "Первое событие";
 		var expectedDescription = "Очень классное событие";
 
@@ -63,7 +63,7 @@ public class EventServiceTests
 	public void UpdateEvent_ExistingEvent_ReturnsTrue()
 	{
 		//Arrange
-		var idEvent = 1;
+		var idEvent = new Guid("00000000-0000-0000-0000-000000000001");
 		var newEvent = GetNewEvent();
 
 		//Act
@@ -77,7 +77,7 @@ public class EventServiceTests
 	public void RemoveAsync_ExistingEvent_ReturnsTrue()
 	{
 		//Arrange
-		var idEvent = 1;
+		var idEvent = new Guid("00000000-0000-0000-0000-000000000001");
 
 		//Act
 		var result = eventService.Delete(idEvent);
@@ -136,7 +136,7 @@ public class EventServiceTests
 	public void GetEventById_NoExistingId_ReturnsNull()
 	{
 		//Arrange
-		var idEvent = 322;
+		var idEvent = new Guid("00000000-0000-0000-0000-000000000322");
 
 		//Act
 		var result = eventService.GetById(idEvent);
@@ -149,7 +149,7 @@ public class EventServiceTests
 	public void UpdateEvent_NoExistingId_ReturnsFalse()
 	{
 		//Arrange
-		var idEvent = 322;
+		var idEvent = new Guid("00000000-0000-0000-0000-000000000322");
 		var newEvent = GetNewEvent();
 
 		//Act
@@ -179,7 +179,7 @@ public class EventServiceTests
 	{
 		//Arrange
 		var newEvent = GetNewEvent();
-		newEvent.Id = 1;
+		newEvent.Id = new Guid("00000000-0000-0000-0000-000000000001");
 
 		//Act
 		var result = eventService.Create(newEvent);
@@ -192,7 +192,7 @@ public class EventServiceTests
 	public void UpdateEvent_NoValidDatas_ReturnsFalse()
 	{
 		//Arrange
-		var idEvent = 1;
+		var idEvent = new Guid("00000000-0000-0000-0000-000000000001");
 		var newEvent = GetNewEvent();
 		newEvent.StartAt = DateTime.Now.AddDays(1);
 		newEvent.EndAt = DateTime.Now;
@@ -208,7 +208,7 @@ public class EventServiceTests
 	public void RemoveAsync_NoExistingId_ReturnsFalse()
 	{
 		//Arrange
-		var idEvent = 322;
+		var idEvent = new Guid("00000000-0000-0000-0000-000000000322");
 
 		//Act
 		var result = eventService.Delete(idEvent);
@@ -221,7 +221,7 @@ public class EventServiceTests
 	{
 		return new Event
 		{
-			Id = 2,
+			Id = new Guid("00000000-0000-0000-0000-000000000002"),
 			Title = "Новое событие",
 			Description = "Потрясающее событие",
 			StartAt = DateTime.Now,

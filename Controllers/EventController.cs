@@ -14,16 +14,19 @@ namespace WebApiTamakulov.Controllers
 	public class EventController : ControllerBase
 	{
 		private readonly IEventService _eventService;
+		private readonly IBookingService _bookingService;
 		private readonly IMapper _mapper;
 		/// <summary>
 		/// Api контроллер для работы с Событиями.
 		/// </summary>
 		/// <param name="eventService">Сервис для работы с Событиями.</param>
 		/// <param name="mapper">Маппер.</param>
-		public EventController(IEventService eventService, IMapper mapper)
+		/// <param name="bookingService">Сервис для работы с бронированием.</param>
+		public EventController(IEventService eventService, IMapper mapper, IBookingService bookingService)
 		{
 			_eventService = eventService;
 			_mapper = mapper;
+			_bookingService = bookingService;
 		}
 
 		/// <summary>
@@ -48,12 +51,12 @@ namespace WebApiTamakulov.Controllers
 		/// <summary>
 		/// Метод возвращает Event по запрашиваемому Id.
 		/// </summary>
-		/// <param name="id">Запрашшиваемый Id события.</param>
-		[HttpGet("{id:int}")]
+		/// <param name="id">Запрашиваемый Id события.</param>
+		[HttpGet("{id:Guid}")]
 		[ProducesResponseType(typeof(ApiResult<EventDto>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public IActionResult GetByIdEvent(int id)
+		public IActionResult GetByIdEvent(Guid id)
 		{
 
 			var eventById = _eventService.GetById(id);
@@ -113,11 +116,11 @@ namespace WebApiTamakulov.Controllers
 		/// </summary>
 		/// <param name="id">Id события для обновления.</param>
 		/// <param name="updateEventDto">Event для обновления.</param>
-		[HttpPut("{id}")]
+		[HttpPut("{id:Guid}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public IActionResult UpdateEvent(int id, [FromBody] EventDto updateEventDto)
+		public IActionResult UpdateEvent(Guid id, [FromBody] EventDto updateEventDto)
 		{
 
 			if (_eventService.Update(id, _mapper.Map<Event>(updateEventDto)))
@@ -137,11 +140,11 @@ namespace WebApiTamakulov.Controllers
 		/// Метод удаляет существующий Event по переданному Id.
 		/// </summary>
 		/// <param name="id">Id события для удаления.</param>
-		[HttpDelete("{id}")]
+		[HttpDelete("{id:Guid}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public IActionResult DeleteEvent(int id)
+		public IActionResult DeleteEvent(Guid id)
 		{
 
 			if (_eventService.Delete(id))
@@ -156,5 +159,59 @@ namespace WebApiTamakulov.Controllers
 				Message = $"Event с id = {id} не найден"
 			});
 		}
+
+		/// <summary>
+		/// Метод создает новое бронирования для конкретного EventId.
+		/// </summary>
+		/// <param name="id">Id события для бронирования.</param>
+		[HttpPost("{id:Guid}/book")]
+		[ProducesResponseType(typeof(ApiResult<Booking>), StatusCodes.Status202Accepted)]
+		[Produces("application/json")]
+		public async Task<IActionResult> CreateBooking(Guid id)
+		{
+			var booking = await _bookingService.CreateBookingAsync(id);
+			
+				var response = new ApiResult<Booking>
+				{
+					Success = true,
+					Data = booking,
+					StatusCode = HttpStatusCode.Accepted,
+					Message = $"Создалось бронирование для EventId = {id}. BookingId = {booking.Id}"
+				};
+				return CreatedAtAction(nameof(GetByIdBooking), new { id = booking.Id }, response);
+		}
+
+		/// <summary>
+		/// Метод возвращает бронирование по запрашиваемому Id.
+		/// </summary>
+		/// <param name="id">Запрашиваемый Id бронирования.</param>
+		[HttpGet("/bookings/{id:Guid}")]
+		[ProducesResponseType(typeof(ApiResult<string>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
+		[Produces("application/json")]
+		public async Task<IActionResult> GetByIdBooking(Guid id)
+		{
+
+			var bookingById = await _bookingService.GetBookingByIdAsync(id);
+
+			if (bookingById != null)
+			{
+				return Ok(new ApiResult<string>()
+				{
+					Success = true,
+					Data = bookingById.Status.ToString(),
+					StatusCode = HttpStatusCode.OK,
+					Message = $"Вернул бронирование по id = {id}"
+				});
+			}
+
+			return NotFound(new ApiResult()
+			{
+				Success = false,
+				StatusCode = HttpStatusCode.NotFound,
+				Message = $"Бронирование по id = {id} не существует"
+			});
+		}
+
 	}
 }

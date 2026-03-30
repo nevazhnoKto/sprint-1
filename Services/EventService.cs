@@ -14,7 +14,7 @@ namespace WebApiTamakulov.Services
 			[
 				new Event
 				{
-					Id = 1,
+					Id = new Guid("00000000-0000-0000-0000-000000000001"),
 					Title = "Первое событие",
 					Description = "Очень классное событие",
 					StartAt = DateTime.Now,
@@ -71,7 +71,7 @@ namespace WebApiTamakulov.Services
 						 .Take(pageSize);
 		}
 
-		public Event? GetById(int id)
+		public Event? GetById(Guid id)
 		{
 			var eventCustom = Events.FirstOrDefault(e => e.Id == id);
 			if (eventCustom == null)
@@ -102,7 +102,7 @@ namespace WebApiTamakulov.Services
 			return true;
 		}
 
-		public bool Update(int id, Event eventCustom)
+		public bool Update(Guid id, Event eventCustom)
 		{
 			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
 			{
@@ -127,7 +127,7 @@ namespace WebApiTamakulov.Services
 		/// </summary>
 		/// <param name="id">Id удаляемого события.</param>
 		/// <returns>True - если удаление прошло успешно.</returns>
-		public bool Delete(int id)
+		public bool Delete(Guid id)
 		{
 			var eventCustom = Events.FirstOrDefault(e => e.Id == id);
 			if (eventCustom == null)
@@ -148,7 +148,7 @@ namespace WebApiTamakulov.Services
 			[
 				new Event
 			{
-				Id = 1,
+				Id = new Guid("00000000-0000-0000-0000-000000000001"),
 				Title = "Первое событие",
 				Description = "Очень классное событие",
 				StartAt = DateTime.Now,
