@@ -8,6 +8,18 @@ namespace WebApiTamakulov.Models
 	public class Booking
 	{
 		/// <summary>
+		/// Конструктор для создания новой брони
+		/// </summary>
+		public Booking(Guid eventId)
+		{
+			Id = Guid.NewGuid();
+			EventId = eventId;
+			Status = BookingStatus.Pending;
+			CreatedAt = DateTime.UtcNow;
+			ProcessedAt = null;
+		}
+
+		/// <summary>
 		/// Уникальный идентификатор брони.
 		/// </summary>
 		public Guid Id { get; set; }

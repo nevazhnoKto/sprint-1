@@ -35,11 +35,11 @@ namespace WebApiTamakulov.Services.BackgroundServices
 				{
 					using var scope = _serviceScope.CreateScope();
 					var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-					var bookings = await bookingService.GetAllPendingStatusBookingAsync();
+					var bookings = bookingService.GetAllPendingStatusBookingAsync();
 					foreach (var booking in bookings)
 					{
 						await Task.Delay(2000);
-						await bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Confirmed);
+						bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Confirmed);
 					}
 				}
 				catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)

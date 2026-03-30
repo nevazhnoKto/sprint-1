@@ -11,22 +11,21 @@ namespace WebApiTamakulov.Services
 		private static List<Booking> Bookings { get; set; } = [];
 
 		private readonly ILogger<BookingService> _logger;
+		private readonly IEventService _eventService;
 
-		public BookingService(ILogger<BookingService> logger)
+		public BookingService(ILogger<BookingService> logger, IEventService eventService)
 		{
 			_logger = logger;
+			_eventService = eventService;
 		}
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId)
 		{
-			var newBooking = new Booking()
+			if (_eventService.GetById(eventId) == null)
 			{
-				Id = Guid.NewGuid(),
-				EventId = eventId,
-				Status = Enums.BookingStatus.Pending,
-				CreatedAt = DateTime.Now,
-				ProcessedAt = null,
-			};
+				return default!;
+			}
+			var newBooking = new Booking(eventId);
 
 			Bookings.Add(newBooking);
 
@@ -38,22 +37,28 @@ namespace WebApiTamakulov.Services
 
 		public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
 		{
-			var eventCustom = Bookings.FirstOrDefault(e => e.Id == bookingId);
-			if (eventCustom == null)
+			var booking = Bookings.FirstOrDefault(e => e.Id == bookingId);
+			if (booking == null)
 			{
 				_logger.LogInformation($"Бронирования с {bookingId} не существует!");
 				return default!;
 			}
+			if (_eventService.GetById(booking.EventId) == null)
+			{
+				_logger.LogInformation($"Событие c EventId {booking.EventId} не существует! Бронирование {booking.Id} будет удалено");
+				Bookings.Remove(booking);
+				return default!;
+			}
 			_logger.LogInformation($"Найдено бронирование с id = {bookingId}");
-			return eventCustom;
+			return booking;
 		}
 
-		public async Task<List<Booking>> GetAllPendingStatusBookingAsync()
+		public List<Booking> GetAllPendingStatusBookingAsync()
 		{
 			return Bookings.Where(b => b.Status == Enums.BookingStatus.Pending).ToList();
 		}
 
-		public async Task UpdateStatusBookingAsync(Guid id, Enums.BookingStatus status)
+		public void UpdateStatusBookingAsync(Guid id, Enums.BookingStatus status)
 		{
 			var booking = Bookings.FirstOrDefault(b => b.Id == id);
 			if (booking != null)

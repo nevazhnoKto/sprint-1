@@ -228,7 +228,6 @@ public class EventServiceTests
 			EndAt = DateTime.Now.AddHours(2)
 		};
 	}
-
 	public static IEnumerable<object[]> GetValidDates()
 	{
 		yield return new object[] { DateTime.Now.AddMinutes(-1), DateTime.Now.AddHours(3), true };

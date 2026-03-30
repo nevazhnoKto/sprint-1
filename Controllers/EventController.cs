@@ -166,11 +166,13 @@ namespace WebApiTamakulov.Controllers
 		/// <param name="id">Id события для бронирования.</param>
 		[HttpPost("{id:Guid}/book")]
 		[ProducesResponseType(typeof(ApiResult<Booking>), StatusCodes.Status202Accepted)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
 		public async Task<IActionResult> CreateBooking(Guid id)
 		{
 			var booking = await _bookingService.CreateBookingAsync(id);
-			
+			if (booking != null)
+			{
 				var response = new ApiResult<Booking>
 				{
 					Success = true,
@@ -178,7 +180,15 @@ namespace WebApiTamakulov.Controllers
 					StatusCode = HttpStatusCode.Accepted,
 					Message = $"Создалось бронирование для EventId = {id}. BookingId = {booking.Id}"
 				};
-				return CreatedAtAction(nameof(GetByIdBooking), new { id = booking.Id }, response);
+				return AcceptedAtAction(nameof(GetByIdBooking), new { id = booking.Id }, response);
+			}
+
+			return NotFound(new ApiResult()
+			{
+				Success = false,
+				StatusCode = HttpStatusCode.NotFound,
+				Message = $"Event по id = {id} не существует, невозможно создать событие!"
+			});
 		}
 
 		/// <summary>
