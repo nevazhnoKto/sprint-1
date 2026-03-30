@@ -3,6 +3,8 @@ using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
 {
+	#pragma warning disable CS1591
+
 	/// <summary>
 	/// Сервис обработки событий.
 	/// </summary>
@@ -26,10 +28,47 @@ namespace WebApiTamakulov.Services
 			_logger = logger;
 		}
 
-		public List<Event> GetAll()
+		public PaginatedResult GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
+		{	
+			var filteredEvent = Events.AsEnumerable();
+
+			if (!string.IsNullOrEmpty(title))
+			{
+				filteredEvent = filteredEvent.Where(e =>
+					e.Title != null && e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+			}	
+				
+			if (from.HasValue)
+			{
+				filteredEvent = filteredEvent.Where(e => e.StartAt >= from);
+			}
+
+			if (to.HasValue)
+			{
+				filteredEvent = filteredEvent.Where(e => e.EndAt <= to);
+			}
+
+			var paginatedFilteredEvent = GetPage(filteredEvent, page, pageSize).ToList();
+			var filteredEventCount = filteredEvent.Count();
+
+			_logger.LogInformation($"Получение всех отфильтрованных событий, количество = {filteredEventCount}");
+
+			var paginatedResult = new PaginatedResult()
+			{
+				TotalCount = filteredEventCount,
+				Items = paginatedFilteredEvent,
+				CurrentPage = page,
+				CountCurrentPage = paginatedFilteredEvent.Count
+			};
+
+			return paginatedResult;
+		}
+
+		private IEnumerable<Event> GetPage(IEnumerable<Event> events, int page, int pageSize)
 		{
-			_logger.LogInformation($"Получение всех событий, количество = {Events.Count}");
-			return Events;
+			return events.OrderByDescending(e => e.StartAt)
+						 .Skip((page - 1) * pageSize)
+						 .Take(pageSize);
 		}
 
 		public Event? GetById(int id)
@@ -47,6 +86,11 @@ namespace WebApiTamakulov.Services
 
 		public bool Create(Event eventCustom)
 		{
+			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
+			{
+				return false;
+			}
+
 			if (Events.Any(e => e.Id == eventCustom.Id))
 			{
 				var message = $"Cобытие с {eventCustom.Id} уже существует в списке событий!";
@@ -60,6 +104,11 @@ namespace WebApiTamakulov.Services
 
 		public bool Update(int id, Event eventCustom)
 		{
+			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
+			{
+				return false;
+			}
+
 			var index = Events.FindIndex(e => e.Id == id);
 			if (index == -1)
 			{
@@ -91,5 +140,32 @@ namespace WebApiTamakulov.Services
 			_logger.LogInformation($"Cобытие с {id} успешно удалено");
 			return true;
 		}
+
+		// Метод для сброса состояния
+		public void Reset()
+		{
+			Events =
+			[
+				new Event
+			{
+				Id = 1,
+				Title = "Первое событие",
+				Description = "Очень классное событие",
+				StartAt = DateTime.Now,
+				EndAt = DateTime.Now.AddHours(2)
+			}
+			];
+		}
+
+		private bool ValidateDate(DateTime? start, DateTime? end)
+		{
+			if (start.HasValue && end.HasValue && start >= end)
+			{
+				_logger.LogError("Дата начала должна быть раньше даты конца");
+				return false;
+			}
+			return true;
+		}
 	}
+	#pragma warning restore CS1591
 }

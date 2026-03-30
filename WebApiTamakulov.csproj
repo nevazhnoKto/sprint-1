@@ -8,8 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="16.0.0" />
+    <Compile Remove="EventServiceTests\**" />
+    <Content Remove="EventServiceTests\**" />
+    <EmbeddedResource Remove="EventServiceTests\**" />
+    <None Remove="EventServiceTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.41.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 

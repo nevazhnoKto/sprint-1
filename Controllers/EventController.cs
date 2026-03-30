@@ -30,19 +30,18 @@ namespace WebApiTamakulov.Controllers
 		/// Метод возвращает все существующие Event.
 		/// </summary>
 		[HttpGet]
-		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(PaginatedResult), StatusCodes.Status200OK)]
 		[Produces("application/json")]
-		public IActionResult GetAllEvents()
+		public IActionResult GetAllEvents(GetEventsRequest eventsRequest)
 		{
-			var events = _eventService.GetAll();
-			var resultDto = _mapper.Map<List<EventDto>>(events);
+			var events = _eventService.GetAll(eventsRequest.Title, eventsRequest.From, eventsRequest.To, eventsRequest.Page, eventsRequest.PageSize);
 
-			return Ok(new ApiResult<List<EventDto>>()
+			return Ok(new ApiResult<PaginatedResult>()
 			{
 				Success = true,
-				Data = resultDto,
+				Data = events,
 				StatusCode = HttpStatusCode.OK,
-				Message = "Вернул все Events"
+				Message = "Вернул все Events с заданными фильтрамиы"
 			});
 		}
 

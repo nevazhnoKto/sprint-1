@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using System.Reflection;
+using WebApiTamakulov;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Mappings;
 using WebApiTamakulov.Services;
@@ -24,10 +25,12 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfile>(); }, typeof(Program));
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<EventDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<GetEventsRequestValidator>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
