@@ -14,19 +14,16 @@ namespace WebApiTamakulov.Controllers
 	public class EventController : ControllerBase
 	{
 		private readonly IEventService _eventService;
-		private readonly IBookingService _bookingService;
 		private readonly IMapper _mapper;
 		/// <summary>
 		/// Api контроллер для работы с Событиями.
 		/// </summary>
 		/// <param name="eventService">Сервис для работы с Событиями.</param>
 		/// <param name="mapper">Маппер.</param>
-		/// <param name="bookingService">Сервис для работы с бронированием.</param>
-		public EventController(IEventService eventService, IMapper mapper, IBookingService bookingService)
+		public EventController(IEventService eventService, IMapper mapper)
 		{
 			_eventService = eventService;
 			_mapper = mapper;
-			_bookingService = bookingService;
 		}
 
 		/// <summary>

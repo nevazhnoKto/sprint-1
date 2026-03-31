@@ -18,7 +18,6 @@ namespace WebApiTamakulov.Controllers
 		/// <summary>
 		/// Api контроллер для работы с Событиями.
 		/// </summary>
-		/// <param name="eventService">Сервис для работы с Событиями.</param>
 		/// <param name="mapper">Маппер.</param>
 		/// <param name="bookingService">Сервис для работы с бронированием.</param>
 		public BookingController(IMapper mapper, IBookingService bookingService)

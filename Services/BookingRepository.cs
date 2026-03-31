@@ -24,7 +24,7 @@ namespace WebApiTamakulov.Services
 				Bookings.Remove(booking);
 		}
 
-		public Booking GetBookingById(Guid bookingId)
+		public Booking? GetBookingById(Guid bookingId)
 		{
 			return Bookings.FirstOrDefault(b => b.Id == bookingId);
 		}

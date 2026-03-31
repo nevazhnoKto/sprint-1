@@ -9,12 +9,14 @@ namespace EventServiceTests;
 
 public class EventServiceTests
 {
-	private readonly IEventService eventService;
+	private readonly IEventService _eventService;
+	private readonly IEventRepository _eventRepository;
 	public EventServiceTests()
 	{
 		var loggerMock = new Mock<ILogger<EventService>>();
-		eventService = new EventService(loggerMock.Object);
-		eventService.Reset();
+		_eventRepository = new EventRepository();
+		_eventService = new EventService(loggerMock.Object, _eventRepository);
+		_eventRepository.Reset();
 	}
 
 	[Fact]
@@ -24,7 +26,7 @@ public class EventServiceTests
 		var newEvent = GetNewEvent();
 
 		//Act
-		var result = eventService.Create(newEvent);
+		var result = _eventService.Create(newEvent);
 
 		//Assert
 		Assert.True(result);
@@ -37,7 +39,7 @@ public class EventServiceTests
 		var expected = 1;
 
 		//Act
-		var result = eventService.GetAll("", null, null);
+		var result = _eventService.GetAll("", null, null);
 
 		//Assert
 		Assert.Equal(expected, result.CountCurrentPage);
@@ -52,7 +54,7 @@ public class EventServiceTests
 		var expectedDescription = "Очень классное событие";
 
 		//Act
-		var result = eventService.GetById(idEvent);
+		var result = _eventService.GetById(idEvent);
 
 		//Assert
 		Assert.Equal(expectedTitle, result?.Title);
@@ -67,7 +69,7 @@ public class EventServiceTests
 		var newEvent = GetNewEvent();
 
 		//Act
-		var result = eventService.Update(idEvent, newEvent);
+		var result = _eventService.Update(idEvent, newEvent);
 
 		//Assert
 		Assert.True(result);
@@ -80,7 +82,7 @@ public class EventServiceTests
 		var idEvent = new Guid("00000000-0000-0000-0000-000000000001");
 
 		//Act
-		var result = eventService.Delete(idEvent);
+		var result = _eventService.Delete(idEvent);
 
 		//Assert
 		Assert.True(result);
@@ -92,7 +94,7 @@ public class EventServiceTests
 	public void GetEventsByTitle_ValidTitle_ReturnsEvents(string title, bool expected)
 	{
 		//Act
-		var result = eventService.GetAll(title, null, null);
+		var result = _eventService.GetAll(title, null, null);
 
 		//Assert
 		Assert.Equal(expected, result.CountCurrentPage == 1);
@@ -103,7 +105,7 @@ public class EventServiceTests
 	public void GetEventsByDateRange_ValidDates_ReturnsEvents(DateTime from, DateTime to, bool expected)
 	{
 		//Act
-		var result = eventService.GetAll("", from, to);
+		var result = _eventService.GetAll("", from, to);
 
 		//Assert
 		Assert.Equal(expected, result.CountCurrentPage == 1);
@@ -115,7 +117,7 @@ public class EventServiceTests
 	public void GetAllEvents_ValidPageNumber_ReturnsEvents(int page, int pageSize, bool expected)
 	{
 		//Act
-		var result = eventService.GetAll("", null, null, page, pageSize);
+		var result = _eventService.GetAll("", null, null, page, pageSize);
 
 		//Assert
 		Assert.Equal(expected, result.CountCurrentPage == 1);
@@ -126,7 +128,7 @@ public class EventServiceTests
 	public void GetAllEvents_CombineValidData_ReturnsEvents(string title, DateTime from, DateTime to, int page, int pageSize, bool expected)
 	{
 		//Act
-		var result = eventService.GetAll(title, from, to, page, pageSize);
+		var result = _eventService.GetAll(title, from, to, page, pageSize);
 
 		//Assert
 		Assert.Equal(expected, result.CountCurrentPage == 1);
@@ -139,7 +141,7 @@ public class EventServiceTests
 		var idEvent = new Guid("00000000-0000-0000-0000-000000000322");
 
 		//Act
-		var result = eventService.GetById(idEvent);
+		var result = _eventService.GetById(idEvent);
 
 		//Assert
 		Assert.Null(result);
@@ -153,7 +155,7 @@ public class EventServiceTests
 		var newEvent = GetNewEvent();
 
 		//Act
-		var result = eventService.Update(idEvent, newEvent);
+		var result = _eventService.Update(idEvent, newEvent);
 
 		//Assert
 		Assert.False(result);
@@ -168,7 +170,7 @@ public class EventServiceTests
 		newEvent.EndAt = DateTime.Now;
 
 		//Act
-		var result = eventService.Create(newEvent);
+		var result = _eventService.Create(newEvent);
 
 		//Assert
 		Assert.False(result);
@@ -182,7 +184,7 @@ public class EventServiceTests
 		newEvent.Id = new Guid("00000000-0000-0000-0000-000000000001");
 
 		//Act
-		var result = eventService.Create(newEvent);
+		var result = _eventService.Create(newEvent);
 
 		//Assert
 		Assert.False(result);
@@ -198,7 +200,7 @@ public class EventServiceTests
 		newEvent.EndAt = DateTime.Now;
 
 		//Act
-		var result = eventService.Update(idEvent, newEvent);
+		var result = _eventService.Update(idEvent, newEvent);
 
 		//Assert
 		Assert.False(result);
@@ -211,7 +213,7 @@ public class EventServiceTests
 		var idEvent = new Guid("00000000-0000-0000-0000-000000000322");
 
 		//Act
-		var result = eventService.Delete(idEvent);
+		var result = _eventService.Delete(idEvent);
 
 		//Assert
 		Assert.False(result);

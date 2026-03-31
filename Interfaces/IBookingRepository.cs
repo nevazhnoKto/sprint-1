@@ -18,7 +18,7 @@ namespace WebApiTamakulov.Interfaces
 		/// Возвращает бронирование по его идентификатору.
 		/// </summary>
 		/// <param name="bookingId">Идентификатор бронирования.</param>
-		Booking GetBookingById(Guid bookingId);
+		Booking? GetBookingById(Guid bookingId);
 
 		/// <summary>
 		/// Удаляет бронирование по идентификатору.

@@ -46,11 +46,5 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Id события.</param>
 		/// <returns>True - елси событие успешно удалено.</returns>
 		bool Delete(Guid id);
-
-		/// <summary>
-		/// Костыль для тестов, чтобы сбрасывать статик переменную.
-		/// </summary>
-		void Reset();
-
 	}
 }
