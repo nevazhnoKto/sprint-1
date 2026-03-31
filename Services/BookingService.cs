@@ -8,15 +8,15 @@ namespace WebApiTamakulov.Services
 
 	public class BookingService : IBookingService
 	{
-		private static List<Booking> Bookings { get; set; } = [];
-
 		private readonly ILogger<BookingService> _logger;
 		private readonly IEventService _eventService;
+		private readonly IBookingRepository _bookingRepository;
 
-		public BookingService(ILogger<BookingService> logger, IEventService eventService)
+		public BookingService(ILogger<BookingService> logger, IEventService eventService, IBookingRepository bookingRepository)
 		{
 			_logger = logger;
 			_eventService = eventService;
+			_bookingRepository = bookingRepository;
 		}
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId)
@@ -25,9 +25,8 @@ namespace WebApiTamakulov.Services
 			{
 				return default!;
 			}
-			var newBooking = new Booking(eventId);
 
-			Bookings.Add(newBooking);
+			var newBooking = _bookingRepository.AddBooking(eventId);
 
 			var message = $"Бронирования для события с eventId = {eventId} созданно!";
 			_logger.LogInformation(message);
@@ -37,7 +36,7 @@ namespace WebApiTamakulov.Services
 
 		public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
 		{
-			var booking = Bookings.FirstOrDefault(e => e.Id == bookingId);
+			var booking = _bookingRepository.GetBookingById(bookingId);
 			if (booking == null)
 			{
 				_logger.LogInformation($"Бронирования с {bookingId} не существует!");
@@ -46,7 +45,7 @@ namespace WebApiTamakulov.Services
 			if (_eventService.GetById(booking.EventId) == null)
 			{
 				_logger.LogInformation($"Событие c EventId {booking.EventId} не существует! Бронирование {booking.Id} будет удалено");
-				Bookings.Remove(booking);
+				_bookingRepository.DeleteBookingById(booking.Id);
 				return default!;
 			}
 			_logger.LogInformation($"Найдено бронирование с id = {bookingId}");
@@ -55,17 +54,12 @@ namespace WebApiTamakulov.Services
 
 		public List<Booking> GetAllPendingStatusBookingAsync()
 		{
-			return Bookings.Where(b => b.Status == Enums.BookingStatus.Pending).ToList();
+			return _bookingRepository.GetBookingsByStatus(Enums.BookingStatus.Pending);
 		}
 
 		public void UpdateStatusBookingAsync(Guid id, Enums.BookingStatus status)
 		{
-			var booking = Bookings.FirstOrDefault(b => b.Id == id);
-			if (booking != null)
-			{
-				booking.Status = status;
-				booking.ProcessedAt = DateTime.Now;
-			}
+			_bookingRepository.UpdateBooking(id, status);
 		}
 	}
 

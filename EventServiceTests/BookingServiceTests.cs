@@ -16,6 +16,7 @@ namespace EventServiceTests
 	{
 		private Guid defaultEventGuid = new Guid("00000000-0000-0000-0000-000000000001");
 		private readonly IBookingService _bookingService;
+		private readonly IBookingRepository _bookingRepository;
 		private readonly Mock<IEventService> _eventServiceMock;
 		private bool IsEventDeleted = false;
 
@@ -34,7 +35,9 @@ namespace EventServiceTests
 			_eventServiceMock.Setup(m => m.Delete(defaultEventGuid))
 							.Returns(true)
 							.Callback(() => IsEventDeleted = true);
-			_bookingService = new BookingService(loggerBookingMock.Object, _eventServiceMock.Object);
+			_bookingRepository = new BookingRepository();
+			_bookingService = new BookingService(loggerBookingMock.Object, _eventServiceMock.Object, _bookingRepository);
+			_bookingRepository.Reset();
 		}
 
 		[Fact]

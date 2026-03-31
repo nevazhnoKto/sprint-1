@@ -36,10 +36,11 @@ namespace WebApiTamakulov.Services.BackgroundServices
 					using var scope = _serviceScope.CreateScope();
 					var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 					var bookings = bookingService.GetAllPendingStatusBookingAsync();
+					Random random = new Random();
 					foreach (var booking in bookings)
 					{
-						await Task.Delay(2000);
-						bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Confirmed);
+						await Task.Delay(2000, stoppingToken);
+						bookingService.UpdateStatusBookingAsync(booking.Id, (Enums.BookingStatus)random.Next(1, 3));
 					}
 				}
 				catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
@@ -51,7 +52,7 @@ namespace WebApiTamakulov.Services.BackgroundServices
 					_logger.LogError(ex, "Ошибка при подтвержнеии бронирования.");
 				}
 				// Запускать каждые 5 сек.
-				await Task.Delay(5000);
+				await Task.Delay(5000, stoppingToken);
 			}
 
 			_logger.LogInformation("ConfirmBookingBackgroundService остановлен");

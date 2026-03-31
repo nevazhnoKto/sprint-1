@@ -74,7 +74,7 @@ namespace WebApiTamakulov.Controllers
 		/// </summary>
 		/// <param name="id">Запрашиваемый Id бронирования.</param>
 		[HttpGet("/bookings/{id:Guid}")]
-		[ProducesResponseType(typeof(ApiResult<string>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult<BookingDto>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
@@ -94,10 +94,10 @@ namespace WebApiTamakulov.Controllers
 
 			if (bookingById != null)
 			{
-				return Ok(new ApiResult<string>()
+				return Ok(new ApiResult<BookingDto>()
 				{
 					Success = true,
-					Data = bookingById.Status.ToString(),
+					Data = _mapper.Map<BookingDto>(bookingById),
 					StatusCode = HttpStatusCode.OK,
 					Message = $"Вернул статус бронирования по id = {id}"
 				});
