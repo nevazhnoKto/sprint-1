@@ -23,7 +23,7 @@ namespace WebApiTamakulov.Interfaces
 		/// </summary>
 		/// <param name="id">Id события.</param>
 		/// <returns>Информация по найденному событию.</returns>
-		Event? GetById(int id);
+		Event? GetById(Guid id);
 
 		/// <summary>
 		/// Создать новое событие.
@@ -38,19 +38,13 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Id события.</param>
 		/// <param name="eventCustom">Данные, которыми обновить событие.</param>
 		/// <returns>True - если обновление прошло удачно.</returns>
-		bool Update(int id, Event eventCustom);
+		bool Update(Guid id, Event eventCustom);
 
 		/// <summary>
 		/// Удалить событие по его Id.
 		/// </summary>
 		/// <param name="id">Id события.</param>
 		/// <returns>True - елси событие успешно удалено.</returns>
-		bool Delete(int id);
-
-		/// <summary>
-		/// Костыль для тестов, чтобы сбрасывать статик переменную.
-		/// </summary>
-		void Reset();
-
+		bool Delete(Guid id);
 	}
 }

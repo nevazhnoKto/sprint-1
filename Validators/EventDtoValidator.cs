@@ -14,8 +14,7 @@ namespace WebApiTamakulov.Validators
 		public EventDtoValidator()
 		{
 			RuleFor(x => x.Id)
-			.NotEmpty().WithMessage("ID обязателен")
-			.GreaterThan(0).WithMessage("ID должен быть положительным числом");
+			.NotEmpty().WithMessage("ID обязателен");
 
 			RuleFor(x => x.Title)
 				.NotEmpty().WithMessage("Значение Title обязательно для заполнения");
