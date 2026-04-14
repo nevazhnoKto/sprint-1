@@ -48,15 +48,12 @@
 		/// <returns>Возвращает false, если свободных мест недостаточно.</returns>
 		public bool TryReserveSeats(int count = 1)
 		{
-			lock (_lock)
+			if (AvailableSeats >= count)
 			{
-				if (AvailableSeats >= count)
-				{
-					AvailableSeats -= count;
-					return true;
-				}
-				return false;
+				AvailableSeats -= count;
+				return true;
 			}
+			return false;
 		}
 
 		/// <summary>

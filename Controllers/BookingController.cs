@@ -34,6 +34,7 @@ namespace WebApiTamakulov.Controllers
 		[ProducesResponseType(typeof(ApiResult<BookingDto>), StatusCodes.Status202Accepted)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		[Produces("application/json")]
 		public async Task<IActionResult> CreateBooking(Guid id)
 		{

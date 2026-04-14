@@ -1,4 +1,5 @@
-﻿using WebApiTamakulov.Interfaces;
+﻿using WebApiTamakulov.ExceptionExtension;
+using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
@@ -11,6 +12,7 @@ namespace WebApiTamakulov.Services
 		private readonly ILogger<BookingService> _logger;
 		private readonly IEventService _eventService;
 		private readonly IBookingRepository _bookingRepository;
+		private readonly object _bookingLock = new();
 
 		public BookingService(ILogger<BookingService> logger, IEventService eventService, IBookingRepository bookingRepository)
 		{
@@ -21,10 +23,18 @@ namespace WebApiTamakulov.Services
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId)
 		{
-			if (_eventService.GetById(eventId) == null)
+			var eventInfo = _eventService.GetById(eventId);
+			if (eventInfo == null)
 			{
 				return default!;
 			}
+			var resultReserve = false;
+			lock (_bookingLock)
+			{
+				resultReserve = eventInfo.TryReserveSeats();
+			}
+			if (!resultReserve)
+				throw new NoAvailableSeatsException();
 
 			var newBooking = _bookingRepository.AddBooking(eventId);
 

@@ -14,7 +14,9 @@ namespace WebApiTamakulov.Services
 					Title = "Первое событие",
 					Description = "Очень классное событие",
 					StartAt = DateTime.Now,
-					EndAt = DateTime.Now.AddHours(2)
+					EndAt = DateTime.Now.AddHours(2),
+					TotalSeats = 10,
+					AvailableSeats = 10,
 				}
 			];
 
