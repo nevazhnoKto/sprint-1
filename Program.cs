@@ -26,10 +26,11 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
-builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingProfile>(); }, typeof(Program));
+builder.Services.AddAutoMapper(cfg => { cfg.AddProfile<MappingEvent>(); }, typeof(Program));
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<EventDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<GetEventsRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateEventRequestDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateEventRequestDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<GetEventsRequestDtoValidator>();
 builder.Services.AddHostedService<ConfirmBookingBackgroundService>();
 
 var app = builder.Build();

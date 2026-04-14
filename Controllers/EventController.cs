@@ -30,16 +30,24 @@ namespace WebApiTamakulov.Controllers
 		/// Метод возвращает все существующие Event.
 		/// </summary>
 		[HttpGet]
-		[ProducesResponseType(typeof(PaginatedResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(PaginatedResultDto), StatusCodes.Status200OK)]
 		[Produces("application/json")]
-		public IActionResult GetAllEvents(GetEventsRequest eventsRequest)
+		public IActionResult GetAllEvents(GetEventsRequestDto eventsRequest)
 		{
 			var events = _eventService.GetAll(eventsRequest.Title, eventsRequest.From, eventsRequest.To, eventsRequest.Page, eventsRequest.PageSize);
 
-			return Ok(new ApiResult<PaginatedResult>()
+			var eventsDto = new PaginatedResultDto()
+			{
+				TotalCount = events.TotalCount,
+				CurrentPage = events.CurrentPage,
+				CountCurrentPage = events.CountCurrentPage,
+				Items = _mapper.Map<List<EventResponseDto>>(events.Items)
+			};
+
+			return Ok(new ApiResult<PaginatedResultDto>()
 			{
 				Success = true,
-				Data = events,
+				Data = eventsDto,
 				StatusCode = HttpStatusCode.OK,
 				Message = "Вернул все Events с заданными фильтрамиы"
 			});
@@ -50,7 +58,7 @@ namespace WebApiTamakulov.Controllers
 		/// </summary>
 		/// <param name="id">Запрашиваемый Id события.</param>
 		[HttpGet("{id:Guid}")]
-		[ProducesResponseType(typeof(ApiResult<EventDto>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult<EventResponseDto>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
 		public IActionResult GetByIdEvent(Guid id)
@@ -60,10 +68,10 @@ namespace WebApiTamakulov.Controllers
 
 			if (eventById != null)
 			{
-				return Ok(new ApiResult<EventDto>()
+				return Ok(new ApiResult<EventResponseDto>()
 				{
 					Success = true,
-					Data = _mapper.Map<EventDto>(eventById),
+					Data = _mapper.Map<EventResponseDto>(eventById),
 					StatusCode = HttpStatusCode.OK,
 					Message = $"Вернул Event по id = {id}"
 				});
@@ -82,18 +90,18 @@ namespace WebApiTamakulov.Controllers
 		/// </summary>
 		/// <param name="newEventDto">Данные нового Event.</param>
 		[HttpPost]
-		[ProducesResponseType(typeof(ApiResult<EventDto>), StatusCodes.Status201Created)]
+		[ProducesResponseType(typeof(ApiResult<EventResponseDto>), StatusCodes.Status201Created)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[Produces("application/json")]
-		public IActionResult CreateEvent([FromBody] EventDto newEventDto)
+		public IActionResult CreateEvent([FromBody] CreateEventRequestDto newEventDto)
 		{
 			var newEvent = _mapper.Map<Event>(newEventDto);
 			if (_eventService.Create(newEvent))
 			{
-				var response = new ApiResult<EventDto>
+				var response = new ApiResult<EventResponseDto>
 				{
 					Success = true,
-					Data = newEventDto,
+					Data = _mapper.Map<EventResponseDto>(newEvent),
 					StatusCode = HttpStatusCode.Created,
 					Message = $"Создался Event по id = {newEventDto.Id}"
 				};
@@ -117,7 +125,7 @@ namespace WebApiTamakulov.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public IActionResult UpdateEvent(Guid id, [FromBody] EventDto updateEventDto)
+		public IActionResult UpdateEvent(Guid id, [FromBody] UpdateEventRequestDto updateEventDto)
 		{
 
 			if (_eventService.Update(id, _mapper.Map<Event>(updateEventDto)))

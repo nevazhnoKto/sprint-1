@@ -1,4 +1,5 @@
-﻿using WebApiTamakulov.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
@@ -76,6 +77,11 @@ namespace WebApiTamakulov.Services
 
 		public bool Create(Event eventCustom)
 		{
+			if (eventCustom.TotalSeats <= 0)
+			{
+				throw new ValidationException($"TotalSeats должно быть больше нуля. Указано значение: {eventCustom.TotalSeats}");
+			}
+
 			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
 			{
 				return false;

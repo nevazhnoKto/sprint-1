@@ -6,7 +6,7 @@ namespace WebApiTamakulov.Models
 	/// <summary>
 	/// Query параметры для получения событий.
 	/// </summary>
-	public class GetEventsRequest
+	public class GetEventsRequestDto
 	{
 		/// <summary>
 		/// Поиск по названию события.

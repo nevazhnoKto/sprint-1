@@ -6,12 +6,12 @@ namespace WebApiTamakulov.Validators
 	/// <summary>
 	/// Валидация EventDto.
 	/// </summary>
-	public class GetEventsRequestValidator : AbstractValidator<GetEventsRequest>
+	public class GetEventsRequestDtoValidator : AbstractValidator<GetEventsRequestDto>
 	{
 		/// <summary>
 		/// Валидация EventDto.
 		/// </summary>
-		public GetEventsRequestValidator()
+		public GetEventsRequestDtoValidator()
 		{
 			RuleFor(x => x.Page)
 			.GreaterThan(0)
@@ -29,7 +29,7 @@ namespace WebApiTamakulov.Validators
 
 		}
 
-		private bool BeValidDateRange(GetEventsRequest request)
+		private bool BeValidDateRange(GetEventsRequestDto request)
 		{
 			return request.From!.Value <= request.To!.Value;
 		}
