@@ -148,6 +148,48 @@ namespace WebApiTamakulov.Services
 			}
 			return true;
 		}
+
+		/// <summary>
+		/// Попытка резервирования места на событие.
+		/// </summary>
+		/// <param name="count">Количество для резервации.</param>
+		/// <returns>Возвращает false, если свободных мест недостаточно.</returns>
+		public bool TryReserveSeats(Guid id, int count = 1)
+		{
+			var eventCustom = _eventRepository.GetEventById(id);
+			if (eventCustom == null)
+			{
+				_logger.LogError($"Событие {id} не сущетвует!");
+				return false;
+			}
+			if (eventCustom.AvailableSeats >= count)
+			{
+				eventCustom.AvailableSeats -= count;
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Отмена резервирования места на событие.
+		/// </summary>
+		/// <param name="count">Количество мест для отмены.</param>
+		/// <returns></returns>
+		public bool ReleaseSeats(Guid id, int count = 1)
+		{
+			var eventCustom = _eventRepository.GetEventById(id);
+			if (eventCustom == null)
+			{
+				_logger.LogError($"Событие {id} не сущетвует!");
+				return false;
+			}
+			if (eventCustom.AvailableSeats + count <= eventCustom.TotalSeats )
+			{
+				eventCustom.AvailableSeats += count;
+				return true;
+			}
+			return false;
+		}
 	}
 	#pragma warning restore CS1591
 }

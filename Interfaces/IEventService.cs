@@ -46,5 +46,9 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Id события.</param>
 		/// <returns>True - елси событие успешно удалено.</returns>
 		bool Delete(Guid id);
+
+		bool TryReserveSeats(Guid id, int count = 1);
+
+		bool ReleaseSeats(Guid id, int count = 1);
 	}
 }

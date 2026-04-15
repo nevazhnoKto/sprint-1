@@ -77,12 +77,24 @@ namespace EventServiceTests
 
 		[Theory]
 		[InlineData(WebApiTamakulov.Enums.BookingStatus.Confirmed)]
-		[InlineData(WebApiTamakulov.Enums.BookingStatus.Rejected)]
-		public async Task ChangeStatusBooking_ValidStatus_ReturnsTrue(WebApiTamakulov.Enums.BookingStatus status)
+		public async Task ConfirmStatusBooking_ValidStatus_ReturnsTrue(WebApiTamakulov.Enums.BookingStatus status)
 		{
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			_bookingService.UpdateStatusBookingAsync(firstBooking.Id, status);
+			_bookingService.ConfirmBookingAsync(firstBooking.Id);
+			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
+
+			//Assert
+			Assert.Equal(status, result.Status);
+		}
+
+		[Theory]
+		[InlineData(WebApiTamakulov.Enums.BookingStatus.Rejected)]
+		public async Task RejectedStatusBooking_ValidStatus_ReturnsTrue(WebApiTamakulov.Enums.BookingStatus status)
+		{
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			_bookingService.RejectedBookingAsync(firstBooking.Id);
 			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
 
 			//Assert
@@ -118,6 +130,17 @@ namespace EventServiceTests
 
 		[Fact]
 		public async Task GetBooking_NoValidBookingId_ReturnsNull()
+		{
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var result = await _bookingService.GetBookingByIdAsync(Guid.NewGuid());
+
+			//Assert
+			Assert.Null(result);
+		}
+
+		[Fact]
+		public async Task CreateBooking_ValidBooking_ReturnsAvailableSeatsDec()
 		{
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);

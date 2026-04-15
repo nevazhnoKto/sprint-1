@@ -27,12 +27,8 @@ namespace WebApiTamakulov.Interfaces
 		/// <returns>Список всех броней со статусом "В ожидании".</returns>
 		List<Booking> GetAllPendingStatusBookingAsync();
 
-		/// <summary>
-		/// Обновить статус брони по Id.
-		/// </summary>
-		/// <param name="id">Id брони.</param>
-		/// <param name="status">Новый статус брони.</param>
-		/// <returns></returns>
-		void UpdateStatusBookingAsync(Guid id, Enums.BookingStatus status);
+		void ConfirmBookingAsync(Guid id);
+
+		void RejectedBookingAsync(Guid bookingId, Guid? eventId = default);
 	}
 }

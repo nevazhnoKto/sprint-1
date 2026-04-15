@@ -1,4 +1,5 @@
-﻿using WebApiTamakulov.ExceptionExtension;
+﻿using System.Net.NetworkInformation;
+using WebApiTamakulov.ExceptionExtension;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
@@ -31,7 +32,7 @@ namespace WebApiTamakulov.Services
 			var resultReserve = false;
 			lock (_bookingLock)
 			{
-				resultReserve = eventInfo.TryReserveSeats();
+				resultReserve = _eventService.TryReserveSeats(eventId);
 			}
 			if (!resultReserve)
 				throw new NoAvailableSeatsException();
@@ -67,9 +68,16 @@ namespace WebApiTamakulov.Services
 			return _bookingRepository.GetBookingsByStatus(Enums.BookingStatus.Pending);
 		}
 
-		public void UpdateStatusBookingAsync(Guid id, Enums.BookingStatus status)
+		public void ConfirmBookingAsync(Guid id)
 		{
-			_bookingRepository.UpdateBooking(id, status);
+			_bookingRepository.UpdateBooking(id, Enums.BookingStatus.Confirmed);
+		}
+
+		public void RejectedBookingAsync(Guid bookingId, Guid? eventId = default)
+		{
+			_bookingRepository.UpdateBooking(bookingId, Enums.BookingStatus.Rejected);
+			if (eventId != null)
+				_eventService.ReleaseSeats(eventId.Value);
 		}
 	}
 

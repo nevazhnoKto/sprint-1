@@ -5,7 +5,6 @@
 	/// </summary>
 	public class Event
 	{
-		private object _lock = new object();
 		/// <summary>
 		/// ID события.
 		/// </summary>
@@ -40,30 +39,5 @@
 		/// Текущее количество свободных мест.
 		/// </summary>
 		public int AvailableSeats { get; set; }
-
-		/// <summary>
-		/// Попытка резервирования места на событие.
-		/// </summary>
-		/// <param name="count">Количество для резервации.</param>
-		/// <returns>Возвращает false, если свободных мест недостаточно.</returns>
-		public bool TryReserveSeats(int count = 1)
-		{
-			if (AvailableSeats >= count)
-			{
-				AvailableSeats -= count;
-				return true;
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Отмена резервирования места на событие.
-		/// </summary>
-		/// <param name="count">Количество мест для отмены.</param>
-		/// <returns></returns>
-		public bool ReleaseSeats(int count = 1)
-		{
-			return false;
-		}
 	}
 }

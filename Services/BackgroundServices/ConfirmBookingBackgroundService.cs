@@ -67,16 +67,16 @@ namespace WebApiTamakulov.Services.BackgroundServices
 			try
 			{
 				if (eventInfo != null)
-					bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Confirmed);
+					bookingService.ConfirmBookingAsync(booking.Id);
 				else
 				{
-					bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Rejected);
+					bookingService.RejectedBookingAsync(booking.Id);
 					_logger.LogWarning($"Событие №{booking.EventId} удалено , бронь отклонена");
 				}
 			}
 			catch
 			{
-				bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Rejected);
+				bookingService.RejectedBookingAsync(booking.Id, booking.EventId);
 				eventInfo?.ReleaseSeats();
 			}
 			finally
