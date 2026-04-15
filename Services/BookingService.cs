@@ -1,4 +1,5 @@
-﻿using System.Net.NetworkInformation;
+﻿using OpenQA.Selenium;
+using System.Net.NetworkInformation;
 using WebApiTamakulov.ExceptionExtension;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
@@ -24,11 +25,6 @@ namespace WebApiTamakulov.Services
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId)
 		{
-			var eventInfo = _eventService.GetById(eventId);
-			if (eventInfo == null)
-			{
-				return default!;
-			}
 			var resultReserve = false;
 			lock (_bookingLock)
 			{

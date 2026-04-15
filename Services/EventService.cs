@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OpenQA.Selenium;
+using System.ComponentModel.DataAnnotations;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
@@ -149,18 +150,12 @@ namespace WebApiTamakulov.Services
 			return true;
 		}
 
-		/// <summary>
-		/// Попытка резервирования места на событие.
-		/// </summary>
-		/// <param name="count">Количество для резервации.</param>
-		/// <returns>Возвращает false, если свободных мест недостаточно.</returns>
 		public bool TryReserveSeats(Guid id, int count = 1)
 		{
 			var eventCustom = _eventRepository.GetEventById(id);
 			if (eventCustom == null)
 			{
-				_logger.LogError($"Событие {id} не сущетвует!");
-				return false;
+				throw new NotFoundException($"События {id} не существует!");
 			}
 			if (eventCustom.AvailableSeats >= count)
 			{
@@ -170,18 +165,12 @@ namespace WebApiTamakulov.Services
 			return false;
 		}
 
-		/// <summary>
-		/// Отмена резервирования места на событие.
-		/// </summary>
-		/// <param name="count">Количество мест для отмены.</param>
-		/// <returns></returns>
 		public bool ReleaseSeats(Guid id, int count = 1)
 		{
 			var eventCustom = _eventRepository.GetEventById(id);
 			if (eventCustom == null)
 			{
-				_logger.LogError($"Событие {id} не сущетвует!");
-				return false;
+				throw new NotFoundException($"События {id} не существует!");
 			}
 			if (eventCustom.AvailableSeats + count <= eventCustom.TotalSeats )
 			{

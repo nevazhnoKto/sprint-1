@@ -77,7 +77,6 @@ namespace WebApiTamakulov.Services.BackgroundServices
 			catch
 			{
 				bookingService.RejectedBookingAsync(booking.Id, booking.EventId);
-				eventInfo?.ReleaseSeats();
 			}
 			finally
 			{

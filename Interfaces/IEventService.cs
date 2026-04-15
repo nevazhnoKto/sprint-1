@@ -47,8 +47,21 @@ namespace WebApiTamakulov.Interfaces
 		/// <returns>True - елси событие успешно удалено.</returns>
 		bool Delete(Guid id);
 
+
+		/// <summary>
+		/// Попытка резервирования места на событие.
+		/// </summary>
+		/// <param name="id">Id события.</param>
+		/// <param name="count">Количество для резервации.</param>
+		/// <returns>Возвращает false, если свободных мест недостаточно.</returns>
 		bool TryReserveSeats(Guid id, int count = 1);
 
+		/// <summary>
+		/// Отмена освобождения места на событие.
+		/// </summary>
+		/// <param name="id">Id события.</param>
+		/// <param name="count">Количество мест для отмены.</param>
+		/// <returns></returns>
 		bool ReleaseSeats(Guid id, int count = 1);
 	}
 }

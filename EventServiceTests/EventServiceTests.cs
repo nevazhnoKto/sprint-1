@@ -227,7 +227,9 @@ public class EventServiceTests
 			Title = "Новое событие",
 			Description = "Потрясающее событие",
 			StartAt = DateTime.Now,
-			EndAt = DateTime.Now.AddHours(2)
+			EndAt = DateTime.Now.AddHours(2),
+			TotalSeats = 10,
+			AvailableSeats = 10
 		};
 	}
 	public static IEnumerable<object[]> GetValidDates()
