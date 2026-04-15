@@ -1,5 +1,8 @@
 ﻿using Microsoft.OpenApi.Writers;
+using System.Linq.Expressions;
+using System.Reflection;
 using WebApiTamakulov.Interfaces;
+using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services.BackgroundServices
 {
@@ -10,6 +13,7 @@ namespace WebApiTamakulov.Services.BackgroundServices
 	{
 		private readonly ILogger<BackgroundService> _logger;
 		private readonly IServiceScopeFactory _serviceScope;
+		private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
 		/// <summary>
 		/// Фоновая обработка бронирования.
@@ -35,13 +39,10 @@ namespace WebApiTamakulov.Services.BackgroundServices
 				{
 					using var scope = _serviceScope.CreateScope();
 					var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-					var bookings = bookingService.GetAllPendingStatusBookingAsync();
-					Random random = new Random();
-					foreach (var booking in bookings)
-					{
-						await Task.Delay(2000, stoppingToken);
-						bookingService.UpdateStatusBookingAsync(booking.Id, (Enums.BookingStatus)random.Next(1, 3));
-					}
+					var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
+					var pendingBookings = bookingService.GetAllPendingStatusBookingAsync();
+					var tasks = pendingBookings.Select(booking => ProcessBookingAsync(bookingService, eventService, booking, stoppingToken));
+					await Task.WhenAll(tasks);
 				}
 				catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
 				{
@@ -56,6 +57,34 @@ namespace WebApiTamakulov.Services.BackgroundServices
 			}
 
 			_logger.LogInformation("ConfirmBookingBackgroundService остановлен");
+		}
+
+		private async Task ProcessBookingAsync(IBookingService bookingService, IEventService eventService, Booking booking, CancellationToken stoppingToken)
+		{
+			await Task.Delay(2000, stoppingToken);
+			await _processingSemaphore.WaitAsync(stoppingToken);
+			var eventInfo = eventService.GetById(booking.EventId);
+			try
+			{
+				if (eventInfo != null)
+					bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Confirmed);
+				else
+				{
+					bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Rejected);
+					_logger.LogWarning($"Событие №{booking.EventId} удалено , бронь отклонена");
+				}
+			}
+			catch
+			{
+				bookingService.UpdateStatusBookingAsync(booking.Id, Enums.BookingStatus.Rejected);
+				eventInfo?.ReleaseSeats();
+			}
+			finally
+			{
+				_processingSemaphore.Release();
+			}
+			
+			
 		}
 	}
 }
