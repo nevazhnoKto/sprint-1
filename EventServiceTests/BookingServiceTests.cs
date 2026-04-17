@@ -1,13 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using OpenQA.Selenium;
-using OpenQA.Selenium.BiDi.Session;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebApiTamakulov.Enums;
 using WebApiTamakulov.ExceptionExtension;
 using WebApiTamakulov.Interfaces;

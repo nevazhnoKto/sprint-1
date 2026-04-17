@@ -1,4 +1,4 @@
-using AutoMapper;
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using WebApiTamakulov.Interfaces;
@@ -55,7 +55,7 @@ namespace WebApiTamakulov.Controllers
 				Success = true,
 				Data = _mapper.Map<BookingDto>(booking),
 				StatusCode = HttpStatusCode.Accepted,
-				Message = $"Создалось бронирование для EventId = {id}. BookingId = {booking.Id}"
+				Message = $"Создалось бронирование для EventId = {id}. BookingId = {booking.Id}. Статус {booking.Status}"
 			};
 			return AcceptedAtAction(nameof(GetByIdBooking), new { id = booking.Id }, response);
 		}
@@ -90,7 +90,7 @@ namespace WebApiTamakulov.Controllers
 					Success = true,
 					Data = _mapper.Map<BookingDto>(bookingById),
 					StatusCode = HttpStatusCode.OK,
-					Message = $"Вернул статус бронирования по id = {id}"
+					Message = $"Вернул статус ({bookingById.Status}) бронирования по id = {id}"
 				});
 			}
 

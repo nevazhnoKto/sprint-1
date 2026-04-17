@@ -1,27 +1,34 @@
-﻿using AutoMapper;
+﻿using Mapster;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Mappings
 {
 	/// <summary>
-	/// Маппинг Event и EventDto.
+	/// Маппинг Event
 	/// </summary>
-	public class MappingEvent : Profile
+	public class MappingEvent : IRegister
 	{
 		/// <summary>
-		/// Маппинг Event и EventDto.
+		/// Регистрация маппингов.
 		/// </summary>
-		public MappingEvent()
+		public void Register(TypeAdapterConfig config)
 		{
-			// Базовый маппинг Event <-> EventDto
-			CreateMap<Event, EventResponseDto>().ReverseMap();
+			// Базовый маппинг Event <-> EventResponseDto
+			config.NewConfig<Event, EventResponseDto>()
+				.TwoWays(); // ReverseMap аналог
 
 			// Маппинг для создания события (CreateEventRequestDto -> Event)
-			CreateMap<CreateEventRequestDto, Event>()
-				.ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.TotalSeats));
+			config.NewConfig<CreateEventRequestDto, Event>()
+				 .MapWith(src => new Event(Guid.NewGuid(),
+											src.Title,
+											src.Description,
+											src.StartAt,
+											src.EndAt,
+											src.TotalSeats
+				));
 
 			// Маппинг для обновления события (UpdateEventRequestDto -> Event)
-			CreateMap<UpdateEventRequestDto, Event>();
+			config.NewConfig<UpdateEventRequestDto, Event>();
 		}
 	}
 }
