@@ -22,12 +22,12 @@ namespace WebApiTamakulov.Models
 		/// <summary>
 		/// Уникальный идентификатор брони.
 		/// </summary>
-		public Guid Id { get; set; }
+		public Guid Id { get; private set; }
 
 		/// <summary>
 		/// Идентификатор события, к которому относится бронь.
 		/// </summary>
-		public Guid EventId { get; set; }
+		public Guid EventId { get; private set; }
 		/// <summary>
 		/// Текущий статус брони.
 		/// </summary>
@@ -36,7 +36,7 @@ namespace WebApiTamakulov.Models
 		/// <summary>
 		/// Дата и время создания брони.
 		/// </summary>
-		public DateTime CreatedAt { get; set; }
+		public DateTime CreatedAt { get; private set; }
 
 		/// <summary>
 		/// Дата и время обработки брони.

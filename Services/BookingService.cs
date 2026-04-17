@@ -14,7 +14,6 @@ namespace WebApiTamakulov.Services
 		private readonly ILogger<BookingService> _logger;
 		private readonly IEventService _eventService;
 		private readonly IBookingRepository _bookingRepository;
-		private readonly object _bookingLock = new();
 
 		public BookingService(ILogger<BookingService> logger, IEventService eventService, IBookingRepository bookingRepository)
 		{
@@ -26,10 +25,8 @@ namespace WebApiTamakulov.Services
 		public async Task<Booking> CreateBookingAsync(Guid eventId)
 		{
 			var resultReserve = false;
-			lock (_bookingLock)
-			{
-				resultReserve = _eventService.TryReserveSeats(eventId);
-			}
+			resultReserve = _eventService.TryReserveSeats(eventId);
+
 			if (!resultReserve)
 				throw new NoAvailableSeatsException();
 

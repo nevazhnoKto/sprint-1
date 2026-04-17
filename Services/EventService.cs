@@ -157,12 +157,7 @@ namespace WebApiTamakulov.Services
 			{
 				throw new NotFoundException($"События {id} не существует!");
 			}
-			if (eventCustom.AvailableSeats >= count)
-			{
-				eventCustom.AvailableSeats -= count;
-				return true;
-			}
-			return false;
+			return eventCustom.TryReserveSeats(count);
 		}
 
 		public bool ReleaseSeats(Guid id, int count = 1)
@@ -172,12 +167,7 @@ namespace WebApiTamakulov.Services
 			{
 				throw new NotFoundException($"События {id} не существует!");
 			}
-			if (eventCustom.AvailableSeats + count <= eventCustom.TotalSeats )
-			{
-				eventCustom.AvailableSeats += count;
-				return true;
-			}
-			return false;
+			return eventCustom.ReleaseSeats(count);
 		}
 	}
 	#pragma warning restore CS1591

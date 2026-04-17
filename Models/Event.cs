@@ -5,10 +5,27 @@
 	/// </summary>
 	public class Event
 	{
+		/// Объект синхронизации для потокобезопасного доступа к полям события.
+		private readonly object _eventLock = new();
+
+		/// <summary>
+		/// Конструктор Event.
+		/// </summary>
+		public Event(Guid id, string? title, string? description, DateTime startAt, DateTime endAt, int totalSeats)
+		{
+			Id = id;
+			Title = title;
+			Description = description;
+			StartAt = startAt;
+			EndAt = endAt;
+			TotalSeats = totalSeats;
+			AvailableSeats = totalSeats;
+		}
+
 		/// <summary>
 		/// ID события.
 		/// </summary>
-		public Guid Id { get; set; }
+		public Guid Id { get; private set; }
 
 		/// <summary>
 		/// Заголовок события.
@@ -38,6 +55,40 @@
 		/// <summary>
 		/// Текущее количество свободных мест.
 		/// </summary>
-		public int AvailableSeats { get; set; }
+		public int AvailableSeats { get; private set; }
+
+		/// <summary>
+		/// Попытка резервирования места на событие.
+		/// </summary>
+		/// <param name="count">Количество для резервации.</param>
+		public bool TryReserveSeats(int count = 1)
+		{
+			lock (_eventLock)
+			{
+				if (AvailableSeats >= count)
+				{
+					AvailableSeats -= count;
+					return true;
+				}
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Отмена освобождения места на событие.
+		/// </summary>
+		/// <param name="count">Количество мест для отмены.</param>
+		public bool ReleaseSeats(int count = 1)
+		{
+			lock (_eventLock)
+			{
+				if (AvailableSeats + count <= TotalSeats)
+				{
+					AvailableSeats += count;
+					return true;
+				}
+				return false;
+			}
+		}
 	}
 }

@@ -29,10 +29,8 @@ namespace EventServiceTests
 			var loggerBookingMock = new Mock<ILogger<BookingService>>();
 			_eventServiceMock = new Mock<IEventService>();
 
-			Event defaultEvent = new Event()
-			{
-				Id = defaultEventGuid,
-			};
+			Event defaultEvent = new Event(defaultEventGuid, "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
+			
 			_eventServiceMock.Setup(m => m.GetById(defaultEventGuid))
 							.Returns(() => IsEventDeleted ? null : defaultEvent);
 
