@@ -8,13 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebApiTamakulov.DataAccess;
+using WebApiTamakulov.Interfaces;
+using WebApiTamakulov.Models;
 using WebApiTamakulov.Services;
 
 namespace EventServiceTests.Новая_папка
 {
-	static public class TestDbContextFactory
+	static public class TestEventDbContextFactory
 	{
-		public static (AppDbContext context, EventService eventService) Create()
+		public static async Task<(IEventService eventService, AppDbContext context)> Create()
 		{
 			var dbName = Guid.NewGuid().ToString();
 			var services = new ServiceCollection();
@@ -29,8 +31,7 @@ namespace EventServiceTests.Новая_папка
 			var repository = new EventRepository(context);
 			var eventService = new EventService(loggerMock.Object, repository);
 
-			// Возвращаем Tuple
-			return (context, eventService);
+			return (eventService, context);
 		}
 	}
 }

@@ -82,8 +82,6 @@ namespace WebApiTamakulov.Services
 			
 			if (existingEvent != null)
 			{
-				_context.Events.Update(eventCustom);
-
 				// Обновляем только нужные поля
 				existingEvent.Title = eventCustom.Title;
 				existingEvent.Description = eventCustom.Description;
