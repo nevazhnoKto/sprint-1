@@ -8,6 +8,11 @@ namespace WebApiTamakulov.Models
 	public class Booking
 	{
 		/// <summary>
+		/// Пустой конструктор для EF Core.
+		/// </summary>
+		private Booking() { }
+
+		/// <summary>
 		/// Конструктор для создания новой брони
 		/// </summary>
 		public Booking(Guid eventId)

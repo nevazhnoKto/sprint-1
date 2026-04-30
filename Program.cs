@@ -7,7 +7,6 @@ using System.Reflection;
 using WebApiTamakulov;
 using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Interfaces;
-using WebApiTamakulov.Mappings;
 using WebApiTamakulov.Services;
 using WebApiTamakulov.Services.BackgroundServices;
 using WebApiTamakulov.Validators;
@@ -66,9 +65,9 @@ app.UseAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {
-	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-	db.Database.EnsureCreated();
-}
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+} 
 
 app.MapControllers();
 

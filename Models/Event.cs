@@ -8,6 +8,14 @@
 		private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
 		/// <summary>
+		/// Пустой конструктор для EF Core.
+		/// </summary>
+		private Event()
+		{
+
+		}
+
+		/// <summary>
 		/// Конструктор Event.
 		/// </summary>
 		public Event(Guid id, string? title, string? description, DateTime startAt, DateTime endAt, int totalSeats)

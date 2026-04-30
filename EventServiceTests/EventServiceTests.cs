@@ -1,45 +1,58 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 using WebApiTamakulov.Services;
 
 namespace EventServiceTests;
 
-public class EventServiceTests
+public class EventServiceTests: IDisposable
 {
 	private readonly IEventService _eventService;
 	private readonly IEventRepository _eventRepository;
 	public EventServiceTests()
 	{
+		var dbName = Guid.NewGuid().ToString();
+		var services = new ServiceCollection();
+		services.AddDbContext<AppDbContext>(options =>
+			options.UseInMemoryDatabase(dbName));
+		var _serviceProvider = services.BuildServiceProvider();
+		var context = _serviceProvider.GetRequiredService<AppDbContext>();
+
 		var loggerMock = new Mock<ILogger<EventService>>();
-		_eventRepository = new EventRepository();
+		_eventRepository = new EventRepository(context);
 		_eventService = new EventService(loggerMock.Object, _eventRepository);
-		_eventRepository.Reset();
+
+		var newEvent = new Event(Guid.NewGuid(), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
+
+		_eventRepository.AddEvent(newEvent);
 	}
 
 	[Fact]
-	public void CreateEvent_ValidEvent_ReturnsTrue()
+	public async Task CreateEvent_ValidEvent_ReturnsTrue()
 	{
 		//Arrange
 		var newEvent = GetNewEvent();
 
 		//Act
-		var result = _eventService.Create(newEvent);
+		var result = await _eventService.Create(newEvent);
 
 		//Assert
 		Assert.True(result);
 	}
 
 	[Fact]
-	public void GetAllEvents_NoFilter_ReturnsEvents()
+	public async Task GetAllEvents_NoFilter_ReturnsEvents()
 	{
 		//Arrange
 		var expected = 1;
 
 		//Act
-		var result = _eventService.GetAll("", null, null);
+		var result = await _eventService.GetAll("", null, null);
 
 		//Assert
 		Assert.Equal(expected, result.CountCurrentPage);
@@ -233,5 +246,10 @@ public class EventServiceTests
 	{
 		yield return new object[] { "Первое событие", DateTime.Now.AddMinutes(-1), DateTime.Now.AddHours(3), 1, 10, true };
 		yield return new object[] { "Первое событие", DateTime.Now.AddHours(-11), DateTime.Now.AddHours(33), 1, 20, true };
+	}
+
+	public void Dispose()
+	{
+		throw new NotImplementedException();
 	}
 }
