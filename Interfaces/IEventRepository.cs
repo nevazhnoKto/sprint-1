@@ -45,6 +45,13 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Идентификатор события (Guid).</param>
 		Task DeleteEventById(Guid id);
 
+		/// <summary>
+		/// Обновляет передаваемое событие.
+		/// </summary>
+		/// <param name="eventCustom">Обновленное событие.</param>
+		/// <returns></returns>
+		Task UpdateAsync(Event eventCustom);
+
 		/*/// <summary>
 		/// Костыль для тестов, чтобы сбрасывать статик переменную.
 		/// </summary>

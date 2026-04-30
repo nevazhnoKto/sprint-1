@@ -5,7 +5,7 @@ using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
 {
-	#pragma warning disable CS1591
+#pragma warning disable CS1591
 
 	/// <summary>
 	/// Сервис обработки событий.
@@ -14,6 +14,7 @@ namespace WebApiTamakulov.Services
 	{
 		private readonly ILogger<EventService> _logger;
 		private readonly IEventRepository _eventRepository;
+
 		public EventService(ILogger<EventService> logger, IEventRepository eventRepository)
 		{
 			_logger = logger;
@@ -21,7 +22,7 @@ namespace WebApiTamakulov.Services
 		}
 
 		public async Task<PaginatedResult> GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
-		{	
+		{
 			var filteredEvent = await _eventRepository.GetEventsFiltered(title, from, to);
 
 			var paginatedFilteredEvent = GetPage(filteredEvent, page, pageSize).ToList();
@@ -92,7 +93,7 @@ namespace WebApiTamakulov.Services
 			}
 
 			var result = await _eventRepository.UpdateEventByIndex(id, eventCustom);
-			
+
 			if (!result)
 			{
 				var message = $"Cобытия с {id} не существует!";
@@ -140,7 +141,7 @@ namespace WebApiTamakulov.Services
 			{
 				throw new NotFoundException($"События {id} не существует!");
 			}
-			return eventCustom.TryReserveSeats(count);
+			return await eventCustom.TryReserveSeats(count);
 		}
 
 		public async Task<bool> ReleaseSeats(Guid id, int count = 1)
@@ -150,8 +151,13 @@ namespace WebApiTamakulov.Services
 			{
 				throw new NotFoundException($"События {id} не существует!");
 			}
-			return eventCustom.ReleaseSeats(count);
+
+			var result = await eventCustom.ReleaseSeats(count);
+			if (result)
+				await _eventRepository.UpdateAsync(eventCustom);
+
+			return result;
 		}
 	}
-	#pragma warning restore CS1591
+#pragma warning restore CS1591
 }

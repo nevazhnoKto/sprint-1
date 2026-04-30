@@ -38,6 +38,11 @@ namespace WebApiTamakulov.Services
 		{
 			return await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
 		}
+		public async Task UpdateAsync(Event eventCustom)
+		{
+			_context.Events.Update(eventCustom);
+			await _context.SaveChangesAsync();
+		}
 
 		public async Task<List<Event>> GetEvents()
 		{
