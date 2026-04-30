@@ -1,9 +1,9 @@
 ﻿namespace WebApiTamakulov.Models
 {
 	/// <summary>
-	/// Модель EventDto.
+	/// Модель запроса на обновление Event.
 	/// </summary>
-	public class EventDto
+	public class UpdateEventRequestDto
 	{
 		/// <summary>
 		/// ID события.
@@ -29,5 +29,15 @@
 		/// Время окончания события.
 		/// </summary>
 		public DateTime EndAt { get; set; }
+
+		/// <summary>
+		/// Общее количество мест на событии.
+		/// </summary>
+		public int TotalSeats { get; set; }
+
+		/// <summary>
+		/// Текущее количество свободных мест.
+		/// </summary>
+		public int AvailableSeats { get; set; }
 	}
 }

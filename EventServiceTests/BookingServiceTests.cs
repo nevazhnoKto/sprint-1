@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
-using OpenQA.Selenium.BiDi.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OpenQA.Selenium;
+using WebApiTamakulov.Enums;
+using WebApiTamakulov.ExceptionExtension;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 using WebApiTamakulov.Services;
@@ -25,16 +22,16 @@ namespace EventServiceTests
 			var loggerBookingMock = new Mock<ILogger<BookingService>>();
 			_eventServiceMock = new Mock<IEventService>();
 
-			Event defaultEvent = new Event()
-			{
-				Id = defaultEventGuid,
-			};
+			Event defaultEvent = new Event(defaultEventGuid, "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
+			
 			_eventServiceMock.Setup(m => m.GetById(defaultEventGuid))
 							.Returns(() => IsEventDeleted ? null : defaultEvent);
 
 			_eventServiceMock.Setup(m => m.Delete(defaultEventGuid))
 							.Returns(true)
 							.Callback(() => IsEventDeleted = true);
+
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>())).Returns(true);
 			_bookingRepository = new BookingRepository();
 			_bookingService = new BookingService(loggerBookingMock.Object, _eventServiceMock.Object, _bookingRepository);
 			_bookingRepository.Reset();
@@ -44,7 +41,7 @@ namespace EventServiceTests
 		public async Task CreateBooking_ValidBooking_ReturnsTrue()
 		{
 			//Arrange
-			var status = WebApiTamakulov.Enums.BookingStatus.Pending;
+			var status = BookingStatus.Pending;
 
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
@@ -76,28 +73,29 @@ namespace EventServiceTests
 		}
 
 		[Theory]
-		[InlineData(WebApiTamakulov.Enums.BookingStatus.Confirmed)]
-		[InlineData(WebApiTamakulov.Enums.BookingStatus.Rejected)]
-		public async Task ChangeStatusBooking_ValidStatus_ReturnsTrue(WebApiTamakulov.Enums.BookingStatus status)
+		[InlineData(BookingStatus.Confirmed)]
+		public async Task ConfirmStatusBooking_ValidStatus_ReturnsTrue(BookingStatus status)
 		{
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			_bookingService.UpdateStatusBookingAsync(firstBooking.Id, status);
+			_bookingService.ConfirmBookingAsync(firstBooking.Id);
 			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
 
 			//Assert
 			Assert.Equal(status, result.Status);
 		}
 
-		[Fact]
-		public async Task CreateBooking_NoValidEventId_ReturnsNull()
+		[Theory]
+		[InlineData(BookingStatus.Rejected)]
+		public async Task RejectedStatusBooking_ValidStatus_ReturnsTrue(BookingStatus status)
 		{
-			
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(Guid.NewGuid());
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			_bookingService.RejectedBookingAsync(firstBooking.Id);
+			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
 
 			//Assert
-			Assert.Null(firstBooking);
+			Assert.Equal(status, result.Status);
 		}
 
 		[Fact]
@@ -125,6 +123,179 @@ namespace EventServiceTests
 
 			//Assert
 			Assert.Null(result);
+		}
+
+		[Fact]
+		public async Task CreateBooking_ValidBooking_ReturnsNotNull()
+		{
+			// Arrange
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>())).Returns(true);
+
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+
+			//Assert
+			Assert.NotNull(firstBooking);
+		}
+
+		[Fact]
+		public async Task CreateManyBooking_ValidBookings_ReturnsNotNulls()
+		{
+			// Arrange
+			var callCount = 0;
+
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>()))
+				.Returns(() =>
+				{
+					callCount++;
+					return callCount <= 3;
+				});
+
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var secondBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var thirdBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+
+			//Assert
+			Assert.NotNull(firstBooking);
+			Assert.NotNull(secondBooking);
+			Assert.NotNull(thirdBooking);
+		}
+
+		[Fact]
+		public async Task CreateManyBooking_NoEvalibleCount_ReturnsNotNulls()
+		{
+			// Arrange
+			var callCount = 0;
+
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>()))
+				.Returns(() =>
+				{
+					callCount++;
+					return callCount <= 3;
+				});
+
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var secondBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var thirdBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+
+			//Assert
+			Assert.NotNull(firstBooking);
+			Assert.NotNull(secondBooking);
+			Assert.NotNull(thirdBooking);
+			await Assert.ThrowsAsync<NoAvailableSeatsException>(() => _bookingService.CreateBookingAsync(defaultEventGuid));
+		}
+
+		[Fact]
+		public async Task CreateBooking_NotSeats_ReturnsNoAvailableSeatsException()
+		{
+			// Arrange
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>()))
+				.Returns(() => false);
+			
+			//Assert
+			await Assert.ThrowsAsync<NoAvailableSeatsException>(() => _bookingService.CreateBookingAsync(defaultEventGuid));
+		}
+
+		[Fact]
+		public async Task CreateBooking_NotValidEvent_ReturnsNotFoundException()
+		{
+			// Arrange
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>())).Throws<NotFoundException>();
+			//Assert
+			await Assert.ThrowsAsync<NotFoundException>(() => _bookingService.CreateBookingAsync(Guid.NewGuid()));
+		}
+
+		[Fact]
+		public async Task Confirm_ValidBooking_ReturnsTrue()
+		{
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			_bookingService.ConfirmBookingAsync(firstBooking.Id);
+
+			//Assert
+			Assert.Equal(BookingStatus.Confirmed, firstBooking.Status);
+			Assert.NotNull(firstBooking.ProcessedAt);
+		}
+
+		[Fact]
+		public async Task Rejected_ValidBooking_ReturnsTrue()
+		{
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			_bookingService.RejectedBookingAsync(firstBooking.Id);
+
+			//Assert
+			Assert.Equal(BookingStatus.Rejected, firstBooking.Status);
+			Assert.NotNull(firstBooking.ProcessedAt);
+		}
+
+		[Fact]
+		public async Task UniqId_ValidBooking_ReturnsTrue()
+		{
+			// Arrange
+			var callCount = 0;
+
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>()))
+				.Returns(() =>
+				{
+					callCount++;
+					return callCount <= 10;
+				});
+			var concurrentRequests = 10;
+
+			//Act
+			var tasks = new Task<Booking>[concurrentRequests];
+			for (int i = 0; i < concurrentRequests; i++)
+			{
+				tasks[i] = _bookingService.CreateBookingAsync(defaultEventGuid);
+			}
+
+			// Ждем завершения всех задач
+			var results = await Task.WhenAll(tasks);
+			
+			//Assert
+			var distinctId = results.Select(d => d.Id).Distinct().ToList();
+			Assert.Equal(10, distinctId.Count);
+		}
+
+		[Fact]
+		public async Task NoAvailableCount_ValidBooking_ReturnsTrue()
+		{
+			// Arrange
+			var callCount = 0;
+			var successfulBookings = 0;
+			var exceptionsBookings = 0;
+
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>()))
+				.Returns(() =>
+				{
+					callCount++;
+					return callCount <= 5;
+				});
+			var concurrentRequests = 20;
+
+			//Act
+			// Act - запускаем параллельно
+			await Parallel.ForEachAsync(
+				Enumerable.Range(0, concurrentRequests),
+				async (_, _) =>
+				{
+					try
+					{
+						var booking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+						successfulBookings++;
+					}
+					catch
+					{
+						exceptionsBookings++;
+					}
+				});
+
+			//Assert
+			Assert.Equal(15, exceptionsBookings);
+			Assert.Equal(5, successfulBookings);
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿using WebApiTamakulov.Interfaces;
+﻿using OpenQA.Selenium;
+using System.ComponentModel.DataAnnotations;
+using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
@@ -76,6 +78,11 @@ namespace WebApiTamakulov.Services
 
 		public bool Create(Event eventCustom)
 		{
+			if (eventCustom.TotalSeats <= 0)
+			{
+				throw new ValidationException($"TotalSeats должно быть больше нуля. Указано значение: {eventCustom.TotalSeats}");
+			}
+
 			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
 			{
 				return false;
@@ -141,6 +148,26 @@ namespace WebApiTamakulov.Services
 				return false;
 			}
 			return true;
+		}
+
+		public bool TryReserveSeats(Guid id, int count = 1)
+		{
+			var eventCustom = _eventRepository.GetEventById(id);
+			if (eventCustom == null)
+			{
+				throw new NotFoundException($"События {id} не существует!");
+			}
+			return eventCustom.TryReserveSeats(count);
+		}
+
+		public bool ReleaseSeats(Guid id, int count = 1)
+		{
+			var eventCustom = _eventRepository.GetEventById(id);
+			if (eventCustom == null)
+			{
+				throw new NotFoundException($"События {id} не существует!");
+			}
+			return eventCustom.ReleaseSeats(count);
 		}
 	}
 	#pragma warning restore CS1591

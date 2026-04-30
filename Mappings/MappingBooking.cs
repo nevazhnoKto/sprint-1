@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using Mapster;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Mappings
@@ -6,14 +6,16 @@ namespace WebApiTamakulov.Mappings
 	/// <summary>
 	/// Маппинг Booking и BookingDto.
 	/// </summary>
-	public class MappingBooking : Profile
+	public class MappingBooking : IRegister
 	{
 		/// <summary>
-		/// Маппинг Booking и BookingDto.
+		/// Регистрация маппингов.
 		/// </summary>
-		public MappingBooking()
+		public void Register(TypeAdapterConfig config)
 		{
-			CreateMap<Booking, BookingDto>().ReverseMap();
+			// Базовый маппинг Event <-> EventResponseDto
+			config.NewConfig<Booking, BookingDto>()
+				.TwoWays();
 		}
 	}
 }

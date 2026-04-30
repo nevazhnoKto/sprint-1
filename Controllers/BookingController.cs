@@ -1,4 +1,4 @@
-using AutoMapper;
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using WebApiTamakulov.Interfaces;
@@ -33,7 +33,8 @@ namespace WebApiTamakulov.Controllers
 		[HttpPost("{id:Guid}/book")]
 		[ProducesResponseType(typeof(ApiResult<BookingDto>), StatusCodes.Status202Accepted)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		[Produces("application/json")]
 		public async Task<IActionResult> CreateBooking(Guid id)
 		{
@@ -48,24 +49,15 @@ namespace WebApiTamakulov.Controllers
 			}
 
 			var booking = await _bookingService.CreateBookingAsync(id);
-			if (booking != null)
-			{
-				var response = new ApiResult<BookingDto>
-				{
-					Success = true,
-					Data = _mapper.Map<BookingDto>(booking),
-					StatusCode = HttpStatusCode.Accepted,
-					Message = $"Создалось бронирование для EventId = {id}. BookingId = {booking.Id}"
-				};
-				return AcceptedAtAction(nameof(GetByIdBooking), new { id = booking.Id }, response);
-			}
 
-			return NotFound(new ApiResult()
+			var response = new ApiResult<BookingDto>
 			{
-				Success = false,
-				StatusCode = HttpStatusCode.NotFound,
-				Message = $"Event по id = {id} не существует, невозможно создать событие!"
-			});
+				Success = true,
+				Data = _mapper.Map<BookingDto>(booking),
+				StatusCode = HttpStatusCode.Accepted,
+				Message = $"Создалось бронирование для EventId = {id}. BookingId = {booking.Id}. Статус {booking.Status}"
+			};
+			return AcceptedAtAction(nameof(GetByIdBooking), new { id = booking.Id }, response);
 		}
 
 		/// <summary>
@@ -98,7 +90,7 @@ namespace WebApiTamakulov.Controllers
 					Success = true,
 					Data = _mapper.Map<BookingDto>(bookingById),
 					StatusCode = HttpStatusCode.OK,
-					Message = $"Вернул статус бронирования по id = {id}"
+					Message = $"Вернул статус ({bookingById.Status}) бронирования по id = {id}"
 				});
 			}
 

@@ -8,14 +8,7 @@ namespace WebApiTamakulov.Services
 	{
 		private static List<Event> Events { get; set; } =
 			[
-				new Event
-				{
-					Id = new Guid("00000000-0000-0000-0000-000000000001"),
-					Title = "Первое событие",
-					Description = "Очень классное событие",
-					StartAt = DateTime.Now,
-					EndAt = DateTime.Now.AddHours(2)
-				}
+				new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10)
 			];
 
 		public void AddEvent(Event newEvent)
@@ -50,14 +43,7 @@ namespace WebApiTamakulov.Services
 		{
 			Events =
 			[
-				new Event
-			{
-				Id = new Guid("00000000-0000-0000-0000-000000000001"),
-				Title = "Первое событие",
-				Description = "Очень классное событие",
-				StartAt = DateTime.Now,
-				EndAt = DateTime.Now.AddHours(2)
-			}
+				new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10)
 			];
 		}
 	}

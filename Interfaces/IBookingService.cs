@@ -28,11 +28,16 @@ namespace WebApiTamakulov.Interfaces
 		List<Booking> GetAllPendingStatusBookingAsync();
 
 		/// <summary>
-		/// Обновить статус брони по Id.
+		/// Подтверждение бронирования.
 		/// </summary>
-		/// <param name="id">Id брони.</param>
-		/// <param name="status">Новый статус брони.</param>
-		/// <returns></returns>
-		void UpdateStatusBookingAsync(Guid id, Enums.BookingStatus status);
+		/// <param name="id">Id бронирования.</param>
+		void ConfirmBookingAsync(Guid id);
+
+		/// <summary>
+		/// Отмена бронирования.
+		/// </summary>
+		/// <param name="bookingId">Id бронирования.</param>
+		/// <param name="eventId">Id события.</param>
+		void RejectedBookingAsync(Guid bookingId, Guid? eventId = default);
 	}
 }

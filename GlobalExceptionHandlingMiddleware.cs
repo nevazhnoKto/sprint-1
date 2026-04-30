@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium;
+using WebApiTamakulov.ExceptionExtension;
 
 namespace WebApiTamakulov
 {
@@ -74,6 +75,7 @@ namespace WebApiTamakulov
 		{
 			ValidationException => StatusCodes.Status400BadRequest,
 			NotFoundException => StatusCodes.Status404NotFound,
+			NoAvailableSeatsException => StatusCodes.Status409Conflict,
 			_ => StatusCodes.Status500InternalServerError
 		};
 	}

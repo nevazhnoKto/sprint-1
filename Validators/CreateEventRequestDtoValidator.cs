@@ -6,18 +6,22 @@ namespace WebApiTamakulov.Validators
 	/// <summary>
 	/// Валидация EventDto.
 	/// </summary>
-	public class EventDtoValidator : AbstractValidator<EventDto>
+	public class CreateEventRequestDtoValidator : AbstractValidator<CreateEventRequestDto>
 	{
 		/// <summary>
-		/// Валидация EventDto.
+		/// Валидация CreateEventRequestDto.
 		/// </summary>
-		public EventDtoValidator()
+		public CreateEventRequestDtoValidator()
 		{
 			RuleFor(x => x.Id)
 			.NotEmpty().WithMessage("ID обязателен");
 
 			RuleFor(x => x.Title)
 				.NotEmpty().WithMessage("Значение Title обязательно для заполнения");
+
+			RuleFor(x => x.TotalSeats)
+				 .NotEmpty().WithMessage("Значение TotalSeats обязательно для заполнения")
+				 .GreaterThan(0).WithMessage("TotalSeats должно быть больше нуля");
 
 			RuleFor(x => x.StartAt)
 				.NotEmpty().WithMessage("Значение StartAt обязательно для заполнения");

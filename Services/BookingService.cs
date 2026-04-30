@@ -1,4 +1,7 @@
-﻿using WebApiTamakulov.Interfaces;
+﻿using OpenQA.Selenium;
+using System.Net.NetworkInformation;
+using WebApiTamakulov.ExceptionExtension;
+using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
@@ -21,10 +24,11 @@ namespace WebApiTamakulov.Services
 
 		public async Task<Booking> CreateBookingAsync(Guid eventId)
 		{
-			if (_eventService.GetById(eventId) == null)
-			{
-				return default!;
-			}
+			var resultReserve = false;
+			resultReserve = _eventService.TryReserveSeats(eventId);
+
+			if (!resultReserve)
+				throw new NoAvailableSeatsException();
 
 			var newBooking = _bookingRepository.AddBooking(eventId);
 
@@ -57,9 +61,16 @@ namespace WebApiTamakulov.Services
 			return _bookingRepository.GetBookingsByStatus(Enums.BookingStatus.Pending);
 		}
 
-		public void UpdateStatusBookingAsync(Guid id, Enums.BookingStatus status)
+		public void ConfirmBookingAsync(Guid id)
 		{
-			_bookingRepository.UpdateBooking(id, status);
+			_bookingRepository.UpdateBooking(id, Enums.BookingStatus.Confirmed);
+		}
+
+		public void RejectedBookingAsync(Guid bookingId, Guid? eventId = default)
+		{
+			_bookingRepository.UpdateBooking(bookingId, Enums.BookingStatus.Rejected);
+			if (eventId != null)
+				_eventService.ReleaseSeats(eventId.Value);
 		}
 	}
 

@@ -181,9 +181,9 @@ public class EventServiceTests
 	{
 		//Arrange
 		var newEvent = GetNewEvent();
-		newEvent.Id = new Guid("00000000-0000-0000-0000-000000000001");
 
 		//Act
+		_eventService.Create(newEvent);
 		var result = _eventService.Create(newEvent);
 
 		//Assert
@@ -221,14 +221,7 @@ public class EventServiceTests
 
 	private Event GetNewEvent()
 	{
-		return new Event
-		{
-			Id = new Guid("00000000-0000-0000-0000-000000000002"),
-			Title = "Новое событие",
-			Description = "Потрясающее событие",
-			StartAt = DateTime.Now,
-			EndAt = DateTime.Now.AddHours(2)
-		};
+		return new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
 	}
 	public static IEnumerable<object[]> GetValidDates()
 	{
