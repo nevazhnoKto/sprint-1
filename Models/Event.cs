@@ -90,5 +90,7 @@
 				return false;
 			}
 		}
+
+		public List<Booking> Bookings { get; set; }
 	}
 }

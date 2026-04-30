@@ -20,28 +20,12 @@ namespace WebApiTamakulov.Services
 			_eventRepository = eventRepository;
 		}
 
-		public PaginatedResult GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
+		public async Task<PaginatedResult> GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
 		{	
-			var filteredEvent = _eventRepository.GetEvents().AsEnumerable();
-
-			if (!string.IsNullOrEmpty(title))
-			{
-				filteredEvent = filteredEvent.Where(e =>
-					e.Title != null && e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
-			}	
-				
-			if (from.HasValue)
-			{
-				filteredEvent = filteredEvent.Where(e => e.StartAt >= from);
-			}
-
-			if (to.HasValue)
-			{
-				filteredEvent = filteredEvent.Where(e => e.EndAt <= to);
-			}
+			var filteredEvent = await _eventRepository.GetEventsFiltered(title, from, to);
 
 			var paginatedFilteredEvent = GetPage(filteredEvent, page, pageSize).ToList();
-			var filteredEventCount = filteredEvent.Count();
+			var filteredEventCount = filteredEvent.Count;
 
 			_logger.LogInformation($"Получение всех отфильтрованных событий, количество = {filteredEventCount}");
 
@@ -63,9 +47,9 @@ namespace WebApiTamakulov.Services
 						 .Take(pageSize);
 		}
 
-		public Event? GetById(Guid id)
+		public async Task<Event?> GetById(Guid id)
 		{
-			var eventCustom = _eventRepository.GetEventById(id);
+			var eventCustom = await _eventRepository.GetEventById(id);
 			if (eventCustom == null)
 			{
 				var message = $"Cобытия с {id} не существует!";
@@ -76,7 +60,7 @@ namespace WebApiTamakulov.Services
 			return eventCustom;
 		}
 
-		public bool Create(Event eventCustom)
+		public async Task<bool> Create(Event eventCustom)
 		{
 			if (eventCustom.TotalSeats <= 0)
 			{
@@ -88,35 +72,34 @@ namespace WebApiTamakulov.Services
 				return false;
 			}
 
-			var events = _eventRepository.GetEvents();
+			var events = await _eventRepository.GetEvents();
 			if (events.Any(e => e.Id == eventCustom.Id))
 			{
 				var message = $"Cобытие с {eventCustom.Id} уже существует в списке событий!";
 				_logger.LogInformation(message);
 				return false;
 			}
-			_eventRepository.AddEvent(eventCustom);
+			await _eventRepository.AddEvent(eventCustom);
 			_logger.LogInformation($"Cобытие с id = {eventCustom.Id} успешно добавлено в список событий");
 			return true;
 		}
 
-		public bool Update(Guid id, Event eventCustom)
+		public async Task<bool> Update(Guid id, Event eventCustom)
 		{
 			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
 			{
 				return false;
 			}
 
-			var evenst = _eventRepository.GetEvents();
-			var index = evenst.FindIndex(e => e.Id == id);
-			if (index == -1)
+			var result = await _eventRepository.UpdateEventByIndex(id, eventCustom);
+			
+			if (!result)
 			{
 				var message = $"Cобытия с {id} не существует!";
 				_logger.LogInformation(message);
 				return false;
 			}
 
-			_eventRepository.UpdateEventByIndex(index, eventCustom);
 			_logger.LogInformation($"Cобытие с id = {eventCustom.Id} успешно обновлено");
 			return true;
 		}
@@ -126,16 +109,16 @@ namespace WebApiTamakulov.Services
 		/// </summary>
 		/// <param name="id">Id удаляемого события.</param>
 		/// <returns>True - если удаление прошло успешно.</returns>
-		public bool Delete(Guid id)
+		public async Task<bool> Delete(Guid id)
 		{
-			var eventCustom = _eventRepository.GetEventById(id);
+			var eventCustom = await _eventRepository.GetEventById(id);
 			if (eventCustom == null)
 			{
 				var message = $"Невозможно удалить событие с {id}, т.к его не существует!";
 				_logger.LogError(message);
 				return false;
 			}
-			_eventRepository.DeleteEventById(eventCustom.Id);
+			await _eventRepository.DeleteEventById(eventCustom.Id);
 			_logger.LogInformation($"Cобытие с {id} успешно удалено");
 			return true;
 		}
@@ -150,9 +133,9 @@ namespace WebApiTamakulov.Services
 			return true;
 		}
 
-		public bool TryReserveSeats(Guid id, int count = 1)
+		public async Task<bool> TryReserveSeats(Guid id, int count = 1)
 		{
-			var eventCustom = _eventRepository.GetEventById(id);
+			var eventCustom = await _eventRepository.GetEventById(id);
 			if (eventCustom == null)
 			{
 				throw new NotFoundException($"События {id} не существует!");
@@ -160,9 +143,9 @@ namespace WebApiTamakulov.Services
 			return eventCustom.TryReserveSeats(count);
 		}
 
-		public bool ReleaseSeats(Guid id, int count = 1)
+		public async Task<bool> ReleaseSeats(Guid id, int count = 1)
 		{
-			var eventCustom = _eventRepository.GetEventById(id);
+			var eventCustom = await _eventRepository.GetEventById(id);
 			if (eventCustom == null)
 			{
 				throw new NotFoundException($"События {id} не существует!");

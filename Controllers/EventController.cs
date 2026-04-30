@@ -32,9 +32,9 @@ namespace WebApiTamakulov.Controllers
 		[HttpGet]
 		[ProducesResponseType(typeof(PaginatedResultDto), StatusCodes.Status200OK)]
 		[Produces("application/json")]
-		public IActionResult GetAllEvents(GetEventsRequestDto eventsRequest)
+		public async Task<IActionResult> GetAllEvents(GetEventsRequestDto eventsRequest)
 		{
-			var events = _eventService.GetAll(eventsRequest.Title, eventsRequest.From, eventsRequest.To, eventsRequest.Page, eventsRequest.PageSize);
+			var events = await _eventService.GetAll(eventsRequest.Title, eventsRequest.From, eventsRequest.To, eventsRequest.Page, eventsRequest.PageSize);
 
 			var eventsDto = new PaginatedResultDto()
 			{
@@ -61,10 +61,10 @@ namespace WebApiTamakulov.Controllers
 		[ProducesResponseType(typeof(ApiResult<EventResponseDto>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public IActionResult GetByIdEvent(Guid id)
+		public async Task<IActionResult> GetByIdEvent(Guid id)
 		{
 
-			var eventById = _eventService.GetById(id);
+			var eventById = await _eventService.GetById(id);
 
 			if (eventById != null)
 			{
@@ -93,10 +93,10 @@ namespace WebApiTamakulov.Controllers
 		[ProducesResponseType(typeof(ApiResult<EventResponseDto>), StatusCodes.Status201Created)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[Produces("application/json")]
-		public IActionResult CreateEvent([FromBody] CreateEventRequestDto newEventDto)
+		public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequestDto newEventDto)
 		{
 			var newEvent = _mapper.Map<Event>(newEventDto);
-			if (_eventService.Create(newEvent))
+			if (await _eventService.Create(newEvent))
 			{
 				var response = new ApiResult<EventResponseDto>
 				{
@@ -125,10 +125,10 @@ namespace WebApiTamakulov.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public IActionResult UpdateEvent(Guid id, [FromBody] UpdateEventRequestDto updateEventDto)
+		public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] UpdateEventRequestDto updateEventDto)
 		{
 
-			if (_eventService.Update(id, _mapper.Map<Event>(updateEventDto)))
+			if (await _eventService.Update(id, _mapper.Map<Event>(updateEventDto)))
 			{
 				return NoContent();
 			}
@@ -149,10 +149,10 @@ namespace WebApiTamakulov.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
-		public IActionResult DeleteEvent(Guid id)
+		public async Task<IActionResult> DeleteEvent(Guid id)
 		{
 
-			if (_eventService.Delete(id))
+			if (await _eventService.Delete(id))
 			{
 				return NoContent();
 			}

@@ -1,14 +1,16 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Mapster;
+using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using WebApiTamakulov;
+using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Mappings;
 using WebApiTamakulov.Services;
 using WebApiTamakulov.Services.BackgroundServices;
 using WebApiTamakulov.Validators;
-using Mapster;
-using MapsterMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +39,16 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateEventRequestDtoValida
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateEventRequestDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GetEventsRequestDtoValidator>();
 builder.Services.AddHostedService<ConfirmBookingBackgroundService>();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+	throw new InvalidOperationException(
+		"Connection string 'DefaultConnection' not found in appsettings.json or environment variables.");
+}
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+	options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 

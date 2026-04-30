@@ -42,5 +42,10 @@ namespace WebApiTamakulov.Models
 		/// Дата и время обработки брони.
 		/// </summary>
 		public DateTime? ProcessedAt  { get; set; }
+
+		/// <summary>
+		/// Ссылка на событие.
+		/// </summary>
+		public Event EventMain { get; set; }
 	}
 }

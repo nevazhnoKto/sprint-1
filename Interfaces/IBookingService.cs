@@ -25,19 +25,19 @@ namespace WebApiTamakulov.Interfaces
 		/// Получить все брони со статусом "В ожидании".
 		/// </summary>
 		/// <returns>Список всех броней со статусом "В ожидании".</returns>
-		List<Booking> GetAllPendingStatusBookingAsync();
+		Task<List<Booking>> GetAllPendingStatusBookingAsync();
 
 		/// <summary>
 		/// Подтверждение бронирования.
 		/// </summary>
 		/// <param name="id">Id бронирования.</param>
-		void ConfirmBookingAsync(Guid id);
+		Task ConfirmBookingAsync(Guid id);
 
 		/// <summary>
 		/// Отмена бронирования.
 		/// </summary>
 		/// <param name="bookingId">Id бронирования.</param>
 		/// <param name="eventId">Id события.</param>
-		void RejectedBookingAsync(Guid bookingId, Guid? eventId = default);
+		Task RejectedBookingAsync(Guid bookingId, Guid? eventId = default);
 	}
 }
