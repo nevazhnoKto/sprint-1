@@ -1,6 +1,4 @@
-﻿using EventServiceTests.Новая_папка;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -15,7 +13,7 @@ public class EventServiceTests: IDisposable
 {
 	private readonly IEventService _eventService;
 	private readonly AppDbContext _context;
-	private readonly IServiceProvider _serviceProvider;
+	private readonly ServiceProvider _serviceProvider;
 
 	public EventServiceTests()
 	{
@@ -248,5 +246,7 @@ public class EventServiceTests: IDisposable
 	{
 		_context.Database.EnsureDeleted();
 		_context.Dispose();
+		_serviceProvider.Dispose();
 	}
 }
+

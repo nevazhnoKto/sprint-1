@@ -51,10 +51,5 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="eventCustom">Обновленное событие.</param>
 		/// <returns></returns>
 		Task UpdateAsync(Event eventCustom);
-
-		/*/// <summary>
-		/// Костыль для тестов, чтобы сбрасывать статик переменную.
-		/// </summary>
-		void Reset();*/
 	}
 }

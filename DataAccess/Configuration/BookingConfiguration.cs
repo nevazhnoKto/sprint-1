@@ -4,29 +4,41 @@ using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.DataAccess.Configuration
 {
+#pragma warning disable CS1591
 	public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 	{
 		public void Configure(EntityTypeBuilder<Booking> builder)
 		{
-			builder.ToTable("Booking");
+			builder.ToTable("bookings");
 
 			builder.HasKey(b => b.Id);
 
 			builder.Property(b => b.Id)
-				.ValueGeneratedNever(); // Идентификатор генерируется в коде
+				.HasColumnName("id")
+				.ValueGeneratedNever();
 
-			builder.Property(b => b.Id).IsRequired();
-			builder.Property(b => b.EventId).IsRequired();
-			builder.Property(b => b.Status).HasConversion<string>() // Конвертация enum в строку
+			builder.Property(b => b.EventId)
+				.HasColumnName("event_id")
+				.IsRequired();
+
+			builder.Property(b => b.Status)
+				.HasColumnName("status")
 				.IsRequired()
-				.HasMaxLength(50); // Максимальная длина для строки статуса;
-			builder.Property(b => b.CreatedAt).IsRequired();
-			builder.Property(b => b.ProcessedAt);
+				.HasConversion<string>()
+				.HasMaxLength(20);
+
+			builder.Property(b => b.CreatedAt)
+				.HasColumnName("created_at")
+				.IsRequired();
+
+			builder.Property(b => b.ProcessedAt)
+				.HasColumnName("processed_at");
 
 			builder.HasOne(b => b.EventMain)
 				.WithMany(e => e.Bookings)
 				.HasForeignKey(b => b.EventId)
-				.OnDelete(DeleteBehavior.Restrict);
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
+#pragma warning restore CS1591
 }

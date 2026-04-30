@@ -38,10 +38,5 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Идентификатор бронирования.</param>
 		/// <param name="status">Новый статус бронирования.</param>
 		Task UpdateBooking(Guid id, BookingStatus status);
-
-		/*/// <summary>
-		/// Костыль для тестов, чтобы сбрасывать статик переменную.
-		/// </summary>
-		void Reset();*/
 	}
 }

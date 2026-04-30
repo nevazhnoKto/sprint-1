@@ -1,5 +1,4 @@
-﻿using EventServiceTests.Новая_папка;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -19,11 +18,14 @@ namespace EventServiceTests
 		private readonly IBookingService _bookingService;
 		private readonly IBookingRepository _bookingRepository;
 		private readonly Mock<IEventService> _eventServiceMock;
-		private readonly IServiceProvider _serviceProvider;
+		private readonly ServiceProvider _serviceProvider;
 		private readonly AppDbContext _context;
 
 		private bool IsEventDeleted = false;
 
+		/// <summary>
+		/// Конструктор тестов.
+		/// </summary>
 		public BookingServiceTests() 
 		{
 			var services = new ServiceCollection();
@@ -103,7 +105,7 @@ namespace EventServiceTests
 		{
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			_bookingService.ConfirmBookingAsync(firstBooking.Id);
+			await _bookingService.ConfirmBookingAsync(firstBooking.Id);
 			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
 
 			//Assert
@@ -116,7 +118,7 @@ namespace EventServiceTests
 		{
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			_bookingService.RejectedBookingAsync(firstBooking.Id);
+			await _bookingService.RejectedBookingAsync(firstBooking.Id);
 			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
 
 			//Assert
@@ -130,7 +132,7 @@ namespace EventServiceTests
 			var booking = await _bookingService.CreateBookingAsync(defaultEventGuid);
 
 			// Удаляем событие
-			_eventServiceMock.Object.Delete(defaultEventGuid);
+			await _eventServiceMock.Object.Delete(defaultEventGuid);
 
 			var bookingAfterDeletedEvent = await _bookingService.GetBookingByIdAsync(booking.Id);
 
@@ -237,7 +239,7 @@ namespace EventServiceTests
 		{
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			_bookingService.ConfirmBookingAsync(firstBooking.Id);
+			await _bookingService.ConfirmBookingAsync(firstBooking.Id);
 
 			//Assert
 			Assert.Equal(BookingStatus.Confirmed, firstBooking.Status);
@@ -249,7 +251,7 @@ namespace EventServiceTests
 		{
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			_bookingService.RejectedBookingAsync(firstBooking.Id);
+			await _bookingService.RejectedBookingAsync(firstBooking.Id);
 
 			//Assert
 			Assert.Equal(BookingStatus.Rejected, firstBooking.Status);
@@ -329,6 +331,7 @@ namespace EventServiceTests
 		{
 			_context.Database.EnsureDeleted();
 			_context.Dispose();
+			_serviceProvider.Dispose();
 		}
 	}
 }

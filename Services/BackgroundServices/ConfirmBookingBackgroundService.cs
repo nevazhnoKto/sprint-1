@@ -76,7 +76,7 @@ namespace WebApiTamakulov.Services.BackgroundServices
 			{
 				var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
 				var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-				var eventInfo = eventService.GetById(booking.EventId);
+				var eventInfo = await eventService.GetById(booking.EventId);
 				try
 				{
 					if (eventInfo != null)

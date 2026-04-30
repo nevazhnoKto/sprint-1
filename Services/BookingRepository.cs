@@ -49,15 +49,10 @@ namespace WebApiTamakulov.Services
 			if (booking != null)
 			{
 				booking.Status = status;
-				booking.ProcessedAt = DateTime.Now;
+				booking.ProcessedAt = DateTime.UtcNow;
 				await _context.SaveChangesAsync();
 			}
 		}
-
-		/*public void Reset()
-		{
-			Bookings.Clear();
-		}*/
 	}
 
 #pragma warning restore CS1591
