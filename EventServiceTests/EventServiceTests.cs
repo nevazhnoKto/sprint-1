@@ -5,6 +5,7 @@ using Moq;
 using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
+using WebApiTamakulov.Repositories;
 using WebApiTamakulov.Services;
 
 namespace EventServiceTests;

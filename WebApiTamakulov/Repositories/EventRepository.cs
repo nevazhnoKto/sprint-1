@@ -3,16 +3,12 @@ using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
-namespace WebApiTamakulov.Services
+namespace WebApiTamakulov.Repositories
 {
 #pragma warning disable CS1591
 	public class EventRepository : IEventRepository
 	{
 		private readonly AppDbContext _context;
-		/*private static List<Event> Events { get; set; } =
-			[
-				new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10)
-			];*/
 
 		public EventRepository(AppDbContext context)
 		{
@@ -57,7 +53,7 @@ namespace WebApiTamakulov.Services
 			if (!string.IsNullOrEmpty(title))
 			{
 				query = query.Where(e => e.Title != null &&
-										e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+										 e.Title.ToLower().Contains(title.ToLower()));
 			}
 
 			if (from.HasValue)
