@@ -16,7 +16,6 @@ namespace EventServiceTests
 	{
 		private Guid defaultEventGuid = new Guid("00000000-0000-0000-0000-000000000001");
 		private readonly IBookingService _bookingService;
-		private readonly IBookingRepository _bookingRepository;
 		private readonly Mock<IEventService> _eventServiceMock;
 		private readonly ServiceProvider _serviceProvider;
 		private readonly AppDbContext _context;
