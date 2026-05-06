@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Data;
 using Testcontainers.PostgreSql;
 using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Enums;
@@ -26,29 +27,60 @@ namespace BookingApi.IntegrationTests
 
 		private async Task ResetDatabaseAsync()
 		{
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			await context.Database.ExecuteSqlRawAsync(
 				"TRUNCATE TABLE events, bookings RESTART IDENTITY CASCADE");
 		}
 
-		private AppDbContext CreateContext()
+		private async Task<AppDbContext> CreateContext()
 		{
 			var options = new DbContextOptionsBuilder<AppDbContext>()
 				.UseNpgsql(_postgres.GetConnectionString())
 				.Options;
 
 			var context = new AppDbContext(options);
-			context.Database.EnsureCreated();
+			await context.Database.MigrateAsync();
 			return context;
 		}
 
+		[Fact]
+		public async Task Migrations_CreateBookingsTable()
+		{
+			await ResetDatabaseAsync();
+
+			// Arrange
+			await using var context = await CreateContext();
+
+			// Act
+			var tableExists = await TableExistsAsync(context, "Bookings");
+
+			// Assert
+			Assert.True(tableExists, "Bookings table should exist after migration");
+		}
+
+		[Fact]
+		public async Task Migrations_CreateEventsTable()
+		{
+			await ResetDatabaseAsync();
+
+			// Arrange
+			await using var context = await CreateContext();
+
+			// Act
+			var tableExists = await TableExistsAsync(context, "Events");
+
+			// Assert
+			Assert.True(tableExists, "Events table should exist after migration");
+		}
+
+		
 		[Fact]
 		public async Task CreateBooking_SavesBookingToDataBase()
 		{
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
@@ -58,7 +90,7 @@ namespace BookingApi.IntegrationTests
 			var booking = await bookingRepository.AddBooking(new Guid("00000000-0000-0000-0000-000000000001"));
 
 			//Assert
-			await using var assertContext = CreateContext();
+			await using var assertContext = await CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
 			Assert.Equal(newBooking.EventId, booking.EventId);
 		}
@@ -69,7 +101,7 @@ namespace BookingApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -81,7 +113,7 @@ namespace BookingApi.IntegrationTests
 			await bookingRepository.DeleteBookingById(booking.Id);
 
 			//Assert
-			await using var assertContext = CreateContext();
+			await using var assertContext = await CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
 			Assert.Null(newBooking);
 		}
@@ -92,7 +124,7 @@ namespace BookingApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -114,7 +146,7 @@ namespace BookingApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -138,7 +170,7 @@ namespace BookingApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -150,9 +182,33 @@ namespace BookingApi.IntegrationTests
 			await bookingRepository.UpdateBooking(booking.Id, BookingStatus.Confirmed);
 
 			//Assert
-			await using var assertContext = CreateContext();
+			await using var assertContext = await CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
 			Assert.Equal(BookingStatus.Confirmed, newBooking.Status);
+		}
+
+		private async Task<bool> TableExistsAsync(AppDbContext context, string tableName)
+		{
+			var connection = context.Database.GetDbConnection();
+			if (connection.State != ConnectionState.Open)
+				await connection.OpenAsync();
+
+			var sql = @"
+            SELECT COUNT(*)
+            FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name = @tableName";
+
+			await using var command = connection.CreateCommand();
+			command.CommandText = sql;
+
+			var parameter = command.CreateParameter();
+			parameter.ParameterName = "@tableName";
+			parameter.Value = tableName.ToLower();
+			command.Parameters.Add(parameter);
+
+			var result = await command.ExecuteScalarAsync();
+			return Convert.ToInt64(result) > 0;
 		}
 	}
 }

@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using System.Data;
 using Testcontainers.PostgreSql;
 using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Models;
@@ -24,20 +26,50 @@ namespace EventApi.IntegrationTests
 
 		private async Task ResetDatabaseAsync()
 		{
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			await context.Database.ExecuteSqlRawAsync(
 				"TRUNCATE TABLE events, bookings RESTART IDENTITY CASCADE");
 		}
 
-		private AppDbContext CreateContext()
+		private async Task<AppDbContext> CreateContext()
 		{
 			var options = new DbContextOptionsBuilder<AppDbContext>()
 				.UseNpgsql(_postgres.GetConnectionString())
 				.Options;
 
 			var context = new AppDbContext(options);
-			context.Database.EnsureCreated();
+			await context.Database.MigrateAsync();
 			return context;
+		}
+
+		[Fact]
+		public async Task Migrations_CreateBookingsTable()
+		{
+			await ResetDatabaseAsync();
+
+			// Arrange
+			await using var context = await CreateContext();
+
+			// Act
+			var tableExists = await TableExistsAsync(context, "Bookings");
+
+			// Assert
+			Assert.True(tableExists, "Bookings table should exist after migration");
+		}
+
+		[Fact]
+		public async Task Migrations_CreateEventsTable()
+		{
+			await ResetDatabaseAsync();
+
+			// Arrange
+			await using var context = await CreateContext();
+
+			// Act
+			var tableExists = await TableExistsAsync(context, "Events");
+
+			// Assert
+			Assert.True(tableExists, "Events table should exist after migration");
 		}
 
 		[Fact]
@@ -46,7 +78,7 @@ namespace EventApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			var eventRepository = new EventRepository(context);
 
@@ -54,7 +86,7 @@ namespace EventApi.IntegrationTests
 			await eventRepository.AddEvent(newEvent);
 
 			//Assert
-			await using var assertContext = CreateContext();
+			await using var assertContext = await CreateContext();
 			var checkEvent = await assertContext.Events.FirstAsync();
 			Assert.Equal(newEvent.Title, checkEvent.Title);
 		}
@@ -65,17 +97,17 @@ namespace EventApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(CreateContext());
+			var eventRepository = new EventRepository(await CreateContext());
 			await eventRepository.DeleteEventById(new Guid("00000000-0000-0000-0000-000000000001"));
 
 			//Assert
-			await using var assertContext = CreateContext();
+			await using var assertContext = await CreateContext();
 			var checkEvent = await assertContext.Events.FirstOrDefaultAsync();
 			Assert.Null(checkEvent);
 		}
@@ -86,13 +118,13 @@ namespace EventApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(CreateContext());
+			var eventRepository = new EventRepository(await CreateContext());
 			var findedEvent = await eventRepository.GetEventById(new Guid("00000000-0000-0000-0000-000000000001"));
 
 			//Assert
@@ -105,14 +137,14 @@ namespace EventApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			var newEvent2 = new Event(new Guid("00000000-0000-0000-0000-000000000002"), "Второе событие", "Тоже классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.AddRange(newEvent, newEvent2);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(CreateContext());
+			var eventRepository = new EventRepository(await CreateContext());
 			var findedEvents = await eventRepository.GetEvents();
 
 			//Assert
@@ -125,14 +157,14 @@ namespace EventApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			var newEvent2 = new Event(new Guid("00000000-0000-0000-0000-000000000002"), "Второе событие", "Тоже классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.AddRange(newEvent, newEvent2);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(CreateContext());
+			var eventRepository = new EventRepository(await CreateContext());
 			var findedEvents = await eventRepository.GetEventsFiltered("Первое событие", null, null);
 
 			//Assert
@@ -146,18 +178,18 @@ namespace EventApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(CreateContext());
+			var eventRepository = new EventRepository(await CreateContext());
 			newEvent.Title = "Обновленное классное событие";
 			await eventRepository.UpdateAsync(newEvent);
 
 			//Assert
-			await using var asserctContext = CreateContext();
+			await using var asserctContext = await CreateContext();
 			var assertEvent = asserctContext.Events.FirstOrDefault();
 			Assert.Equal("Обновленное классное событие", assertEvent.Title);
 		}
@@ -167,18 +199,18 @@ namespace EventApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(CreateContext());
+			var eventRepository = new EventRepository(await CreateContext());
 			newEvent.Title = "Обновленное классное событие";
 			await eventRepository.UpdateEventByIndex(new Guid("00000000-0000-0000-0000-000000000001"), newEvent);
 
 			//Assert
-			await using var asserctContext = CreateContext();
+			await using var asserctContext = await CreateContext();
 			var assertEvent = asserctContext.Events.FirstOrDefault();
 			Assert.Equal("Обновленное классное событие", assertEvent.Title);
 		}
@@ -189,13 +221,37 @@ namespace EventApi.IntegrationTests
 			await ResetDatabaseAsync();
 
 			//Arrange
-			await using var context = CreateContext();
+			await using var context = await CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			var eventRepository = new EventRepository(context);
 			await eventRepository.AddEvent(newEvent);
 
 			//Act, Assert
 			Assert.ThrowsAsync<DbUpdateException>(() => eventRepository.AddEvent(newEvent));
+		}
+
+		private async Task<bool> TableExistsAsync(AppDbContext context, string tableName)
+		{
+			var connection = context.Database.GetDbConnection();
+			if (connection.State != ConnectionState.Open)
+				await connection.OpenAsync();
+
+			var sql = @"
+            SELECT COUNT(*)
+            FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name = @tableName";
+
+			await using var command = connection.CreateCommand();
+			command.CommandText = sql;
+
+			var parameter = command.CreateParameter();
+			parameter.ParameterName = "@tableName";
+			parameter.Value = tableName.ToLower();
+			command.Parameters.Add(parameter);
+
+			var result = await command.ExecuteScalarAsync();
+			return Convert.ToInt64(result) > 0;
 		}
 	}
 }
