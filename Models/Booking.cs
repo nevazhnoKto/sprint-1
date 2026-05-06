@@ -8,6 +8,11 @@ namespace WebApiTamakulov.Models
 	public class Booking
 	{
 		/// <summary>
+		/// Пустой конструктор для EF Core.
+		/// </summary>
+		private Booking() { }
+
+		/// <summary>
 		/// Конструктор для создания новой брони
 		/// </summary>
 		public Booking(Guid eventId)
@@ -42,5 +47,10 @@ namespace WebApiTamakulov.Models
 		/// Дата и время обработки брони.
 		/// </summary>
 		public DateTime? ProcessedAt  { get; set; }
+
+		/// <summary>
+		/// Ссылка на событие.
+		/// </summary>
+		public Event EventMain { get; set; }
 	}
 }

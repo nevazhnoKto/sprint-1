@@ -16,21 +16,21 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="page">Номер страницы.</param>
 		/// <param name="pageSize">Количество событий на странице.</param>
 		/// <returns></returns>
-		PaginatedResult GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10);
+		Task<PaginatedResult> GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10);
 
 		/// <summary>
 		/// Получить событие по Id.
 		/// </summary>
 		/// <param name="id">Id события.</param>
 		/// <returns>Информация по найденному событию.</returns>
-		Event? GetById(Guid id);
+		Task<Event?> GetById(Guid id);
 
 		/// <summary>
 		/// Создать новое событие.
 		/// </summary>
 		/// <param name="eventCustom">Данные нового события.</param>
 		/// <returns>True - если событие удачно добавлено.</returns>
-		bool Create(Event eventCustom);
+		Task<bool> Create(Event eventCustom);
 
 		/// <summary>
 		/// Обновить событие по его Id.
@@ -38,14 +38,14 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Id события.</param>
 		/// <param name="eventCustom">Данные, которыми обновить событие.</param>
 		/// <returns>True - если обновление прошло удачно.</returns>
-		bool Update(Guid id, Event eventCustom);
+		Task<bool> Update(Guid id, Event eventCustom);
 
 		/// <summary>
 		/// Удалить событие по его Id.
 		/// </summary>
 		/// <param name="id">Id события.</param>
 		/// <returns>True - елси событие успешно удалено.</returns>
-		bool Delete(Guid id);
+		Task<bool> Delete(Guid id);
 
 
 		/// <summary>
@@ -54,7 +54,7 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Id события.</param>
 		/// <param name="count">Количество для резервации.</param>
 		/// <returns>Возвращает false, если свободных мест недостаточно.</returns>
-		bool TryReserveSeats(Guid id, int count = 1);
+		Task<bool> TryReserveSeats(Guid id, int count = 1);
 
 		/// <summary>
 		/// Отмена освобождения места на событие.
@@ -62,6 +62,6 @@ namespace WebApiTamakulov.Interfaces
 		/// <param name="id">Id события.</param>
 		/// <param name="count">Количество мест для отмены.</param>
 		/// <returns></returns>
-		bool ReleaseSeats(Guid id, int count = 1);
+		Task<bool> ReleaseSeats(Guid id, int count = 1);
 	}
 }

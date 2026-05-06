@@ -1,4 +1,6 @@
-﻿using WebApiTamakulov.Enums;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApiTamakulov.DataAccess;
+using WebApiTamakulov.Enums;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
@@ -8,45 +10,48 @@ namespace WebApiTamakulov.Services
 
 	public class BookingRepository : IBookingRepository
 	{
-		private static List<Booking> Bookings { get; set; } = [];
-
-		public Booking AddBooking(Guid eventId)
+		private readonly AppDbContext _context;
+		public BookingRepository(AppDbContext context)
+		{
+			_context = context;
+		}
+		public async Task<Booking> AddBooking(Guid eventId)
 		{
 			var booking = new Booking(eventId);
-			Bookings.Add(booking);
+			_context.Bookings.Add(booking);
+			await _context.SaveChangesAsync();
 			return booking;
 		}
 
-		public void DeleteBookingById(Guid bookingId)
+		public async Task DeleteBookingById(Guid bookingId)
 		{
-			var booking = Bookings.FirstOrDefault(b => b.Id == bookingId);
-			if (booking != null)
-				Bookings.Remove(booking);
-		}
-
-		public Booking? GetBookingById(Guid bookingId)
-		{
-			return Bookings.FirstOrDefault(b => b.Id == bookingId);
-		}
-
-		public List<Booking> GetBookingsByStatus(BookingStatus status)
-		{
-			return Bookings.Where(b => b.Status == status).ToList();
-		}
-
-		public void UpdateBooking(Guid id, BookingStatus status)
-		{
-			var booking = Bookings.FirstOrDefault(b => b.Id == id);
+			var booking = _context.Bookings.FirstOrDefault(b => b.Id == bookingId);
 			if (booking != null)
 			{
-				booking.Status = status;
-				booking.ProcessedAt = DateTime.Now;
+				_context.Bookings.Remove(booking);
+				await _context.SaveChangesAsync();
 			}
 		}
 
-		public void Reset()
+		public async Task<Booking?> GetBookingById(Guid bookingId)
 		{
-			Bookings.Clear();
+			return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
+		}
+
+		public async Task<List<Booking>> GetBookingsByStatus(BookingStatus status)
+		{
+			return await _context.Bookings.Where(b => b.Status == status).ToListAsync();
+		}
+
+		public async Task UpdateBooking(Guid id, BookingStatus status)
+		{
+			var booking = _context.Bookings.FirstOrDefault(b => b.Id == id);
+			if (booking != null)
+			{
+				booking.Status = status;
+				booking.ProcessedAt = DateTime.UtcNow;
+				await _context.SaveChangesAsync();
+			}
 		}
 	}
 

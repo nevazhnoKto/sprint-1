@@ -1,4 +1,6 @@
-﻿using WebApiTamakulov.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApiTamakulov.DataAccess;
+using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
 
 namespace WebApiTamakulov.Services
@@ -6,45 +8,90 @@ namespace WebApiTamakulov.Services
 #pragma warning disable CS1591
 	public class EventRepository : IEventRepository
 	{
-		private static List<Event> Events { get; set; } =
+		private readonly AppDbContext _context;
+		/*private static List<Event> Events { get; set; } =
 			[
 				new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10)
-			];
+			];*/
 
-		public void AddEvent(Event newEvent)
+		public EventRepository(AppDbContext context)
 		{
-			Events.Add(newEvent);
+			_context = context;
+		}
+		public async Task AddEvent(Event newEvent)
+		{
+			_context.Events.Add(newEvent);
+			await _context.SaveChangesAsync();
 		}
 
-		public void DeleteEventById(Guid id)
+		public async Task DeleteEventById(Guid id)
 		{
-			var findEvent = Events.FirstOrDefault(e => e.Id == id);
+			var findEvent = _context.Events.FirstOrDefault(e => e.Id == id);
 			if (findEvent != null)
-				Events.Remove(findEvent);
+			{
+				_context.Events.Remove(findEvent);
+				await _context.SaveChangesAsync();
+			}
 		}
 
-		public Event? GetEventById(Guid id)
+		public async Task<Event?> GetEventById(Guid id)
 		{
-			return Events.FirstOrDefault(e => e.Id == id);
+			return await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
+		}
+		public async Task UpdateAsync(Event eventCustom)
+		{
+			_context.Events.Update(eventCustom);
+			await _context.SaveChangesAsync();
 		}
 
-		public List<Event> GetEvents()
+		public async Task<List<Event>> GetEvents()
 		{
-			return Events;
+			return await _context.Events.ToListAsync();
 		}
 
-		public void UpdateEventByIndex(int index, Event eventCustom)
+
+		public async Task<List<Event>> GetEventsFiltered(string? title, DateTime? from, DateTime? to)
 		{
-			if (index >= 0 || index < Events.Count)
-				Events[index] = eventCustom;
+			IQueryable<Event> query = _context.Events.AsQueryable();  // Начинаем с IQueryable
+
+			if (!string.IsNullOrEmpty(title))
+			{
+				query = query.Where(e => e.Title != null &&
+										e.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+			}
+
+			if (from.HasValue)
+			{
+				query = query.Where(e => e.StartAt >= from.Value);
+			}
+
+			if (to.HasValue)
+			{
+				query = query.Where(e => e.EndAt <= to.Value);
+			}
+
+			// Выполняем запрос
+			var result = await query.ToListAsync();
+
+			return result;
 		}
 
-		public void Reset()
+		public async Task<bool> UpdateEventByIndex(Guid index, Event eventCustom)
 		{
-			Events =
-			[
-				new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10)
-			];
+			var existingEvent = _context.Events.FirstOrDefault(e => e.Id == index);
+			
+			if (existingEvent != null)
+			{
+				// Обновляем только нужные поля
+				existingEvent.Title = eventCustom.Title;
+				existingEvent.Description = eventCustom.Description;
+				existingEvent.StartAt = eventCustom.StartAt;
+				existingEvent.EndAt = eventCustom.EndAt;
+				existingEvent.TotalSeats = eventCustom.TotalSeats;
+				await _context.SaveChangesAsync();
+				return true;
+			}
+			return false;
 		}
 	}
 #pragma warning restore CS1591

@@ -5,8 +5,15 @@
 	/// </summary>
 	public class Event
 	{
-		/// Объект синхронизации для потокобезопасного доступа к полям события.
-		private readonly object _eventLock = new();
+		private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
+
+		/// <summary>
+		/// Пустой конструктор для EF Core.
+		/// </summary>
+		private Event()
+		{
+
+		}
 
 		/// <summary>
 		/// Конструктор Event.
@@ -61,9 +68,10 @@
 		/// Попытка резервирования места на событие.
 		/// </summary>
 		/// <param name="count">Количество для резервации.</param>
-		public bool TryReserveSeats(int count = 1)
+		public async Task<bool> TryReserveSeats(int count = 1)
 		{
-			lock (_eventLock)
+			await _processingSemaphore.WaitAsync();
+			try
 			{
 				if (AvailableSeats >= count)
 				{
@@ -72,15 +80,20 @@
 				}
 				return false;
 			}
+			finally
+			{
+				_processingSemaphore.Release();
+			}
 		}
 
 		/// <summary>
 		/// Отмена освобождения места на событие.
 		/// </summary>
 		/// <param name="count">Количество мест для отмены.</param>
-		public bool ReleaseSeats(int count = 1)
+		public async Task<bool> ReleaseSeats(int count = 1)
 		{
-			lock (_eventLock)
+			await _processingSemaphore.WaitAsync();
+			try
 			{
 				if (AvailableSeats + count <= TotalSeats)
 				{
@@ -89,6 +102,15 @@
 				}
 				return false;
 			}
+			finally
+			{
+				_processingSemaphore.Release();
+			}
 		}
+
+		/// <summary>
+		/// Коллекция Bookings.
+		/// </summary>
+		public List<Booking> Bookings { get; set; }
 	}
 }
