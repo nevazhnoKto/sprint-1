@@ -1,4 +1,4 @@
 <Solution>
   <Project Path="EventServiceTests/EventServiceTests.csproj" />
-  <Project Path="WebApiTamakulov.csproj" />
+  <Project Path="WebApiTamakulov/WebApiTamakulov.csproj" />
 </Solution>

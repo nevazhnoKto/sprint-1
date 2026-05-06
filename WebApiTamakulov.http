@@ -1,6 +1,0 @@
-@WebApiTamakulov_HostAddress = http://localhost:5224
-
-GET {{WebApiTamakulov_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
