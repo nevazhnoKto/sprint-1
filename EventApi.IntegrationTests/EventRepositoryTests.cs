@@ -184,7 +184,7 @@ namespace EventApi.IntegrationTests
 		}
 
 		[Fact]
-		public async Task CreateEvent_DuplicateId_CreateBook_DuplicateIsbn_ThrowsDbUpdateException()
+		public async Task CreateEvent_DuplicateId_ThrowsDbUpdateException()
 		{
 			await ResetDatabaseAsync();
 
