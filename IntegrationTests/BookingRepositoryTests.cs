@@ -40,7 +40,7 @@ namespace IntegrationTests
 			//Assert
 			await using var assertContext = await _dbFixture.CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
-			Assert.Equal(newBooking.EventId, booking.EventId);
+			Assert.Equal(newBooking!.EventId, booking.EventId);
 		}
 
 		[Fact]
@@ -80,8 +80,8 @@ namespace IntegrationTests
 			var bookingDb = await bookingRepository.GetBookingById(booking.Id);
 
 			//Assert
-			Assert.Equal(booking.Id, bookingDb.Id);
-			Assert.Equal(booking.EventId, bookingDb.EventId);
+			Assert.Equal(booking.Id, bookingDb!.Id);
+			Assert.Equal(booking.EventId, bookingDb!.EventId);
 		}
 
 		[Fact]
@@ -102,8 +102,8 @@ namespace IntegrationTests
 			var bookingDb = await bookingRepository.GetBookingsByStatus(BookingStatus.Pending);
 
 			//Assert
-			Assert.Equal(booking2.Id, bookingDb.FirstOrDefault().Id);
-			Assert.Equal(booking2.EventId, bookingDb.FirstOrDefault().EventId);
+			Assert.Equal(booking2.Id, bookingDb.First().Id);
+			Assert.Equal(booking2.EventId, bookingDb.First().EventId);
 		}
 
 		[Fact]
@@ -124,7 +124,7 @@ namespace IntegrationTests
 			//Assert
 			await using var assertContext = await _dbFixture.CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
-			Assert.Equal(BookingStatus.Confirmed, newBooking.Status);
+			Assert.Equal(BookingStatus.Confirmed, newBooking!.Status);
 		}
 	}
 }
