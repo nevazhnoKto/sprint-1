@@ -8,7 +8,7 @@ using WebApiTamakulov.Models;
 using WebApiTamakulov.Repositories;
 using WebApiTamakulov.Services;
 
-namespace EventServiceTests;
+namespace ServiceTests;
 
 public class EventServiceTests: IDisposable
 {
