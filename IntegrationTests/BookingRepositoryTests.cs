@@ -1,55 +1,34 @@
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Data;
-using Testcontainers.PostgreSql;
-using WebApiTamakulov.DataAccess;
+using IntegrationTests.Fixture;
 using WebApiTamakulov.Enums;
 using WebApiTamakulov.Models;
 using WebApiTamakulov.Repositories;
 
 namespace IntegrationTests
 {
+	[Collection("Database")]
 	public class BookingRepositoryTests: IAsyncLifetime
 	{
-		private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-		.WithImage("postgres:16-alpine")
-		.Build();
+		private readonly DatabaseFixture _dbFixture;
+		public BookingRepositoryTests(DatabaseFixture dbFixture)
+		{
+			_dbFixture = dbFixture;
+		}
 
 		public async Task InitializeAsync()
 		{
-			await _postgres.StartAsync();
+			// Перед началом каждого теста очистить БД.
+			await _dbFixture.ResetDatabaseAsync();
 		}
 
 		public async Task DisposeAsync()
 		{
-			await _postgres.DisposeAsync();
 		}
 
-		private async Task ResetDatabaseAsync()
-		{
-			await using var context = await CreateContext();
-			await context.Database.ExecuteSqlRawAsync(
-				"TRUNCATE TABLE events, bookings RESTART IDENTITY CASCADE");
-		}
-
-		private async Task<AppDbContext> CreateContext()
-		{
-			var options = new DbContextOptionsBuilder<AppDbContext>()
-				.UseNpgsql(_postgres.GetConnectionString())
-				.Options;
-
-			var context = new AppDbContext(options);
-			await context.Database.MigrateAsync();
-			return context;
-		}
-		
 		[Fact]
 		public async Task CreateBooking_SavesBookingToDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
@@ -59,7 +38,7 @@ namespace IntegrationTests
 			var booking = await bookingRepository.AddBooking(new Guid("00000000-0000-0000-0000-000000000001"));
 
 			//Assert
-			await using var assertContext = await CreateContext();
+			await using var assertContext = await _dbFixture.CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
 			Assert.Equal(newBooking.EventId, booking.EventId);
 		}
@@ -67,10 +46,8 @@ namespace IntegrationTests
 		[Fact]
 		public async Task DeleteBooking_DeleteBookingToDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -82,7 +59,7 @@ namespace IntegrationTests
 			await bookingRepository.DeleteBookingById(booking.Id);
 
 			//Assert
-			await using var assertContext = await CreateContext();
+			await using var assertContext = await _dbFixture.CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
 			Assert.Null(newBooking);
 		}
@@ -90,10 +67,8 @@ namespace IntegrationTests
 		[Fact]
 		public async Task GetBookingById_GetBookingByIdFromDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -112,10 +87,8 @@ namespace IntegrationTests
 		[Fact]
 		public async Task GetBookingByStatus_GetBookingStatusFromDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -136,10 +109,8 @@ namespace IntegrationTests
 		[Fact]
 		public async Task UpdateBooking_UpdateBookingToDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -151,7 +122,7 @@ namespace IntegrationTests
 			await bookingRepository.UpdateBooking(booking.Id, BookingStatus.Confirmed);
 
 			//Assert
-			await using var assertContext = await CreateContext();
+			await using var assertContext = await _dbFixture.CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
 			Assert.Equal(BookingStatus.Confirmed, newBooking.Status);
 		}

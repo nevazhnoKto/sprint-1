@@ -1,7 +1,6 @@
+using IntegrationTests.Fixture;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using System.Data;
-using Testcontainers.PostgreSql;
 using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Models;
 using WebApiTamakulov.Repositories;
@@ -68,24 +67,22 @@ namespace IntegrationTests
 			var checkEvent = await assertContext.Events.FirstAsync();
 			Assert.Equal(newEvent.Title, checkEvent.Title);
 		}
-		/*
+		
 		[Fact]
 		public async Task DeleteEvent_DeleteEventToDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(await CreateContext());
+			var eventRepository = new EventRepository(await _dbFixture.CreateContext());
 			await eventRepository.DeleteEventById(new Guid("00000000-0000-0000-0000-000000000001"));
 
 			//Assert
-			await using var assertContext = await CreateContext();
+			await using var assertContext = await _dbFixture.CreateContext();
 			var checkEvent = await assertContext.Events.FirstOrDefaultAsync();
 			Assert.Null(checkEvent);
 		}
@@ -93,16 +90,14 @@ namespace IntegrationTests
 		[Fact]
 		public async Task GetEventById_GetEventFromDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(await CreateContext());
+			var eventRepository = new EventRepository(await _dbFixture.CreateContext());
 			var findedEvent = await eventRepository.GetEventById(new Guid("00000000-0000-0000-0000-000000000001"));
 
 			//Assert
@@ -112,17 +107,15 @@ namespace IntegrationTests
 		[Fact]
 		public async Task GetEvents_GetAllEventsFromDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			var newEvent2 = new Event(new Guid("00000000-0000-0000-0000-000000000002"), "Второе событие", "Тоже классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.AddRange(newEvent, newEvent2);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(await CreateContext());
+			var eventRepository = new EventRepository(await _dbFixture.CreateContext());
 			var findedEvents = await eventRepository.GetEvents();
 
 			//Assert
@@ -132,17 +125,15 @@ namespace IntegrationTests
 		[Fact]
 		public async Task GetEventsFiltered_GetFiltretedEventsFromDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			var newEvent2 = new Event(new Guid("00000000-0000-0000-0000-000000000002"), "Второе событие", "Тоже классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.AddRange(newEvent, newEvent2);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(await CreateContext());
+			var eventRepository = new EventRepository(await _dbFixture.CreateContext());
 			var findedEvents = await eventRepository.GetEventsFiltered("Первое событие", null, null);
 
 			//Assert
@@ -153,42 +144,38 @@ namespace IntegrationTests
 		[Fact]
 		public async Task UpdateEvent_UpdateEventFromDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(await CreateContext());
+			var eventRepository = new EventRepository(await _dbFixture.CreateContext());
 			newEvent.Title = "Обновленное классное событие";
 			await eventRepository.UpdateAsync(newEvent);
 
 			//Assert
-			await using var asserctContext = await CreateContext();
+			await using var asserctContext = await _dbFixture.CreateContext();
 			var assertEvent = asserctContext.Events.FirstOrDefault();
 			Assert.Equal("Обновленное классное событие", assertEvent.Title);
 		}
 		[Fact]
 		public async Task UpdateEventByIndex_UpdateEventByIndexFromDataBase()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
 			await context.SaveChangesAsync();
 
 			//Act
-			var eventRepository = new EventRepository(await CreateContext());
+			var eventRepository = new EventRepository(await _dbFixture.CreateContext());
 			newEvent.Title = "Обновленное классное событие";
 			await eventRepository.UpdateEventByIndex(new Guid("00000000-0000-0000-0000-000000000001"), newEvent);
 
 			//Assert
-			await using var asserctContext = await CreateContext();
+			await using var asserctContext = await _dbFixture.CreateContext();
 			var assertEvent = asserctContext.Events.FirstOrDefault();
 			Assert.Equal("Обновленное классное событие", assertEvent.Title);
 		}
@@ -196,17 +183,15 @@ namespace IntegrationTests
 		[Fact]
 		public async Task CreateEvent_DuplicateId_ThrowsDbUpdateException()
 		{
-			await ResetDatabaseAsync();
-
 			//Arrange
-			await using var context = await CreateContext();
+			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			var eventRepository = new EventRepository(context);
 			await eventRepository.AddEvent(newEvent);
 
 			//Act, Assert
 			await Assert.ThrowsAsync<DbUpdateException>(() => eventRepository.AddEvent(newEvent));
-		}*/
+		}
 
 		private async Task<bool> TableExistsAsync(AppDbContext context, string tableName)
 		{

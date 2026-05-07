@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 using WebApiTamakulov.DataAccess;
 
-namespace IntegrationTests
+namespace IntegrationTests.Fixture
 {
 	public class DatabaseFixture : IAsyncLifetime
 	{
