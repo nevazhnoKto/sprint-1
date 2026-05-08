@@ -7,6 +7,7 @@ using System.Reflection;
 using WebApiTamakulov;
 using WebApiTamakulov.DataAccess;
 using WebApiTamakulov.Interfaces;
+using WebApiTamakulov.Repositories;
 using WebApiTamakulov.Services;
 using WebApiTamakulov.Services.BackgroundServices;
 using WebApiTamakulov.Validators;
@@ -27,7 +28,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
-builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IBookingRepository, WebApiTamakulov.Repositories.BookingRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 builder.Services.AddSingleton(TypeAdapterConfig.GlobalSettings);
@@ -65,9 +66,9 @@ app.UseAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
-} 
+	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+	db.Database.Migrate();
+}
 
 app.MapControllers();
 

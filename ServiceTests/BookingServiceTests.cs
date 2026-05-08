@@ -8,9 +8,10 @@ using WebApiTamakulov.Enums;
 using WebApiTamakulov.ExceptionExtension;
 using WebApiTamakulov.Interfaces;
 using WebApiTamakulov.Models;
+using WebApiTamakulov.Repositories;
 using WebApiTamakulov.Services;
 
-namespace EventServiceTests
+namespace ServiceTests
 {
 	public class BookingServiceTests : IDisposable
 	{
@@ -33,7 +34,7 @@ namespace EventServiceTests
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseInMemoryDatabase(dbName));
 
-			services.AddScoped<IBookingRepository, BookingRepository>();
+			services.AddScoped<IBookingRepository, WebApiTamakulov.Repositories.BookingRepository>();
 
 			_eventServiceMock = new Mock<IEventService>();
 			services.AddScoped(_ => _eventServiceMock.Object);
