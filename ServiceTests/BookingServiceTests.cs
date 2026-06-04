@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Interfaces;
+using Application.Models;
+using Application.Services;
+using Domain.Enums;
+using Domain.ExceptionExtension;
+using Domain.Models;
+using Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OpenQA.Selenium;
-using WebApiTamakulov.DataAccess;
-using WebApiTamakulov.Enums;
-using WebApiTamakulov.ExceptionExtension;
-using WebApiTamakulov.Interfaces;
-using WebApiTamakulov.Models;
-using WebApiTamakulov.Repositories;
-using WebApiTamakulov.Services;
 
 namespace ServiceTests
 {
@@ -34,7 +34,7 @@ namespace ServiceTests
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseInMemoryDatabase(dbName));
 
-			services.AddScoped<IBookingRepository, WebApiTamakulov.Repositories.BookingRepository>();
+			services.AddScoped<IBookingRepository, Infrastructure.Repositories.BookingRepository>();
 
 			_eventServiceMock = new Mock<IEventService>();
 			services.AddScoped(_ => _eventServiceMock.Object);
@@ -50,8 +50,7 @@ namespace ServiceTests
 
 			_bookingService = _serviceProvider.GetRequiredService<IBookingService>();
 
-			Event defaultEvent = new Event(defaultEventGuid, "Первое событие", "Очень классное событие",
-				DateTime.Now, DateTime.Now.AddHours(2), 10);
+			EventDto defaultEvent =  new EventDto(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
 
 			_eventServiceMock.Setup(m => m.GetById(defaultEventGuid))
 				.ReturnsAsync(() => IsEventDeleted ? null : defaultEvent);
@@ -243,7 +242,7 @@ namespace ServiceTests
 
 			//Assert
 			Assert.Equal(BookingStatus.Confirmed, firstBooking.Status);
-			Assert.NotNull(firstBooking.ProcessedAt);
+			Assert.NotNull(firstBooking.EventId);
 		}
 
 		[Fact]
@@ -255,7 +254,7 @@ namespace ServiceTests
 
 			//Assert
 			Assert.Equal(BookingStatus.Rejected, firstBooking.Status);
-			Assert.NotNull(firstBooking.ProcessedAt);
+			Assert.NotNull(firstBooking.EventId);
 		}
 
 		[Fact]
@@ -273,7 +272,7 @@ namespace ServiceTests
 			var concurrentRequests = 10;
 
 			//Act
-			var tasks = new Task<Booking>[concurrentRequests];
+			var tasks = new Task<BookingDto>[concurrentRequests];
 			for (int i = 0; i < concurrentRequests; i++)
 			{
 				tasks[i] = _bookingService.CreateBookingAsync(defaultEventGuid);

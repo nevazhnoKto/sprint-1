@@ -1,9 +1,9 @@
+using Domain.Models;
+using Infrastructure.DataAccess;
+using Infrastructure.Repositories;
 using IntegrationTests.Fixture;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using WebApiTamakulov.DataAccess;
-using WebApiTamakulov.Models;
-using WebApiTamakulov.Repositories;
 
 namespace IntegrationTests
 {

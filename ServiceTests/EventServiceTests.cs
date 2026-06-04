@@ -1,12 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Interfaces;
+using Application.Models;
+using Application.Services;
+using Domain.Models;
+using Infrastructure.DataAccess;
+using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using WebApiTamakulov.DataAccess;
-using WebApiTamakulov.Interfaces;
-using WebApiTamakulov.Models;
-using WebApiTamakulov.Repositories;
-using WebApiTamakulov.Services;
 
 namespace ServiceTests;
 
@@ -36,7 +37,8 @@ public class EventServiceTests: IDisposable
 		_context = _serviceProvider.GetRequiredService<AppDbContext>();
 		_eventService = _serviceProvider.GetRequiredService<IEventService>();
 
-		var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
+		var newEvent = new CreateEventRequestDto(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
+		
 		_eventService.Create(newEvent);
 	}
 
@@ -74,7 +76,7 @@ public class EventServiceTests: IDisposable
 	{
 		//Arrange
 		var idEvent = new Guid("00000000-0000-0000-0000-000000000001");
-		var newEvent = GetNewEvent();
+		var newEvent = GetNewEventForUpdate();
 
 		//Act
 		var result = await _eventService.Update(idEvent, newEvent);
@@ -160,7 +162,7 @@ public class EventServiceTests: IDisposable
 	{
 		//Arrange
 		var idEvent = new Guid("00000000-0000-0000-0000-000000000322");
-		var newEvent = GetNewEvent();
+		var newEvent = GetNewEventForUpdate();
 
 		//Act
 		var result = await _eventService.Update(idEvent, newEvent);
@@ -203,7 +205,7 @@ public class EventServiceTests: IDisposable
 	{
 		//Arrange
 		var idEvent = new Guid("00000000-0000-0000-0000-000000000001");
-		var newEvent = GetNewEvent();
+		var newEvent = GetNewEventForUpdate();
 		newEvent.StartAt = DateTime.Now.AddDays(1);
 		newEvent.EndAt = DateTime.Now;
 
@@ -227,10 +229,16 @@ public class EventServiceTests: IDisposable
 		Assert.False(result);
 	}
 
-	private Event GetNewEvent()
+	private CreateEventRequestDto GetNewEvent()
 	{
-		return new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
+		return new CreateEventRequestDto(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
 	}
+
+	private UpdateEventRequestDto GetNewEventForUpdate()
+	{
+		return new UpdateEventRequestDto(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10, 10);
+	}
+
 	public static IEnumerable<object[]> GetValidDates()
 	{
 		yield return new object[] { DateTime.Now.AddMinutes(-1), DateTime.Now.AddHours(3), true };

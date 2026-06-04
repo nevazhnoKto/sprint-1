@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
-using WebApiTamakulov.DataAccess;
 
 namespace IntegrationTests.Fixture
 {

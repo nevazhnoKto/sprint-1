@@ -1,9 +1,14 @@
 <Solution>
-  <Project Path="IntegrationTests/IntegrationTests.csproj" Id="82d8e792-77b7-4b3e-825c-c4c0243f9510">
-    <Build Solution="Debug|*" Project="false" />
-  </Project>
-  <Project Path="ServiceTests/ServiceTests.csproj" />
-  <Project Path="WebApiTamakulov/WebApiTamakulov.csproj">
+  <Folder Name="/Tests/">
+    <Project Path="IntegrationTests/IntegrationTests.csproj" Id="82d8e792-77b7-4b3e-825c-c4c0243f9510">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
+    <Project Path="ServiceTests/ServiceTests.csproj" />
+  </Folder>
+  <Project Path="Application/Application.csproj" Id="249a9a8c-098b-415f-ace8-e5fa908f8472" />
+  <Project Path="Domain/Domain.csproj" Id="cec632a8-fae8-4157-a0f4-9662f4028adb" />
+  <Project Path="Infrastructure/Infrastructure.csproj" Id="e6ea3bf3-68b4-4b9f-8201-be6d7d00a0c3" />
+  <Project Path="Presentation/Presentation.csproj">
     <Build Solution="Debug|*" Project="false" />
   </Project>
 </Solution>

@@ -1,7 +1,7 @@
+using Domain.Enums;
+using Domain.Models;
+using Infrastructure.Repositories;
 using IntegrationTests.Fixture;
-using WebApiTamakulov.Enums;
-using WebApiTamakulov.Models;
-using WebApiTamakulov.Repositories;
 
 namespace IntegrationTests
 {
