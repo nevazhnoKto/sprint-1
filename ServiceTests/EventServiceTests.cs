@@ -18,7 +18,6 @@ public class EventServiceTests: IDisposable
 	private readonly IEventService _eventService;
 	private readonly AppDbContext _context;
 	private readonly ServiceProvider _serviceProvider;
-	private readonly IMapper _mapper;
 
 	public EventServiceTests()
 	{

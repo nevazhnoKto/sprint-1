@@ -29,6 +29,11 @@
 Если произойдет ошибка, вернется сообщение в унифицированном формате `ProblemDetails`.
 
 ## Модели данных
+Проект разделен на 4 слоя:
+- `Domain` — доменные сущности, value objects, доменные исключения. Не зависит ни от чего внешнего.
+- `Application` — use cases, сервисы, интерфейсы портов (репозитории, шлюзы), DTO. Зависит только от Domain.
+- `Infrastructure` — реализации портов: репозитории, DbContext, внешние клиенты. Зависит от Application и Domain.
+- `Presentation` — контроллеры/Minimal API эндпоинты, HTTP-маппинг, регистрация зависимостей. Зависит от Application и Infrastructure.
 
 ### Модель Event
 - `Id` — уникальный идентификатор
@@ -58,12 +63,11 @@
 
 ## Тестирование
 1. Для запуска тестов в терминале перейдите в папку с проектом (cd ...) , затем выполните:
-    dotnet test ./EventServiceTests/EventServiceTests.csproj
+    dotnet test ./ServiceTests/ServiceTests.csproj
 2. В проекте используются интеграционные тесты для проверки взаимодействия с реальной базой данных.
 	Для запуска интеграционных тестов необходим Docker, так как тесты поднимают изолированный контейнер с PostgreSQL.
 	Для интеграционных запуска тестов в терминале перейдите в папку с проектом (cd ...) , затем выполните:
-    dotnet test ./EventApi.IntegrationTests/EventApi.IntegrationTests.csproj
-	dotnet test ./BookingApi.IntegrationTests/BookingApi.IntegrationTests.csproj  
+    dotnet test ./IntegrationTests/IntegrationTests.csproj
 	
 ## Запуск проекта
 1. Склонируйте репозиторий.
