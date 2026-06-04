@@ -5,6 +5,8 @@ using Domain.Enums;
 using Domain.ExceptionExtension;
 using Domain.Models;
 using Infrastructure.DataAccess;
+using Mapster;
+using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,6 +31,11 @@ namespace ServiceTests
 		public BookingServiceTests() 
 		{
 			var services = new ServiceCollection();
+
+			// Регистрируем синглтон конфигурации и scoped маппер
+			var config = new TypeAdapterConfig();
+			services.AddSingleton(config);
+			services.AddScoped<IMapper, ServiceMapper>();
 
 			var dbName = Guid.NewGuid().ToString();
 			services.AddDbContext<AppDbContext>(options =>
@@ -239,10 +246,10 @@ namespace ServiceTests
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
 			await _bookingService.ConfirmBookingAsync(firstBooking.Id);
+			var updated = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
 
 			//Assert
-			Assert.Equal(BookingStatus.Confirmed, firstBooking.Status);
-			Assert.NotNull(firstBooking.EventId);
+			Assert.Equal(BookingStatus.Confirmed, updated.Status);
 		}
 
 		[Fact]
@@ -251,10 +258,10 @@ namespace ServiceTests
 			//Act
 			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
 			await _bookingService.RejectedBookingAsync(firstBooking.Id);
+			var updated = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
 
 			//Assert
-			Assert.Equal(BookingStatus.Rejected, firstBooking.Status);
-			Assert.NotNull(firstBooking.EventId);
+			Assert.Equal(BookingStatus.Rejected, updated.Status);
 		}
 
 		[Fact]

@@ -101,7 +101,7 @@ namespace IntegrationTests
 			var findedEvent = await eventRepository.GetEventById(new Guid("00000000-0000-0000-0000-000000000001"));
 
 			//Assert
-			Assert.Equal(newEvent.Title, findedEvent.Title);
+			Assert.Equal(newEvent.Title, findedEvent!.Title);
 		}
 
 		[Fact]
@@ -138,7 +138,7 @@ namespace IntegrationTests
 
 			//Assert
 			Assert.NotNull(findedEvents.FirstOrDefault());
-			Assert.Equal("Очень классное событие", findedEvents.FirstOrDefault().Description);
+			Assert.Equal("Очень классное событие", findedEvents.FirstOrDefault()!.Description);
 		}
 
 		[Fact]
@@ -158,7 +158,7 @@ namespace IntegrationTests
 			//Assert
 			await using var asserctContext = await _dbFixture.CreateContext();
 			var assertEvent = asserctContext.Events.FirstOrDefault();
-			Assert.Equal("Обновленное классное событие", assertEvent.Title);
+			Assert.Equal("Обновленное классное событие", assertEvent!.Title);
 		}
 		[Fact]
 		public async Task UpdateEventByIndex_UpdateEventByIndexFromDataBase()
@@ -177,7 +177,7 @@ namespace IntegrationTests
 			//Assert
 			await using var asserctContext = await _dbFixture.CreateContext();
 			var assertEvent = asserctContext.Events.FirstOrDefault();
-			Assert.Equal("Обновленное классное событие", assertEvent.Title);
+			Assert.Equal("Обновленное классное событие", assertEvent!.Title);
 		}
 
 		[Fact]

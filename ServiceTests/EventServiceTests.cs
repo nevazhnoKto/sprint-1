@@ -4,6 +4,8 @@ using Application.Services;
 using Domain.Models;
 using Infrastructure.DataAccess;
 using Infrastructure.Repositories;
+using Mapster;
+using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,10 +18,17 @@ public class EventServiceTests: IDisposable
 	private readonly IEventService _eventService;
 	private readonly AppDbContext _context;
 	private readonly ServiceProvider _serviceProvider;
+	private readonly IMapper _mapper;
 
 	public EventServiceTests()
 	{
+
 		var services = new ServiceCollection();
+
+		// Регистрируем синглтон конфигурации и scoped маппер
+		var config = new TypeAdapterConfig();
+		services.AddSingleton(config);
+		services.AddScoped<IMapper, ServiceMapper>();
 
 		var dbName = Guid.NewGuid().ToString();
 		services.AddDbContext<AppDbContext>(options =>
