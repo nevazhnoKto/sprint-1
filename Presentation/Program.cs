@@ -1,4 +1,5 @@
 using Application;
+using FluentValidation;
 using Infrastructure;
 using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,9 @@ builder.Services.AddSwaggerGen(options =>
 	var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 	options.IncludeXmlComments(xmlPath);
 });
+
+// Регистрация всех валидаторов.
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);

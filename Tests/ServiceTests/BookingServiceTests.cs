@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OpenQA.Selenium;
 
 namespace ServiceTests
 {
@@ -235,9 +234,9 @@ namespace ServiceTests
 		public async Task CreateBooking_NotValidEvent_ReturnsNotFoundException()
 		{
 			// Arrange
-			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>())).Throws<NotFoundException>();
+			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>())).Throws<EventDoesNotExist>();
 			//Assert
-			await Assert.ThrowsAsync<NotFoundException>(() => _bookingService.CreateBookingAsync(Guid.NewGuid()));
+			await Assert.ThrowsAsync<EventDoesNotExist>(() => _bookingService.CreateBookingAsync(Guid.NewGuid()));
 		}
 
 		[Fact]

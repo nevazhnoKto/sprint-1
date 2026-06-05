@@ -72,7 +72,7 @@ namespace Presentation.Middleware
 		=> ex switch
 		{
 			ValidationException => StatusCodes.Status400BadRequest,
-			NotFoundException => StatusCodes.Status404NotFound,
+			EventDoesNotExist => StatusCodes.Status404NotFound,
 			NoAvailableSeatsException => StatusCodes.Status409Conflict,
 			_ => StatusCodes.Status500InternalServerError
 		};

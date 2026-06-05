@@ -1,9 +1,9 @@
 ﻿using Application.Interfaces;
 using Application.Models;
+using Domain.ExceptionExtension;
 using Domain.Models;
 using MapsterMapper;
 using Microsoft.Extensions.Logging;
-using OpenQA.Selenium;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.Services
@@ -146,7 +146,7 @@ namespace Application.Services
 			var eventCustom = await _eventRepository.GetEventById(id);
 			if (eventCustom == null)
 			{
-				throw new NotFoundException($"События {id} не существует!");
+				throw new EventDoesNotExist($"События {id} не существует!");
 			}
 			return await eventCustom.TryReserveSeats(count);
 		}
@@ -156,7 +156,7 @@ namespace Application.Services
 			var eventCustom = await _eventRepository.GetEventById(id);
 			if (eventCustom == null)
 			{
-				throw new NotFoundException($"События {id} не существует!");
+				throw new EventDoesNotExist($"События {id} не существует!");
 			}
 
 			var result = await eventCustom.ReleaseSeats(count);

@@ -22,9 +22,6 @@ namespace Application
 			services.AddSingleton(TypeAdapterConfig.GlobalSettings);
 			services.AddScoped<IMapper, ServiceMapper>();
 
-			// Регистрация всех валидаторов.
-			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
 			// Регистрация фонового процесса.
 			services.AddHostedService<ConfirmBookingBackgroundService>();
 			return services;
