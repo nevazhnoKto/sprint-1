@@ -30,9 +30,9 @@ namespace Infrastructure.Repositories
 			}
 		}
 
-		public async Task<User?> GetUserById(Guid id)
+		public async Task<User?> GetUserByLogin(string login)
 		{
-			return await _context.Users.FirstOrDefaultAsync(e => e.Id == id);
+			return await _context.Users.FirstOrDefaultAsync(e => e.Login == login);
 		}
 
 		public async Task<List<User>> GetUsers()

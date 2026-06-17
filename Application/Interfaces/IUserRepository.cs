@@ -16,7 +16,7 @@ namespace Application.Interfaces
 		/// Возвращает пользователя по его уникальному идентификатору.
 		/// </summary>
 		/// <param name="id">Идентификатор пользователя (Guid).</param>
-		Task<User?> GetUserById(Guid id);
+		Task<User> GetUserByLogin(string login);
 
 		/// <summary>
 		/// Добавляет нового пользователей в репозиторий.

@@ -74,6 +74,9 @@ namespace Presentation.Middleware
 			ValidationException => StatusCodes.Status400BadRequest,
 			EventDoesNotExist => StatusCodes.Status404NotFound,
 			NoAvailableSeatsException => StatusCodes.Status409Conflict,
+			DuplicateLoginException => StatusCodes.Status409Conflict,
+			NotFoundUserException => StatusCodes.Status409Conflict,
+			UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
 			_ => StatusCodes.Status500InternalServerError
 		};
 	}

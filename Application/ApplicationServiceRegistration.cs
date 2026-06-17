@@ -17,6 +17,7 @@ namespace Application
 			// Регистрация сервисов.
 			services.AddScoped<IEventService, EventService>();
 			services.AddScoped<IBookingService, BookingService>();
+			services.AddScoped<IUserService, UserService>();
 
 			// Регистрация для мапстера.
 			services.AddSingleton(TypeAdapterConfig.GlobalSettings);
