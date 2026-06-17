@@ -18,6 +18,11 @@
 		/// <summary>
 		/// Отклонен.
 		/// </summary>
-		Rejected
+		Rejected,
+
+		/// <summary>
+		/// Отменен.
+		/// </summary>
+		Cancelled
 	}
 }

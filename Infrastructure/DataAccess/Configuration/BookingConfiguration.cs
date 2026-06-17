@@ -38,6 +38,11 @@ namespace Infrastructure.DataAccess.Configuration
 				.WithMany(e => e.Bookings)
 				.HasForeignKey(b => b.EventId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			builder.HasOne(b => b.User)
+				.WithMany(e => e.Bookings)
+				.HasForeignKey(b => b.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 #pragma warning restore CS1591

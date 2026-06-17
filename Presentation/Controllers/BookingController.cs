@@ -4,6 +4,7 @@ using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
 using System.Net;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -49,7 +50,8 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var booking = await _bookingService.CreateBookingAsync(id);
+			var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // TODO
+			var booking = await _bookingService.CreateBookingAsync(id, userId);
 
 			var response = new ApiResult<BookingDto>
 			{

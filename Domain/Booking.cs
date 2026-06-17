@@ -15,9 +15,10 @@ namespace Domain.Models
 		/// <summary>
 		/// Конструктор для создания новой брони
 		/// </summary>
-		public Booking(Guid eventId)
+		public Booking(Guid eventId, Guid userId)
 		{
 			Id = Guid.NewGuid();
+			UserId = userId;
 			EventId = eventId;
 			Status = BookingStatus.Pending;
 			CreatedAt = DateTime.UtcNow;
@@ -28,6 +29,11 @@ namespace Domain.Models
 		/// Уникальный идентификатор брони.
 		/// </summary>
 		public Guid Id { get; private set; }
+
+		/// <summary>
+		/// Идентификатор пользователя, к которому относится бронь.
+		/// </summary>
+		public Guid UserId { get; set; }
 
 		/// <summary>
 		/// Идентификатор события, к которому относится бронь.
@@ -52,5 +58,11 @@ namespace Domain.Models
 		/// Ссылка на событие.
 		/// </summary>
 		public Event EventMain { get; set; }
+
+
+		/// <summary>
+		/// Ссылка на событие.
+		/// </summary>
+		public User User { get; set; }
 	}
 }

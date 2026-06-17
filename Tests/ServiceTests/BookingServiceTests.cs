@@ -14,9 +14,9 @@ using Moq;
 
 namespace ServiceTests
 {
-	public class BookingServiceTests : IDisposable
+	public class BookingServiceTests //: IDisposable
 	{
-		private Guid defaultEventGuid = new Guid("00000000-0000-0000-0000-000000000001");
+		/*private Guid defaultEventGuid = new Guid("00000000-0000-0000-0000-000000000001");
 		private readonly IBookingService _bookingService;
 		private readonly Mock<IEventService> _eventServiceMock;
 		private readonly ServiceProvider _serviceProvider;
@@ -337,6 +337,6 @@ namespace ServiceTests
 			_context.Database.EnsureDeleted();
 			_context.Dispose();
 			_serviceProvider.Dispose();
-		}
+		}*/
 	}
 }

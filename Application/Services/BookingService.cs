@@ -26,7 +26,7 @@ namespace Application.Services
 			_mapping = mapping;
 		}
 
-		public async Task<BookingDto> CreateBookingAsync(Guid eventId)
+		public async Task<BookingDto> CreateBookingAsync(Guid eventId, Guid userId)
 		{
 			var resultReserve = false;
 			resultReserve = await _eventService.TryReserveSeats(eventId);
@@ -34,7 +34,7 @@ namespace Application.Services
 			if (!resultReserve)
 				throw new NoAvailableSeatsException();
 
-			var newBooking = await _bookingRepository.AddBooking(eventId);
+			var newBooking = await _bookingRepository.AddBooking(eventId, userId);
 
 			var message = $"Бронирования для события с eventId = {eventId} созданно!";
 			_logger.LogInformation(message);
@@ -75,6 +75,20 @@ namespace Application.Services
 			await _bookingRepository.UpdateBooking(bookingId, BookingStatus.Rejected);
 			if (eventId != null)
 				await _eventService.ReleaseSeats(eventId.Value);
+		}
+
+		public async Task CanceledBookingAsync(Guid bookingId)
+		{
+			var booking = await _bookingRepository.GetBookingById(bookingId);
+			if (booking != null)
+			{
+				await _bookingRepository.UpdateBooking(bookingId, BookingStatus.Cancelled);
+				await _eventService.ReleaseSeats(booking.EventId);
+			}
+			else
+			{
+				_logger.LogInformation($"Бронирования с {bookingId} не существует!");
+			}
 		}
 	}
 

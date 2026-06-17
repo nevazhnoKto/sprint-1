@@ -15,9 +15,9 @@ namespace Infrastructure.Repositories
 		{
 			_context = context;
 		}
-		public async Task<Booking> AddBooking(Guid eventId)
+		public async Task<Booking> AddBooking(Guid eventId, Guid userId)
 		{
-			var booking = new Booking(eventId);
+			var booking = new Booking(eventId, userId);
 			_context.Bookings.Add(booking);
 			await _context.SaveChangesAsync();
 			return booking;

@@ -13,6 +13,7 @@ namespace Infrastructure
 		{
 			services.AddScoped<IBookingRepository, BookingRepository>();
 			services.AddScoped<IEventRepository, EventRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
 
 			var connectionString = configuration.GetConnectionString("DefaultConnection");
 			if (string.IsNullOrEmpty(connectionString))

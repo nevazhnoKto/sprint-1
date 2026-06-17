@@ -12,7 +12,7 @@ namespace Application.Interfaces
 		/// Создаёт новое бронирование для указанного события.
 		/// </summary>
 		/// <param name="eventId">Идентификатор события.</param>
-		Task<Booking> AddBooking(Guid eventId);
+		Task<Booking> AddBooking(Guid eventId, Guid userId);
 
 		/// <summary>
 		/// Возвращает бронирование по его идентификатору.

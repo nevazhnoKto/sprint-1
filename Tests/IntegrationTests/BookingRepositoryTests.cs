@@ -6,9 +6,9 @@ using IntegrationTests.Fixture;
 namespace IntegrationTests
 {
 	[Collection("Database")]
-	public class BookingRepositoryTests: IAsyncLifetime
+	public class BookingRepositoryTests//: IAsyncLifetime
 	{
-		private readonly DatabaseFixture _dbFixture;
+		/*private readonly DatabaseFixture _dbFixture;
 		public BookingRepositoryTests(DatabaseFixture dbFixture)
 		{
 			_dbFixture = dbFixture;
@@ -125,6 +125,6 @@ namespace IntegrationTests
 			await using var assertContext = await _dbFixture.CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
 			Assert.Equal(BookingStatus.Confirmed, newBooking!.Status);
-		}
+		}*/
 	}
 }

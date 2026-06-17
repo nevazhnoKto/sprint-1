@@ -13,7 +13,7 @@ namespace Application.Interfaces
 		/// </summary>
 		/// <param name="eventId">Id события, для которого создать бронь.</param>
 		/// <returns>Созданная бронь.</returns>
-		Task<BookingDto> CreateBookingAsync(Guid eventId);
+		Task<BookingDto> CreateBookingAsync(Guid eventId, Guid userId);
 
 		/// <summary>
 		/// Получить бронь по Id брони.
@@ -35,10 +35,16 @@ namespace Application.Interfaces
 		Task ConfirmBookingAsync(Guid id);
 
 		/// <summary>
-		/// Отмена бронирования.
+		/// Отклоненение бронирования.
 		/// </summary>
 		/// <param name="bookingId">Id бронирования.</param>
 		/// <param name="eventId">Id события.</param>
 		Task RejectedBookingAsync(Guid bookingId, Guid? eventId = default);
+
+		/// <summary>
+		/// Отмена бронирования.
+		/// </summary>
+		/// <param name="bookingId">Id бронирования.</param>
+		Task CanceledBookingAsync(Guid bookingId);
 	}
 }

@@ -29,6 +29,12 @@ namespace Infrastructure.DataAccess
 		public DbSet<Booking> Bookings => Set<Booking>();
 
 		/// <summary>
+		/// Получает набор сущностей User (пользователей).
+		/// Используется для выполнения CRUD операций над бронированиями.
+		/// </summary>
+		public DbSet<User> Users => Set<User>();
+
+		/// <summary>
 		/// Настраивает модели и их связи при создании модели базы данных.
 		/// </summary>
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
