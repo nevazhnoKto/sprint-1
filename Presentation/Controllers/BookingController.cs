@@ -1,6 +1,8 @@
 using Application.Interfaces;
 using Application.Models;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
 using System.Net;
@@ -12,6 +14,7 @@ namespace Presentation.Controllers
 	/// Api контроллер для работы с Событиями.
 	/// </summary>
 	[ApiController]
+	[Authorize]
 	[Route("events")]
 	public class BookingController : ControllerBase
 	{
@@ -50,8 +53,7 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // TODO
-			var booking = await _bookingService.CreateBookingAsync(id, userId);
+			var booking = await _bookingService.CreateBookingAsync(id);
 
 			var response = new ApiResult<BookingDto>
 			{
@@ -103,6 +105,46 @@ namespace Presentation.Controllers
 				StatusCode = HttpStatusCode.NotFound,
 				Message = $"Бронирование по id = {id} не существует"
 			});
+		}
+
+		/// <summary>
+		/// Метод создает новое бронирования для конкретного EventId.
+		/// </summary>
+		/// <param name="id">Id события для бронирования.</param>
+		[HttpPut("/CancelBookings/{id:Guid}")]
+		[Produces("application/json")]
+		public async Task<IActionResult> CancelBooking(Guid id)
+		{
+			if (id == Guid.Empty)
+			{
+				return BadRequest(new ApiResult
+				{
+					Success = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = "Booking не может быть пустым!"
+				});
+			}
+
+			var result = await _bookingService.CanceledBookingAsync(id);
+
+			if (!result)
+			{
+				return NotFound(new ApiResult
+				{
+					Success = false,
+					StatusCode = HttpStatusCode.NotFound,
+					Message = $"Бронирование с ID {id} не найдено"
+				});
+			}
+
+			var response = new ApiResult
+			{
+				Success = true,
+				StatusCode = HttpStatusCode.OK,
+				Message = $"Бронирование {id} успешно отменено"
+			};
+
+			return Ok(response);
 		}
 
 	}

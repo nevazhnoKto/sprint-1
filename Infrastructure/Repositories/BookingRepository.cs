@@ -43,6 +43,11 @@ namespace Infrastructure.Repositories
 			return await _context.Bookings.Where(b => b.Status == status).ToListAsync();
 		}
 
+		public async Task<int> GetCountBookingByUserId(Guid userId)
+		{
+			return await _context.Bookings.AsNoTracking().CountAsync(b => b.UserId == userId && b.Status != BookingStatus.Cancelled);
+		}
+
 		public async Task UpdateBooking(Guid id, BookingStatus status)
 		{
 			var booking = _context.Bookings.FirstOrDefault(b => b.Id == id);

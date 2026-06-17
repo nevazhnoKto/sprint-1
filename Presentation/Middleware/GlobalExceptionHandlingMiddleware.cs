@@ -71,6 +71,9 @@ namespace Presentation.Middleware
 		private static int StatusCodeMapping(Exception ex)
 		=> ex switch
 		{
+			AccessDeniedException => StatusCodes.Status403Forbidden,
+			EventAlreadyPassedException => StatusCodes.Status400BadRequest,
+			ActiveBookingLimitExceededException => StatusCodes.Status409Conflict,
 			ValidationException => StatusCodes.Status400BadRequest,
 			EventDoesNotExist => StatusCodes.Status404NotFound,
 			NoAvailableSeatsException => StatusCodes.Status409Conflict,

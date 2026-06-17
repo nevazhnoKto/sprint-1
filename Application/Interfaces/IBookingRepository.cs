@@ -38,5 +38,11 @@ namespace Application.Interfaces
 		/// <param name="id">Идентификатор бронирования.</param>
 		/// <param name="status">Новый статус бронирования.</param>
 		Task UpdateBooking(Guid id, BookingStatus status);
+
+		/// <summary>
+		/// Получает количество бронирований для пользователя.
+		/// </summary>
+		/// <param name="eventId">ИД пользователя.</param>
+		Task<int> GetCountBookingByUserId(Guid userId);
 	}
 }

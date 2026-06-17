@@ -28,6 +28,7 @@ namespace Infrastructure
 					{
 						options.TokenValidationParameters = new TokenValidationParameters
 						{
+							RoleClaimType = "role",
 							ValidateIssuer = true,
 							ValidIssuer = jwtSettings.Issuer,
 							ValidateAudience = true,
