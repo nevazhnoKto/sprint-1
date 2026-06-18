@@ -38,29 +38,18 @@ namespace Application.Services
 			if (eventFinded == null)
 			{
 				_logger.LogInformation($"Событие c EventId {eventId} не существует!");
-				throw new EventDoesNotExist();
+				throw new EventDoesNotExist(eventId.ToString());
 			}	
 
 			if (eventFinded!.StartAt < DateTime.UtcNow)
 			{
 				_logger.LogInformation($"Невозможно забронировать билет, так как событие уже началось!");
-				throw new EventAlreadyPassedException();
+				throw new EventAlreadyPassedException(eventId.ToString());
 			}
 
-			// Проверка на максимально количества броней для пользователя.
-			try
-			{
-				var countBookingByUser = await _bookingRepository.GetCountBookingByUserId(userId);
-				if (countBookingByUser >= CommonConst.LimitBookingForUser)
-					throw new ActiveBookingLimitExceededException();
-			}
-			catch(Exception e) 
-			{
-				_logger.LogError(e.Message);
-				return null;
-			}
-			
-			
+			var countBookingByUser = await _bookingRepository.GetCountBookingByUserId(userId);
+			if (countBookingByUser >= CommonConst.LimitBookingForUser)
+				throw new ActiveBookingLimitExceededException(CommonConst.LimitBookingForUser);
 
 			var resultReserve = await _eventService.TryReserveSeats(eventId);
 

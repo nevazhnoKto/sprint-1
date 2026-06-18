@@ -8,8 +8,8 @@
 		/// <summary>
 		/// Исключение при недостаточном мест для бронирования.
 		/// </summary>
-		public EventDoesNotExist(string message)
-	   : base("message")
+		public EventDoesNotExist(string eventId)
+	   : base($"Событие c EventId {eventId} не существует!")
 		{
 		}
 

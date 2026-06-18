@@ -8,9 +8,11 @@
 		/// <summary>
 		/// Исключение бронировании завершенного события.
 		/// </summary>
-		public EventAlreadyPassedException()
-	   : base("Невозможно забронировать билет, так как событие уже началось.")
+		public EventAlreadyPassedException(string eventId)
+	   : base($"Невозможно забронировать билет, так как событие {eventId} уже началось.")
 		{
 		}
+
+		public EventAlreadyPassedException() : base() { }
 	}
 }

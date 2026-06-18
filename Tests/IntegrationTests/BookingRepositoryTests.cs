@@ -6,9 +6,9 @@ using IntegrationTests.Fixture;
 namespace IntegrationTests
 {
 	[Collection("Database")]
-	public class BookingRepositoryTests//: IAsyncLifetime
+	public class BookingRepositoryTests: IAsyncLifetime
 	{
-		/*private readonly DatabaseFixture _dbFixture;
+		private readonly DatabaseFixture _dbFixture;
 		public BookingRepositoryTests(DatabaseFixture dbFixture)
 		{
 			_dbFixture = dbFixture;
@@ -35,7 +35,7 @@ namespace IntegrationTests
 
 			//Act
 			var bookingRepository = new BookingRepository(context);
-			var booking = await bookingRepository.AddBooking(new Guid("00000000-0000-0000-0000-000000000001"));
+			var booking = await bookingRepository.AddBooking(new Guid("00000000-0000-0000-0000-000000000001"), new Guid("00000000-0000-0000-0000-000000000002"));
 
 			//Assert
 			await using var assertContext = await _dbFixture.CreateContext();
@@ -50,7 +50,7 @@ namespace IntegrationTests
 			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
-			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
+			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"), new Guid("00000000-0000-0000-0000-000000000002"));
 			context.Bookings.Add(booking);
 			await context.SaveChangesAsync();
 
@@ -71,7 +71,7 @@ namespace IntegrationTests
 			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
-			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
+			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"), new Guid("00000000-0000-0000-0000-000000000002"));
 			context.Bookings.Add(booking);
 			await context.SaveChangesAsync();
 
@@ -85,15 +85,36 @@ namespace IntegrationTests
 		}
 
 		[Fact]
+		public async Task GetBookingByIdWithUserId_GetBookingByIdFromDataBase()
+		{
+			//Arrange
+			await using var context = await _dbFixture.CreateContext();
+			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
+			context.Events.Add(newEvent);
+			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"), new Guid("00000000-0000-0000-0000-000000000002"));
+			context.Bookings.Add(booking);
+			await context.SaveChangesAsync();
+
+			//Act
+			var bookingRepository = new BookingRepository(context);
+			var bookingDb = await bookingRepository.GetBookingById(booking.Id, new Guid("00000000-0000-0000-0000-000000000002"));
+			var bookingDbOtherUser = await bookingRepository.GetBookingById(booking.Id, new Guid("00000000-0000-0000-0000-000000000228"));
+
+			//Assert
+			Assert.Equal(booking.Id, bookingDb!.Id);
+			Assert.Null(bookingDbOtherUser);
+		}
+
+		[Fact]
 		public async Task GetBookingByStatus_GetBookingStatusFromDataBase()
 		{
 			//Arrange
 			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
-			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
+			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"), new Guid("00000000-0000-0000-0000-000000000002"));
 			booking.Status = BookingStatus.Rejected;
-			var booking2 = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
+			var booking2 = new Booking(new Guid("00000000-0000-0000-0000-000000000001"), new Guid("00000000-0000-0000-0000-000000000002"));
 			context.Bookings.AddRange(booking, booking2);
 			await context.SaveChangesAsync();
 
@@ -113,7 +134,7 @@ namespace IntegrationTests
 			await using var context = await _dbFixture.CreateContext();
 			var newEvent = new Event(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow, DateTime.UtcNow.AddHours(2), 10);
 			context.Events.Add(newEvent);
-			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"));
+			var booking = new Booking(new Guid("00000000-0000-0000-0000-000000000001"), new Guid("00000000-0000-0000-0000-000000000002"));
 			context.Bookings.Add(booking);
 			await context.SaveChangesAsync();
 
@@ -125,6 +146,6 @@ namespace IntegrationTests
 			await using var assertContext = await _dbFixture.CreateContext();
 			var newBooking = assertContext.Bookings.FirstOrDefault();
 			Assert.Equal(BookingStatus.Confirmed, newBooking!.Status);
-		}*/
+		}
 	}
 }

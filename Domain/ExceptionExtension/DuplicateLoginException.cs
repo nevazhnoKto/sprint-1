@@ -5,8 +5,6 @@
 	/// </summary>
 	public class DuplicateLoginException : Exception
 	{
-		public DuplicateLoginException() : base() { }
-
 		/// <summary>
 		/// Исключение при отсутствии прав.
 		/// </summary>
@@ -14,5 +12,7 @@
 	   : base($"Пользователь с логином {message} уже существует.")
 		{
 		}
+
+		public DuplicateLoginException() : base() { }
 	}
 }
