@@ -114,7 +114,7 @@ namespace IntegrationTests
 			var newUser = await userRepository.GetUserByLogin(user.Login);
 
 			//Assert
-			Assert.Equal(Roles.Admin, newUser.Role);
+			Assert.Equal(Roles.Admin, newUser!.Role);
 		}
 	}
 }

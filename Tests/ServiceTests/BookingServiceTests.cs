@@ -421,6 +421,7 @@ namespace ServiceTests
 			await Assert.ThrowsAsync<AccessDeniedException>(() => _bookingService.CanceledBookingAsync(firstBooking.Id, Guid.NewGuid(), Roles.User));
 		}
 
+		[Fact]
 		public async Task CanceledBooking_NoBooking_ReturnsFalse()
 		{
 			//Act

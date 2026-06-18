@@ -10,7 +10,14 @@ namespace Domain.Models
 		/// <summary>
 		/// Пустой конструктор для EF Core.
 		/// </summary>
-		private Booking() { }
+		private Booking()
+		{
+			Id = Guid.NewGuid();
+			UserId = Guid.Empty;
+			EventId = Guid.Empty;
+			Status = BookingStatus.Pending;
+			CreatedAt = DateTime.UtcNow;
+		}
 
 		/// <summary>
 		/// Конструктор для создания новой брони
@@ -57,12 +64,12 @@ namespace Domain.Models
 		/// <summary>
 		/// Ссылка на событие.
 		/// </summary>
-		public Event EventMain { get; set; }
+		public Event? EventMain { get; set; }
 
 
 		/// <summary>
 		/// Ссылка на событие.
 		/// </summary>
-		public User User { get; set; }
+		public User? User { get; set; }
 	}
 }

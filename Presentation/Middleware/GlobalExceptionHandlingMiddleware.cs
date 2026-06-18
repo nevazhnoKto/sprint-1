@@ -72,13 +72,9 @@ namespace Presentation.Middleware
 		=> ex switch
 		{
 			AccessDeniedException => StatusCodes.Status403Forbidden,
-			EventAlreadyPassedException => StatusCodes.Status400BadRequest,
-			ActiveBookingLimitExceededException => StatusCodes.Status409Conflict,
-			ValidationException => StatusCodes.Status400BadRequest,
+			EventAlreadyPassedException or ValidationException => StatusCodes.Status400BadRequest,
+			ActiveBookingLimitExceededException or NoAvailableSeatsException or DuplicateLoginException or NotFoundUserException => StatusCodes.Status409Conflict,
 			EventDoesNotExist => StatusCodes.Status404NotFound,
-			NoAvailableSeatsException => StatusCodes.Status409Conflict,
-			DuplicateLoginException => StatusCodes.Status409Conflict,
-			NotFoundUserException => StatusCodes.Status409Conflict,
 			UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
 			_ => StatusCodes.Status500InternalServerError
 		};

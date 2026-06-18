@@ -10,7 +10,11 @@ namespace Domain.Models
 		/// <summary>
 		/// Пустой конструктор для EF Core.
 		/// </summary>
-		private User() { }
+		private User() 
+		{
+			Login = string.Empty;
+			HashPassword = string.Empty;
+		}
 
 		/// <summary>
 		/// Конструктор для создания нового пользователя
@@ -46,6 +50,6 @@ namespace Domain.Models
 		/// <summary>
 		/// Коллекция Bookings.
 		/// </summary>
-		public List<Booking> Bookings { get; set; }
+		public List<Booking>? Bookings { get; set; }
 	}
 }
