@@ -23,7 +23,7 @@ namespace Presentation.Controllers
 		/// <summary>
 		/// Api контроллер регистрации.
 		/// </summary>
-		/// <param name="userService">Сервис для работы с пользователем.</param>
+		/// <param name="userService">Сервис для работы с регистрацией.</param>
 		public AuthController(IUserService userService)
 		{
 			_userService = userService;
@@ -36,18 +36,31 @@ namespace Presentation.Controllers
 		/// <returns></returns>
 		[HttpPost("/register")]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public IActionResult RegistrationUser([FromBody] RegistrationRequestDto request)
 		{
 			// Проверка на пустой логин
 			if (string.IsNullOrWhiteSpace(request.Login))
 			{
-				return BadRequest(new { error = "Логин не может быть пустым" });
+				return BadRequest(new ApiResult()
+				{
+					Success = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = $"Логин не может быть пустым"
+				});
 			}
 
 			// Проверка на пустой пароль
 			if (string.IsNullOrWhiteSpace(request.Password))
 			{
-				return BadRequest(new { error = "Пароль не может быть пустым" });
+				return BadRequest(new ApiResult()
+				{
+					Success = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = $"Пароль не может быть пустым"
+				});
 			}
 
 			var accessToken = _userService.RegistrationUser(request.Login, request.Password, request.Role);
@@ -62,18 +75,32 @@ namespace Presentation.Controllers
 		/// <returns></returns>
 		[HttpPost("/login")]
 		[AllowAnonymous]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public IActionResult Login([FromBody] LoginRequestDto request)
 		{
 			// Проверка на пустой логин
 			if (string.IsNullOrWhiteSpace(request.Login))
 			{
-				return BadRequest(new { error = "Логин не может быть пустым" });
+				return BadRequest(new ApiResult()
+				{
+					Success = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = $"Логин не может быть пустым"
+				});
 			}
 
 			// Проверка на пустой пароль
 			if (string.IsNullOrWhiteSpace(request.Password))
 			{
-				return BadRequest(new { error = "Пароль не может быть пустым" });
+				return BadRequest(new ApiResult()
+				{
+					Success = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = $"Пароль не может быть пустым"
+				});
 			}
 
 			var accessToken = _userService.LoginUser(request.Login, request.Password);

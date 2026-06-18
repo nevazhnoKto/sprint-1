@@ -1,10 +1,8 @@
 using Application.Interfaces;
 using Application.Models;
 using Domain.Enums;
-using Mapster.Utils;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
 using System.Net;
@@ -78,6 +76,7 @@ namespace Presentation.Controllers
 		[ProducesResponseType(typeof(ApiResult<BookingDto>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
 		[Produces("application/json")]
 		public async Task<IActionResult> GetByIdBooking(Guid id)
 		{
@@ -124,6 +123,10 @@ namespace Presentation.Controllers
 		/// <param name="id">Id бронирования.</param>
 		[HttpPut("/CancelBookings/{id:Guid}")]
 		[Produces("application/json")]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public async Task<IActionResult> CancelBooking(Guid id)
 		{
 			if (id == Guid.Empty)
