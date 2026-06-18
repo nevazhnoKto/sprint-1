@@ -22,7 +22,7 @@ namespace Application.Interfaces
 		/// </summary>
 		/// <param name="bookingId">Id брони.</param>
 		/// <returns>Бронь по Id.</returns>
-		Task<BookingDto> GetBookingByIdAsync(Guid bookingId, Guid userId);
+		Task<BookingDto> GetBookingByIdAsync(Guid bookingId, Guid userId, Roles role);
 
 		/// <summary>
 		/// Получить все брони со статусом "В ожидании".

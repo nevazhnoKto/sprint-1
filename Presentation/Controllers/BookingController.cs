@@ -94,7 +94,10 @@ namespace Presentation.Controllers
 			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 			Guid.TryParse(userIdClaim, out var userId);
 
-			var bookingById = await _bookingService.GetBookingByIdAsync(id, userId);
+			var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+			Enum.TryParse<Roles>(roleClaim, true, out var role);
+
+			var bookingById = await _bookingService.GetBookingByIdAsync(id, userId, role);
 
 			if (bookingById != null)
 			{

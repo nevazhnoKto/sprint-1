@@ -49,7 +49,7 @@ builder.Services.AddSwaggerGen(options =>
 
 // Регистрация всех валидаторов.
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAuthorization();

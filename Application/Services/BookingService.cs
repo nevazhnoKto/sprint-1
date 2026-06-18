@@ -48,9 +48,19 @@ namespace Application.Services
 			}
 
 			// Проверка на максимально количества броней для пользователя.
-			var countBookingByUser = await _bookingRepository.GetCountBookingByUserId(userId);
-			if (countBookingByUser >= CommonConst.LimitBookingForUser)
-				throw new ActiveBookingLimitExceededException();
+			try
+			{
+				var countBookingByUser = await _bookingRepository.GetCountBookingByUserId(userId);
+				if (countBookingByUser >= CommonConst.LimitBookingForUser)
+					throw new ActiveBookingLimitExceededException();
+			}
+			catch(Exception e) 
+			{
+				_logger.LogError(e.Message);
+				return null;
+			}
+			
+			
 
 			var resultReserve = await _eventService.TryReserveSeats(eventId);
 
@@ -65,7 +75,7 @@ namespace Application.Services
 			return _mapping.Map<BookingDto>(newBooking);
 		}
 
-		public async Task<BookingDto> GetBookingByIdAsync(Guid bookingId, Guid userId)
+		public async Task<BookingDto> GetBookingByIdAsync(Guid bookingId, Guid userId, Roles role)
 		{
 			var booking = await _bookingRepository.GetBookingById(bookingId);
 			if (booking == null)
@@ -73,8 +83,8 @@ namespace Application.Services
 				_logger.LogInformation($"Бронирования с {bookingId} не существует!");
 				return default!;
 			}
-			// Если бронирование не принадлежит пользователю, то не выдаем информацию.
-			if (booking.UserId != userId)
+			// Если бронирование не принадлежит пользователю и он не админ то не выдаем информацию.
+			if (role == Roles.User && booking.UserId != userId)
 			{
 				throw new AccessDeniedException();
 			}
