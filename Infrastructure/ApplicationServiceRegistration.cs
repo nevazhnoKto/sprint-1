@@ -51,7 +51,8 @@ namespace Infrastructure
 			}
 
 			services.AddDbContext<AppDbContext>(options =>
-				options.UseNpgsql(connectionString));
+				options.UseNpgsql(connectionString),
+				ServiceLifetime.Scoped);
 
 			return services;
 		}

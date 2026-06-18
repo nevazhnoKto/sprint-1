@@ -39,7 +39,7 @@ namespace Presentation.Controllers
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-		public IActionResult RegistrationUser([FromBody] RegistrationRequestDto request)
+		public async Task<IActionResult> RegistrationUser([FromBody] RegistrationRequestDto request)
 		{
 			// Проверка на пустой логин
 			if (string.IsNullOrWhiteSpace(request.Login))
@@ -63,7 +63,7 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var accessToken = _userService.RegistrationUser(request.Login, request.Password, request.Role);
+			var accessToken = await _userService.RegistrationUser(request.Login, request.Password, request.Role);
 
 			return NoContent();
 		}
@@ -79,7 +79,7 @@ namespace Presentation.Controllers
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-		public IActionResult Login([FromBody] LoginRequestDto request)
+		public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
 		{
 			// Проверка на пустой логин
 			if (string.IsNullOrWhiteSpace(request.Login))
@@ -103,7 +103,7 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var accessToken = _userService.LoginUser(request.Login, request.Password);
+			var accessToken = await _userService.LoginUser(request.Login, request.Password);
 
 			return Ok(new { Token = accessToken });
 		}
