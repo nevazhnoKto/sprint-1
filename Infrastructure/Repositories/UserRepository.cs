@@ -16,8 +16,8 @@ namespace Infrastructure.Repositories
 		}
 		public async Task AddUser(User newUser)
 		{
-			_context.Users.Add(newUser);
-			await _context.SaveChangesAsync();
+				_context.Users.Add(newUser);
+				await _context.SaveChangesAsync();
 		}
 
 		public async Task DeleteUserById(Guid id)

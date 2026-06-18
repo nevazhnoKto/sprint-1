@@ -20,13 +20,15 @@ namespace Application.Services
 		public async Task<string> RegistrationUser(string login, string password, Roles role)
 		{
 			var user = await _userRepository.GetUserByLogin(login);
+
 			if (user != null)
 				throw new DuplicateLoginException(login);
 
 			var hashPassword = _passwordHasher.HashPassword(password);
 			user = new User(login, hashPassword, role);
-			var token = _tokenGenerator.GenerateToken(user);
 			await _userRepository.AddUser(user);
+			
+			var token = _tokenGenerator.GenerateToken(user);
 			return token;
 		}
 

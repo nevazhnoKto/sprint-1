@@ -55,7 +55,7 @@ namespace Application.Services
 
 			if (!resultReserve)
 				throw new NoAvailableSeatsException();
-			
+
 			var newBooking = await _bookingRepository.AddBooking(eventId, userId);
 
 			var message = $"Бронирования для события с eventId = {eventId} созданно!";
