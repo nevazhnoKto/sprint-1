@@ -27,7 +27,7 @@ namespace IntegrationTests.Fixture
 		{
 			await using var context = await CreateContext();
 			await context.Database.ExecuteSqlRawAsync(
-				"TRUNCATE TABLE events, bookings RESTART IDENTITY CASCADE");
+				"TRUNCATE TABLE events, bookings, users RESTART IDENTITY CASCADE");
 		}
 
 		public async Task<AppDbContext> CreateContext()

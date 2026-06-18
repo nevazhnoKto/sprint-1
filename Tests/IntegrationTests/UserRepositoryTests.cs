@@ -47,7 +47,7 @@ namespace IntegrationTests
 			//Arrange
 			await using var context = await _dbFixture.CreateContext();
 			var user = new User("login", "hashPassword", Roles.User);
-			context.Users.Add(user);			
+			context.Users.Add(user);
 			await context.SaveChangesAsync();
 			
 
@@ -57,7 +57,7 @@ namespace IntegrationTests
 
 			//Assert
 			await using var assertContext = await _dbFixture.CreateContext();
-			var newUser = assertContext.Users.FirstOrDefault();
+			var newUser = assertContext.Users.FirstOrDefault(u => u.Id == user.Id);
 			Assert.Null(newUser);
 		}
 
