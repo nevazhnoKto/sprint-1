@@ -73,8 +73,8 @@ namespace Presentation.Middleware
 		{
 			AccessDeniedException => StatusCodes.Status403Forbidden,
 			EventAlreadyPassedException or ValidationException => StatusCodes.Status400BadRequest,
-			ActiveBookingLimitExceededException or NoAvailableSeatsException or DuplicateLoginException or NotFoundUserException => StatusCodes.Status409Conflict,
-			EventDoesNotExist => StatusCodes.Status404NotFound,
+			ActiveBookingLimitExceededException or NoAvailableSeatsException or DuplicateLoginException => StatusCodes.Status409Conflict,
+			EventDoesNotExist or NotFoundUserException => StatusCodes.Status404NotFound,
 			UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
 			_ => StatusCodes.Status500InternalServerError
 		};

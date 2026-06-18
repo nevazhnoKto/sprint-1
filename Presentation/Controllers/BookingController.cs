@@ -123,8 +123,9 @@ namespace Presentation.Controllers
 		/// <param name="id">Id бронирования.</param>
 		[HttpPut("/CancelBookings/{id:Guid}")]
 		[Produces("application/json")]
-		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status202Accepted)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public async Task<IActionResult> CancelBooking(Guid id)
@@ -157,14 +158,7 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var response = new ApiResult
-			{
-				Success = true,
-				StatusCode = HttpStatusCode.OK,
-				Message = $"Бронирование {id} успешно отменено."
-			};
-
-			return Ok(response);
+			return NoContent();
 		}
 
 	}

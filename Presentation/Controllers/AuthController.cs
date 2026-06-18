@@ -36,7 +36,7 @@ namespace Presentation.Controllers
 		/// <returns></returns>
 		[HttpPost("/register")]
 		[AllowAnonymous]
-		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public IActionResult RegistrationUser([FromBody] RegistrationRequestDto request)
@@ -65,7 +65,7 @@ namespace Presentation.Controllers
 
 			var accessToken = _userService.RegistrationUser(request.Login, request.Password, request.Role);
 
-			return Ok(new { Token = accessToken });
+			return NoContent();
 		}
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace Presentation.Controllers
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
 		public IActionResult Login([FromBody] LoginRequestDto request)
 		{
 			// Проверка на пустой логин
