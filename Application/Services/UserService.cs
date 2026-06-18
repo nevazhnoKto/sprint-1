@@ -32,6 +32,7 @@ namespace Application.Services
 
 		public async Task<string> LoginUser(string login, string password)
 		{
+			// Найти в БД.
 			var user = await _userRepository.GetUserByLogin(login);
 			if (user == null)
 				throw new NotFoundUserException(login);
@@ -41,7 +42,7 @@ namespace Application.Services
 				throw new UnauthorizedAccessException("Invalid login or password");
 
 
-			// 3. Сгенерировать токен
+			// Сгенерировать токен
 			var token = _tokenGenerator.GenerateToken(user);
 			return token;
 		}

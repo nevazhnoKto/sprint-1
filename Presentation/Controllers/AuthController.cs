@@ -1,0 +1,84 @@
+using Application.Interfaces;
+using Application.Models;
+
+using Infrastructure.SecurityServices;
+using MapsterMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
+using Presentation.Models;
+using System.Net;
+
+namespace Presentation.Controllers
+{
+	/// <summary>
+	/// Api контроллер для работы с регистрацией.
+	/// </summary>
+	[ApiController]
+	[Route("auth")]
+	public class AuthController : ControllerBase
+	{
+		private readonly IUserService _userService;
+
+		/// <summary>
+		/// Api контроллер регистрации.
+		/// </summary>
+		/// <param name="userService">Сервис для работы с пользователем.</param>
+		public AuthController(IUserService userService)
+		{
+			_userService = userService;
+		}
+
+		/// <summary>
+		/// Регистрация пользователя.
+		/// </summary>
+		/// <param name="request">Информация для регистрации.</param>
+		/// <returns></returns>
+		[HttpPost("/register")]
+		[AllowAnonymous]
+		public IActionResult RegistrationUser([FromBody] RegistrationRequestDto request)
+		{
+			// Проверка на пустой логин
+			if (string.IsNullOrWhiteSpace(request.Login))
+			{
+				return BadRequest(new { error = "Логин не может быть пустым" });
+			}
+
+			// Проверка на пустой пароль
+			if (string.IsNullOrWhiteSpace(request.Password))
+			{
+				return BadRequest(new { error = "Пароль не может быть пустым" });
+			}
+
+			var accessToken = _userService.RegistrationUser(request.Login, request.Password, request.Role);
+
+			return Ok(new { Token = accessToken });
+		}
+
+		/// <summary>
+		/// Логирование пользователя.
+		/// </summary>
+		/// <param name="request">Информация для логирования.</param>
+		/// <returns></returns>
+		[HttpPost("/login")]
+		[AllowAnonymous]
+		public IActionResult Login([FromBody] LoginRequestDto request)
+		{
+			// Проверка на пустой логин
+			if (string.IsNullOrWhiteSpace(request.Login))
+			{
+				return BadRequest(new { error = "Логин не может быть пустым" });
+			}
+
+			// Проверка на пустой пароль
+			if (string.IsNullOrWhiteSpace(request.Password))
+			{
+				return BadRequest(new { error = "Пароль не может быть пустым" });
+			}
+
+			var accessToken = _userService.LoginUser(request.Login, request.Password);
+
+			return Ok(new { Token = accessToken });
+		}
+	}
+}

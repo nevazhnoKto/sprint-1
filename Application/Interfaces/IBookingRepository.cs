@@ -44,5 +44,13 @@ namespace Application.Interfaces
 		/// </summary>
 		/// <param name="eventId">ИД пользователя.</param>
 		Task<int> GetCountBookingByUserId(Guid userId);
+
+		/// <summary>
+		/// Получает бронирование по id и userId.
+		/// </summary>
+		/// <param name="bookingId"></param>
+		/// <param name="userId"></param>
+		/// <returns></returns>
+		Task<Booking?> GetBookingById(Guid bookingId, Guid userId);
 	}
 }

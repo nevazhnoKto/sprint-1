@@ -1,5 +1,7 @@
 using Application.Interfaces;
 using Application.Models;
+using Domain.Enums;
+using Mapster.Utils;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -53,7 +55,10 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var booking = await _bookingService.CreateBookingAsync(id);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			Guid.TryParse(userIdClaim, out var userId);
+			
+			var booking = await _bookingService.CreateBookingAsync(id, userId);
 
 			var response = new ApiResult<BookingDto>
 			{
@@ -86,7 +91,10 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var bookingById = await _bookingService.GetBookingByIdAsync(id);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			Guid.TryParse(userIdClaim, out var userId);
+
+			var bookingById = await _bookingService.GetBookingByIdAsync(id, userId);
 
 			if (bookingById != null)
 			{
@@ -108,9 +116,9 @@ namespace Presentation.Controllers
 		}
 
 		/// <summary>
-		/// Метод создает новое бронирования для конкретного EventId.
+		/// Метод отменяет бронирование для конкретного Id бронирования.
 		/// </summary>
-		/// <param name="id">Id события для бронирования.</param>
+		/// <param name="id">Id бронирования.</param>
 		[HttpPut("/CancelBookings/{id:Guid}")]
 		[Produces("application/json")]
 		public async Task<IActionResult> CancelBooking(Guid id)
@@ -125,7 +133,13 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var result = await _bookingService.CanceledBookingAsync(id);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			Guid.TryParse(userIdClaim, out var userId);
+
+			var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+			Enum.TryParse<Roles>(roleClaim, true, out var role);
+
+			var result = await _bookingService.CanceledBookingAsync(id, userId, role);
 
 			if (!result)
 			{
@@ -133,7 +147,7 @@ namespace Presentation.Controllers
 				{
 					Success = false,
 					StatusCode = HttpStatusCode.NotFound,
-					Message = $"Бронирование с ID {id} не найдено"
+					Message = $"Бронирование с ID {id} не найдено или уже отменено."
 				});
 			}
 
@@ -141,7 +155,7 @@ namespace Presentation.Controllers
 			{
 				Success = true,
 				StatusCode = HttpStatusCode.OK,
-				Message = $"Бронирование {id} успешно отменено"
+				Message = $"Бронирование {id} успешно отменено."
 			};
 
 			return Ok(response);

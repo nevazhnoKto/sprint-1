@@ -26,9 +26,9 @@ namespace Infrastructure.SecurityServices
 		{
 			var claims = new List<Claim>
 			{
-				new Claim(ClaimTypes.Name, user.Login),
-				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-				new Claim(ClaimTypes.Role, user.Role.ToString())
+				new (ClaimTypes.Name, user.Login),
+				new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+				new (ClaimTypes.Role, user.Role.ToString())
 			};
 
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey));

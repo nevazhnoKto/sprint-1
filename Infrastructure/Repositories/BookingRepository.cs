@@ -37,6 +37,10 @@ namespace Infrastructure.Repositories
 		{
 			return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
 		}
+		public async Task<Booking?> GetBookingById(Guid bookingId, Guid userId)
+		{
+			return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == userId);
+		}
 
 		public async Task<List<Booking>> GetBookingsByStatus(BookingStatus status)
 		{

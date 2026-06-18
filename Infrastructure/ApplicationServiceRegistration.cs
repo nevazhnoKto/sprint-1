@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 namespace Infrastructure
@@ -28,9 +29,9 @@ namespace Infrastructure
 					{
 						options.TokenValidationParameters = new TokenValidationParameters
 						{
-							RoleClaimType = "role",
+							RoleClaimType = ClaimTypes.Role,
 							ValidateIssuer = true,
-							ValidIssuer = jwtSettings.Issuer,
+							ValidIssuer = jwtSettings!.Issuer,
 							ValidateAudience = true,
 							ValidAudience = jwtSettings.Audience,
 							ValidateLifetime = true,
