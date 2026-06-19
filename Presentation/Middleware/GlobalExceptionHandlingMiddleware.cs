@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.ExceptionExtension;
 using Microsoft.AspNetCore.Mvc;
-using OpenQA.Selenium;
 
 namespace Presentation.Middleware
 {
@@ -74,8 +73,7 @@ namespace Presentation.Middleware
 			AccessDeniedException => StatusCodes.Status403Forbidden,
 			EventAlreadyPassedException or ValidationException => StatusCodes.Status400BadRequest,
 			ActiveBookingLimitExceededException or NoAvailableSeatsException or DuplicateLoginException => StatusCodes.Status409Conflict,
-			EventDoesNotExist or NotFoundUserException => StatusCodes.Status404NotFound,
-			UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+			EventDoesNotExist or UnauthorizedAccessException => StatusCodes.Status404NotFound,
 			_ => StatusCodes.Status500InternalServerError
 		};
 	}

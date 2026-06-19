@@ -121,7 +121,7 @@ namespace Presentation.Controllers
 		/// Метод отменяет бронирование для конкретного Id бронирования.
 		/// </summary>
 		/// <param name="id">Id бронирования.</param>
-		[HttpPut("/CancelBookings/{id:Guid}")]
+		[HttpDelete("/CancelBookings/{id:Guid}")]
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status202Accepted)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]

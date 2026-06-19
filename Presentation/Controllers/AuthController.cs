@@ -34,7 +34,7 @@ namespace Presentation.Controllers
 		/// </summary>
 		/// <param name="request">Информация для регистрации.</param>
 		/// <returns></returns>
-		[HttpPost("/register")]
+		[HttpPost("/auth/register")]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
@@ -73,11 +73,10 @@ namespace Presentation.Controllers
 		/// </summary>
 		/// <param name="request">Информация для логирования.</param>
 		/// <returns></returns>
-		[HttpPost("/login")]
+		[HttpPost("/auth/login")]
 		[AllowAnonymous]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
 		{

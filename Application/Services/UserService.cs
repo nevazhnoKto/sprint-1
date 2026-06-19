@@ -36,13 +36,8 @@ namespace Application.Services
 		{
 			// Найти в БД.
 			var user = await _userRepository.GetUserByLogin(login);
-			if (user == null)
-				throw new NotFoundUserException(login);
-
-			// Проверить пароль
-			if (!_passwordHasher.VerifyPassword(user.HashPassword, password))
+			if (user == null || !_passwordHasher.VerifyPassword(user.HashPassword, password))
 				throw new UnauthorizedAccessException("Invalid login or password");
-
 
 			// Сгенерировать токен
 			var token = _tokenGenerator.GenerateToken(user);
