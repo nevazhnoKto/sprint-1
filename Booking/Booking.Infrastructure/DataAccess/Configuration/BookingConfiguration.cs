@@ -21,6 +21,10 @@ namespace Booking.Infrastructure.DataAccess.Configuration
 				.HasColumnName("event_id")
 				.IsRequired();
 
+			builder.Property(b => b.UserId)
+				.HasColumnName("user_id")
+				.IsRequired();
+
 			builder.Property(b => b.Status)
 				.HasColumnName("status")
 				.IsRequired()
