@@ -5,6 +5,7 @@ using Domain.Enums;
 using Domain.ExceptionExtension;
 using Domain.Models;
 using Infrastructure.DataAccess;
+using Infrastructure.Repositories;
 using Mapster;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +15,11 @@ using Moq;
 
 namespace ServiceTests
 {
-	public class BookingServiceTests : IDisposable
+	public class BookingServiceTests: IDisposable
 	{
 		private Guid defaultEventGuid = new Guid("00000000-0000-0000-0000-000000000001");
+		private Guid defaultUserIdGuid = new Guid("00000000-0000-0000-0000-000000000002");
+		private Guid passedEventGuid = new Guid("00000000-0000-0000-0000-000000000003");
 		private readonly IBookingService _bookingService;
 		private readonly Mock<IEventService> _eventServiceMock;
 		private readonly ServiceProvider _serviceProvider;
@@ -40,7 +43,7 @@ namespace ServiceTests
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseInMemoryDatabase(dbName));
 
-			services.AddScoped<IBookingRepository, Infrastructure.Repositories.BookingRepository>();
+			services.AddScoped<IBookingRepository, BookingRepository>();
 
 			_eventServiceMock = new Mock<IEventService>();
 			services.AddScoped(_ => _eventServiceMock.Object);
@@ -56,7 +59,11 @@ namespace ServiceTests
 
 			_bookingService = _serviceProvider.GetRequiredService<IBookingService>();
 
-			EventDto defaultEvent =  new EventDto(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.Now, DateTime.Now.AddHours(2), 10);
+			EventDto defaultEvent =  new EventDto(new Guid("00000000-0000-0000-0000-000000000001"), "Первое событие", "Очень классное событие", DateTime.UtcNow.AddHours(2), DateTime.UtcNow.AddHours(10), 10);
+			EventDto passedEvent = new EventDto(new Guid("00000000-0000-0000-0000-000000000003"), "Второе событие", "Очень классное событие", DateTime.UtcNow.AddHours(-2), DateTime.UtcNow.AddHours(10), 10);
+
+			_eventServiceMock.Setup(m => m.GetById(passedEventGuid))
+				.ReturnsAsync(() => passedEvent);
 
 			_eventServiceMock.Setup(m => m.GetById(defaultEventGuid))
 				.ReturnsAsync(() => IsEventDeleted ? null : defaultEvent);
@@ -76,18 +83,68 @@ namespace ServiceTests
 			var status = BookingStatus.Pending;
 
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 
 			//Assert
 			Assert.Equal(status, firstBooking.Status);
 		}
 
 		[Fact]
+		public async Task CreateBooking_ValidBooking_ReturnsEventDoesNotExist()
+		{
+			//Assert
+			await Assert.ThrowsAsync<EventDoesNotExist>(() => _bookingService.CreateBookingAsync(Guid.NewGuid(), defaultUserIdGuid));
+		}
+
+
+		[Fact]
+		public async Task CreateBooking_ValidBookingNoEvent_ReturnsEventAlreadyPassedException()
+		{
+			//Assert
+			await Assert.ThrowsAsync<EventAlreadyPassedException>(() => _bookingService.CreateBookingAsync(passedEventGuid, defaultUserIdGuid));
+		}
+
+		[Fact]
+		public async Task CreateBooking_ValidBooking_ReturnsActiveBookingLimitExceededException()
+		{
+			//Act
+			for (int i = 1; i <= 10; i++)
+			{
+				await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			}
+
+			//Assert
+			await Assert.ThrowsAsync<ActiveBookingLimitExceededException>(() => _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid));
+		}
+
+		[Fact]
+		public async Task GetBooking_ValidBooking_ReturnsAccessDeniedException()
+		{
+			//Act
+			var booking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+
+			//Assert
+			await Assert.ThrowsAsync<AccessDeniedException>(() => _bookingService.GetBookingByIdAsync(booking.Id, Guid.NewGuid(), Roles.User));
+		}
+
+		[Fact]
+		public async Task GetBooking_ValidBooking_ReturnsTrue()
+		{
+			//Act
+			var createBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var booking = await _bookingService.GetBookingByIdAsync(createBooking.Id, Guid.NewGuid(), Roles.Admin);
+
+			//Assert
+			Assert.NotNull(booking);
+		}
+
+
+		[Fact]
 		public async Task CreateSomeBooking_ValidBooking_ReturnsTrue()
 		{
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			var secondBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var secondBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 
 			//Assert
 			Assert.NotEqual(firstBooking.Id, secondBooking.Id);
@@ -97,8 +154,8 @@ namespace ServiceTests
 		public async Task GetBooking_ValidBookingId_ReturnsTrue()
 		{
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id, defaultUserIdGuid, Roles.User);
 
 			//Assert
 			Assert.Equal(defaultEventGuid, result.EventId);
@@ -109,9 +166,9 @@ namespace ServiceTests
 		public async Task ConfirmStatusBooking_ValidStatus_ReturnsTrue(BookingStatus status)
 		{
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 			await _bookingService.ConfirmBookingAsync(firstBooking.Id);
-			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
+			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id, defaultUserIdGuid, Roles.User);
 
 			//Assert
 			Assert.Equal(status, result.Status);
@@ -122,9 +179,9 @@ namespace ServiceTests
 		public async Task RejectedStatusBooking_ValidStatus_ReturnsTrue(BookingStatus status)
 		{
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 			await _bookingService.RejectedBookingAsync(firstBooking.Id);
-			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
+			var result = await _bookingService.GetBookingByIdAsync(firstBooking.Id, defaultUserIdGuid, Roles.User);
 
 			//Assert
 			Assert.Equal(status, result.Status);
@@ -134,12 +191,12 @@ namespace ServiceTests
 		public async Task CreateBooking_DeletedEventId_ReturnsNull()
 		{
 			// Act
-			var booking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var booking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 
 			// Удаляем событие
 			await _eventServiceMock.Object.Delete(defaultEventGuid);
 
-			var bookingAfterDeletedEvent = await _bookingService.GetBookingByIdAsync(booking.Id);
+			var bookingAfterDeletedEvent = await _bookingService.GetBookingByIdAsync(booking.Id, defaultUserIdGuid, Roles.Admin);
 
 			// Assert
 			Assert.NotNull(booking);
@@ -150,8 +207,8 @@ namespace ServiceTests
 		public async Task GetBooking_NoValidBookingId_ReturnsNull()
 		{
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			var result = await _bookingService.GetBookingByIdAsync(Guid.NewGuid());
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var result = await _bookingService.GetBookingByIdAsync(Guid.NewGuid(), defaultUserIdGuid, Roles.User);
 
 			//Assert
 			Assert.Null(result);
@@ -164,7 +221,7 @@ namespace ServiceTests
 			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>())).ReturnsAsync(true);
 
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 
 			//Assert
 			Assert.NotNull(firstBooking);
@@ -184,9 +241,9 @@ namespace ServiceTests
 				});
 
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			var secondBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			var thirdBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var secondBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var thirdBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 
 			//Assert
 			Assert.NotNull(firstBooking);
@@ -208,15 +265,15 @@ namespace ServiceTests
 				});
 
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			var secondBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
-			var thirdBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var secondBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var thirdBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 
 			//Assert
 			Assert.NotNull(firstBooking);
 			Assert.NotNull(secondBooking);
 			Assert.NotNull(thirdBooking);
-			await Assert.ThrowsAsync<NoAvailableSeatsException>(() => _bookingService.CreateBookingAsync(defaultEventGuid));
+			await Assert.ThrowsAsync<NoAvailableSeatsException>(() => _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid));
 		}
 
 		[Fact]
@@ -227,7 +284,7 @@ namespace ServiceTests
 				.ReturnsAsync(() => false);
 			
 			//Assert
-			await Assert.ThrowsAsync<NoAvailableSeatsException>(() => _bookingService.CreateBookingAsync(defaultEventGuid));
+			await Assert.ThrowsAsync<NoAvailableSeatsException>(() => _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid));
 		}
 
 		[Fact]
@@ -236,16 +293,16 @@ namespace ServiceTests
 			// Arrange
 			_eventServiceMock.Setup(m => m.TryReserveSeats(It.IsAny<Guid>(), It.IsAny<int>())).Throws<EventDoesNotExist>();
 			//Assert
-			await Assert.ThrowsAsync<EventDoesNotExist>(() => _bookingService.CreateBookingAsync(Guid.NewGuid()));
+			await Assert.ThrowsAsync<EventDoesNotExist>(() => _bookingService.CreateBookingAsync(Guid.NewGuid(), defaultUserIdGuid));
 		}
 
 		[Fact]
 		public async Task Confirm_ValidBooking_ReturnsTrue()
 		{
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 			await _bookingService.ConfirmBookingAsync(firstBooking.Id);
-			var updated = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
+			var updated = await _bookingService.GetBookingByIdAsync(firstBooking.Id, defaultUserIdGuid, Roles.User);
 
 			//Assert
 			Assert.Equal(BookingStatus.Confirmed, updated.Status);
@@ -255,9 +312,9 @@ namespace ServiceTests
 		public async Task Rejected_ValidBooking_ReturnsTrue()
 		{
 			//Act
-			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid);
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 			await _bookingService.RejectedBookingAsync(firstBooking.Id);
-			var updated = await _bookingService.GetBookingByIdAsync(firstBooking.Id);
+			var updated = await _bookingService.GetBookingByIdAsync(firstBooking.Id, defaultUserIdGuid, Roles.User);
 
 			//Assert
 			Assert.Equal(BookingStatus.Rejected, updated.Status);
@@ -281,7 +338,7 @@ namespace ServiceTests
 			var tasks = new Task<BookingDto>[concurrentRequests];
 			for (int i = 0; i < concurrentRequests; i++)
 			{
-				tasks[i] = _bookingService.CreateBookingAsync(defaultEventGuid);
+				tasks[i] = _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 			}
 
 			// Ждем завершения всех задач
@@ -318,7 +375,7 @@ namespace ServiceTests
 					{
 						using var scope = _serviceProvider.CreateScope();
 						var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-						var booking = await bookingService.CreateBookingAsync(defaultEventGuid);
+						var booking = await bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
 						Interlocked.Increment(ref successfulBookings);
 					}
 					catch
@@ -330,6 +387,60 @@ namespace ServiceTests
 			//Assert
 			Assert.Equal(15, exceptionsBookings);
 			Assert.Equal(5, successfulBookings);
+		}
+
+		[Fact]
+		public async Task CanceledBooking_UserWithValidUserId_ReturnsTrue()
+		{
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var result = await _bookingService.CanceledBookingAsync(firstBooking.Id, defaultUserIdGuid, Roles.User);
+
+			//Assert
+			Assert.True(result);
+		}
+
+		[Fact]
+		public async Task CanceledBooking_AdminWithOtherUserId_ReturnsTrue()
+		{
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			var result = await _bookingService.CanceledBookingAsync(firstBooking.Id, Guid.NewGuid(), Roles.Admin);
+
+			//Assert
+			Assert.True(result);
+		}
+
+		[Fact]
+		public async Task CanceledBooking_UserWithOtherUserId_ReturnAccessDeniedException()
+		{
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+
+			//Assert
+			await Assert.ThrowsAsync<AccessDeniedException>(() => _bookingService.CanceledBookingAsync(firstBooking.Id, Guid.NewGuid(), Roles.User));
+		}
+
+		[Fact]
+		public async Task CanceledBooking_NoBooking_ReturnsFalse()
+		{
+			//Act
+			var result = await _bookingService.CanceledBookingAsync(Guid.NewGuid(), Guid.NewGuid(), Roles.User);
+
+			//Assert
+			Assert.False(result);
+		}
+
+		[Fact]
+		public async Task CanceledBooking_AdminWithCancelledStatus_ReturnsFalse()
+		{
+			//Act
+			var firstBooking = await _bookingService.CreateBookingAsync(defaultEventGuid, defaultUserIdGuid);
+			await _bookingService.CanceledBookingAsync(firstBooking.Id, defaultUserIdGuid, Roles.Admin);
+			var result = await _bookingService.CanceledBookingAsync(firstBooking.Id, defaultUserIdGuid, Roles.Admin);
+
+			//Assert
+			Assert.False(result);
 		}
 
 		public void Dispose()

@@ -9,7 +9,7 @@
 		/// Исключение при недостаточном мест для бронирования.
 		/// </summary>
 		public NoAvailableSeatsException()
-	   : base("No available seats for this event")
+	   : base("Недостаточном мест для бронирования.")
 		{
 		}
 	}

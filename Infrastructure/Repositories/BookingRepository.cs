@@ -15,9 +15,9 @@ namespace Infrastructure.Repositories
 		{
 			_context = context;
 		}
-		public async Task<Booking> AddBooking(Guid eventId)
+		public async Task<Booking> AddBooking(Guid eventId, Guid userId)
 		{
-			var booking = new Booking(eventId);
+			var booking = new Booking(eventId, userId);
 			_context.Bookings.Add(booking);
 			await _context.SaveChangesAsync();
 			return booking;
@@ -37,10 +37,19 @@ namespace Infrastructure.Repositories
 		{
 			return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
 		}
+		public async Task<Booking?> GetBookingById(Guid bookingId, Guid userId)
+		{
+			return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == userId);
+		}
 
 		public async Task<List<Booking>> GetBookingsByStatus(BookingStatus status)
 		{
 			return await _context.Bookings.Where(b => b.Status == status).ToListAsync();
+		}
+
+		public async Task<int> GetCountBookingByUserId(Guid userId)
+		{
+			return await _context.Bookings.AsNoTracking().CountAsync(b => b.UserId == userId && b.Status != BookingStatus.Cancelled);
 		}
 
 		public async Task UpdateBooking(Guid id, BookingStatus status)

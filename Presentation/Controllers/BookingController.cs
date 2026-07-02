@@ -1,9 +1,12 @@
 using Application.Interfaces;
 using Application.Models;
+using Domain.Enums;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
 using System.Net;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -11,6 +14,7 @@ namespace Presentation.Controllers
 	/// Api контроллер для работы с Событиями.
 	/// </summary>
 	[ApiController]
+	[Authorize]
 	[Route("events")]
 	public class BookingController : ControllerBase
 	{
@@ -49,7 +53,10 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var booking = await _bookingService.CreateBookingAsync(id);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			Guid.TryParse(userIdClaim, out var userId);
+			
+			var booking = await _bookingService.CreateBookingAsync(id, userId);
 
 			var response = new ApiResult<BookingDto>
 			{
@@ -69,6 +76,7 @@ namespace Presentation.Controllers
 		[ProducesResponseType(typeof(ApiResult<BookingDto>), StatusCodes.Status200OK)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
 		[Produces("application/json")]
 		public async Task<IActionResult> GetByIdBooking(Guid id)
 		{
@@ -82,7 +90,13 @@ namespace Presentation.Controllers
 				});
 			}
 
-			var bookingById = await _bookingService.GetBookingByIdAsync(id);
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			Guid.TryParse(userIdClaim, out var userId);
+
+			var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+			Enum.TryParse<Roles>(roleClaim, true, out var role);
+
+			var bookingById = await _bookingService.GetBookingByIdAsync(id, userId, role);
 
 			if (bookingById != null)
 			{
@@ -101,6 +115,50 @@ namespace Presentation.Controllers
 				StatusCode = HttpStatusCode.NotFound,
 				Message = $"Бронирование по id = {id} не существует"
 			});
+		}
+
+		/// <summary>
+		/// Метод отменяет бронирование для конкретного Id бронирования.
+		/// </summary>
+		/// <param name="id">Id бронирования.</param>
+		[HttpDelete("/CancelBookings/{id:Guid}")]
+		[Produces("application/json")]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status202Accepted)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+		public async Task<IActionResult> CancelBooking(Guid id)
+		{
+			if (id == Guid.Empty)
+			{
+				return BadRequest(new ApiResult
+				{
+					Success = false,
+					StatusCode = HttpStatusCode.BadRequest,
+					Message = "Booking не может быть пустым!"
+				});
+			}
+
+			var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			Guid.TryParse(userIdClaim, out var userId);
+
+			var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+			Enum.TryParse<Roles>(roleClaim, true, out var role);
+
+			var result = await _bookingService.CanceledBookingAsync(id, userId, role);
+
+			if (!result)
+			{
+				return NotFound(new ApiResult
+				{
+					Success = false,
+					StatusCode = HttpStatusCode.NotFound,
+					Message = $"Бронирование с ID {id} не найдено или уже отменено."
+				});
+			}
+
+			return NoContent();
 		}
 
 	}

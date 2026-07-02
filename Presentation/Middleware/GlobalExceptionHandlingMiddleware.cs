@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.ExceptionExtension;
 using Microsoft.AspNetCore.Mvc;
-using OpenQA.Selenium;
 
 namespace Presentation.Middleware
 {
@@ -71,9 +70,10 @@ namespace Presentation.Middleware
 		private static int StatusCodeMapping(Exception ex)
 		=> ex switch
 		{
-			ValidationException => StatusCodes.Status400BadRequest,
-			EventDoesNotExist => StatusCodes.Status404NotFound,
-			NoAvailableSeatsException => StatusCodes.Status409Conflict,
+			AccessDeniedException => StatusCodes.Status403Forbidden,
+			EventAlreadyPassedException or ValidationException => StatusCodes.Status400BadRequest,
+			ActiveBookingLimitExceededException or NoAvailableSeatsException or DuplicateLoginException => StatusCodes.Status409Conflict,
+			EventDoesNotExist or UnauthorizedAccessException => StatusCodes.Status404NotFound,
 			_ => StatusCodes.Status500InternalServerError
 		};
 	}

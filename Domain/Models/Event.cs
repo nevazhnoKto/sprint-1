@@ -111,6 +111,6 @@
 		/// <summary>
 		/// Коллекция Bookings.
 		/// </summary>
-		public List<Booking> Bookings { get; set; }
+		public List<Booking>? Bookings { get; set; }
 	}
 }

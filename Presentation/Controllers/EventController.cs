@@ -1,9 +1,10 @@
-using MapsterMapper;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using Application.Interfaces;
 using Application.Models;
+using MapsterMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
+using System.Net;
 
 namespace Presentation.Controllers
 {
@@ -90,6 +91,7 @@ namespace Presentation.Controllers
 		/// </summary>
 		/// <param name="newEventDto">Данные нового Event.</param>
 		[HttpPost]
+		[Authorize(Roles = "Admin")]
 		[ProducesResponseType(typeof(ApiResult<CreateEventRequestDto>), StatusCodes.Status201Created)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status400BadRequest)]
 		[Produces("application/json")]
@@ -121,6 +123,7 @@ namespace Presentation.Controllers
 		/// <param name="id">Id события для обновления.</param>
 		/// <param name="updateEventDto">Event для обновления.</param>
 		[HttpPut("{id:Guid}")]
+		[Authorize(Roles = "Admin")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]
@@ -145,6 +148,7 @@ namespace Presentation.Controllers
 		/// </summary>
 		/// <param name="id">Id события для удаления.</param>
 		[HttpDelete("{id:Guid}")]
+		[Authorize(Roles = "Admin")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(typeof(ApiResult), StatusCodes.Status404NotFound)]
 		[Produces("application/json")]

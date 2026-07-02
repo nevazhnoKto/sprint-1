@@ -1,10 +1,14 @@
 ﻿using Application.Interfaces;
 using Application.Models;
+using Domain.Common;
 using Domain.Enums;
 using Domain.ExceptionExtension;
 using Domain.Models;
 using MapsterMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Data;
+using System.Security.Claims;
 
 namespace Application.Services
 {
@@ -26,15 +30,33 @@ namespace Application.Services
 			_mapping = mapping;
 		}
 
-		public async Task<BookingDto> CreateBookingAsync(Guid eventId)
+		public async Task<BookingDto> CreateBookingAsync(Guid eventId, Guid userId)
 		{
-			var resultReserve = false;
-			resultReserve = await _eventService.TryReserveSeats(eventId);
+			// Проверка на то, что событие уже началось.
+			var eventFinded = await _eventService.GetById(eventId);
+
+			if (eventFinded == null)
+			{
+				_logger.LogInformation($"Событие c EventId {eventId} не существует!");
+				throw new EventDoesNotExist(eventId.ToString());
+			}	
+
+			if (eventFinded!.StartAt < DateTime.UtcNow)
+			{
+				_logger.LogInformation($"Невозможно забронировать билет, так как событие уже началось!");
+				throw new EventAlreadyPassedException(eventId.ToString());
+			}
+
+			var countBookingByUser = await _bookingRepository.GetCountBookingByUserId(userId);
+			if (countBookingByUser >= CommonConst.LimitBookingForUser)
+				throw new ActiveBookingLimitExceededException(CommonConst.LimitBookingForUser);
+
+			var resultReserve = await _eventService.TryReserveSeats(eventId);
 
 			if (!resultReserve)
 				throw new NoAvailableSeatsException();
 
-			var newBooking = await _bookingRepository.AddBooking(eventId);
+			var newBooking = await _bookingRepository.AddBooking(eventId, userId);
 
 			var message = $"Бронирования для события с eventId = {eventId} созданно!";
 			_logger.LogInformation(message);
@@ -42,13 +64,18 @@ namespace Application.Services
 			return _mapping.Map<BookingDto>(newBooking);
 		}
 
-		public async Task<BookingDto> GetBookingByIdAsync(Guid bookingId)
+		public async Task<BookingDto> GetBookingByIdAsync(Guid bookingId, Guid userId, Roles role)
 		{
 			var booking = await _bookingRepository.GetBookingById(bookingId);
 			if (booking == null)
 			{
 				_logger.LogInformation($"Бронирования с {bookingId} не существует!");
 				return default!;
+			}
+			// Если бронирование не принадлежит пользователю и он не админ то не выдаем информацию.
+			if (role == Roles.User && booking.UserId != userId)
+			{
+				throw new AccessDeniedException();
 			}
 			if (await _eventService.GetById(booking.EventId) == null)
 			{
@@ -75,6 +102,33 @@ namespace Application.Services
 			await _bookingRepository.UpdateBooking(bookingId, BookingStatus.Rejected);
 			if (eventId != null)
 				await _eventService.ReleaseSeats(eventId.Value);
+		}
+
+		public async Task<bool> CanceledBookingAsync(Guid bookingId, Guid userId, Roles role)
+		{
+			var booking = await _bookingRepository.GetBookingById(bookingId);
+			
+			if (booking != null)
+			{
+				if (booking.Status == BookingStatus.Cancelled)
+				{
+					_logger.LogInformation($"Бронирования {bookingId} уже отменено!");
+					return false;
+				}
+				if (role == Roles.Admin || (role == Roles.User && booking.UserId == userId))
+				{
+					await _bookingRepository.UpdateBooking(bookingId, BookingStatus.Cancelled);
+					await _eventService.ReleaseSeats(booking.EventId);
+				}
+				else
+					throw new AccessDeniedException();
+			}
+			else
+			{
+				_logger.LogInformation($"Бронирования с {bookingId} не существует!");
+				return false;
+			}
+			return true;
 		}
 	}
 

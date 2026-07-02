@@ -12,7 +12,7 @@ namespace Application.Interfaces
 		/// Создаёт новое бронирование для указанного события.
 		/// </summary>
 		/// <param name="eventId">Идентификатор события.</param>
-		Task<Booking> AddBooking(Guid eventId);
+		Task<Booking> AddBooking(Guid eventId, Guid userId);
 
 		/// <summary>
 		/// Возвращает бронирование по его идентификатору.
@@ -38,5 +38,19 @@ namespace Application.Interfaces
 		/// <param name="id">Идентификатор бронирования.</param>
 		/// <param name="status">Новый статус бронирования.</param>
 		Task UpdateBooking(Guid id, BookingStatus status);
+
+		/// <summary>
+		/// Получает количество бронирований для пользователя.
+		/// </summary>
+		/// <param name="eventId">ИД пользователя.</param>
+		Task<int> GetCountBookingByUserId(Guid userId);
+
+		/// <summary>
+		/// Получает бронирование по id и userId.
+		/// </summary>
+		/// <param name="bookingId"></param>
+		/// <param name="userId"></param>
+		/// <returns></returns>
+		Task<Booking?> GetBookingById(Guid bookingId, Guid userId);
 	}
 }

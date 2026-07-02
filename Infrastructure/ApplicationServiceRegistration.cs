@@ -1,9 +1,13 @@
 ﻿using Application.Interfaces;
 using Infrastructure.DataAccess;
 using Infrastructure.Repositories;
+using Infrastructure.SecurityServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 namespace Infrastructure
 {
@@ -13,6 +17,31 @@ namespace Infrastructure
 		{
 			services.AddScoped<IBookingRepository, BookingRepository>();
 			services.AddScoped<IEventRepository, EventRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IPasswordHasher, PasswordHasher>();
+			services.AddScoped<ITokenGenerator, TokenGenerator>();
+			services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+
+			var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+			services.AddAuthentication("Bearer")
+					.AddJwtBearer(options =>
+					{
+						options.TokenValidationParameters = new TokenValidationParameters
+						{
+							RoleClaimType = ClaimTypes.Role,
+							ValidateIssuer = true,
+							ValidIssuer = jwtSettings!.Issuer,
+							ValidateAudience = true,
+							ValidAudience = jwtSettings.Audience,
+							ValidateLifetime = true,
+							ValidateIssuerSigningKey = true,
+							IssuerSigningKey = new SymmetricSecurityKey(
+								Encoding.UTF8.GetBytes(jwtSettings.SecretKey)
+							),
+							ClockSkew = TimeSpan.Zero
+						};
+	});
 
 			var connectionString = configuration.GetConnectionString("DefaultConnection");
 			if (string.IsNullOrEmpty(connectionString))
@@ -22,7 +51,8 @@ namespace Infrastructure
 			}
 
 			services.AddDbContext<AppDbContext>(options =>
-				options.UseNpgsql(connectionString));
+				options.UseNpgsql(connectionString),
+				ServiceLifetime.Scoped);
 
 			return services;
 		}
