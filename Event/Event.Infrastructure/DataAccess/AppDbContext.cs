@@ -22,6 +22,11 @@ namespace Event.Infrastructure.DataAccess
 		public DbSet<EventModel> Events => Set<EventModel>();
 
 		/// <summary>
+		/// Работа с БД InboxMessage.
+		/// </summary>
+		public DbSet<InboxMessage> InboxMessages => Set<InboxMessage>();
+
+		/// <summary>
 		/// Настраивает модели и их связи при создании модели базы данных.
 		/// </summary>
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

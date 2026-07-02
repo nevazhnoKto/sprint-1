@@ -148,7 +148,12 @@ namespace Event.Application.Services
 			{
 				throw new EventDoesNotExist($"События {id} не существует!");
 			}
-			return await eventCustom.TryReserveSeats(count);
+
+			var result = await eventCustom.TryReserveSeats(count);
+			if (result)
+				await _eventRepository.UpdateAsync(eventCustom);
+
+			return result;
 		}
 
 		public async Task<bool> ReleaseSeats(Guid id, int count = 1)

@@ -79,7 +79,7 @@ namespace Booking.Presentation.Controllers
 		[Produces("application/json")]
 		public async Task<IActionResult> GetByIdBooking(Guid id)
 		{
-			/*if (id == Guid.Empty)
+			if (id == Guid.Empty)
 			{
 				return BadRequest(new ApiResult
 				{
@@ -93,9 +93,8 @@ namespace Booking.Presentation.Controllers
 			Guid.TryParse(userIdClaim, out var userId);
 
 			var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
-			Enum.TryParse<Roles>(roleClaim, true, out var role);
 
-			var bookingById = await _bookingService.GetBookingByIdAsync(id, userId, role);
+			var bookingById = await _bookingService.GetBookingByIdAsync(id, userId, roleClaim!);
 
 			if (bookingById != null)
 			{
@@ -106,7 +105,7 @@ namespace Booking.Presentation.Controllers
 					StatusCode = HttpStatusCode.OK,
 					Message = $"Вернул статус ({bookingById.Status}) бронирования по id = {id}"
 				});
-			}*/
+			}
 
 			return NotFound(new ApiResult()
 			{
@@ -129,7 +128,7 @@ namespace Booking.Presentation.Controllers
 		[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
 		public async Task<IActionResult> CancelBooking(Guid id)
 		{
-			/*if (id == Guid.Empty)
+			if (id == Guid.Empty)
 			{
 				return BadRequest(new ApiResult
 				{
@@ -143,9 +142,8 @@ namespace Booking.Presentation.Controllers
 			Guid.TryParse(userIdClaim, out var userId);
 
 			var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
-			Enum.TryParse<Roles>(roleClaim, true, out var role);
 
-			var result = await _bookingService.CanceledBookingAsync(id, userId, role);
+			var result = await _bookingService.CanceledBookingAsync(id, userId, roleClaim!);
 
 			if (!result)
 			{
@@ -155,7 +153,7 @@ namespace Booking.Presentation.Controllers
 					StatusCode = HttpStatusCode.NotFound,
 					Message = $"Бронирование с ID {id} не найдено или уже отменено."
 				});
-			}*/
+			}
 
 			return NoContent();
 		}

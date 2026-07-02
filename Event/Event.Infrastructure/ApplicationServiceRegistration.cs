@@ -19,6 +19,7 @@ namespace Event.Infrastructure
 			services.AddHostedService<BookingConfirmedConsumer>();
 
 			services.AddScoped<IEventRepository, EventRepository>();
+			services.AddScoped<IInboxRepository, InboxRepository>();
 
 			var connectionString = configuration.GetConnectionString("DefaultConnection");
 			if (string.IsNullOrEmpty(connectionString))

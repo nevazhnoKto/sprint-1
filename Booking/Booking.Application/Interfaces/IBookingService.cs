@@ -22,7 +22,7 @@ namespace Booking.Application.Interfaces
 		/// </summary>
 		/// <param name="bookingId">Id брони.</param>
 		/// <returns>Бронь по Id.</returns>
-		Task<BookingDto> GetBookingByIdAsync(Guid bookingId, Guid userId);
+		Task<BookingDto> GetBookingByIdAsync(Guid bookingId, Guid userId, string role);
 
 		/// <summary>
 		/// Получить все брони со статусом "В ожидании".
@@ -47,6 +47,6 @@ namespace Booking.Application.Interfaces
 		/// Отмена бронирования.
 		/// </summary>
 		/// <param name="bookingId">Id бронирования.</param>
-		Task<bool> CanceledBookingAsync(Guid bookingId, Guid userId);
+		Task<bool> CanceledBookingAsync(Guid bookingId, Guid userId, string role);
 	}
 }
