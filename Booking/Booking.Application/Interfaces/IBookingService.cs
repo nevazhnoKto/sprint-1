@@ -34,7 +34,7 @@ namespace Booking.Application.Interfaces
 		/// Подтверждение бронирования.
 		/// </summary>
 		/// <param name="id">Id бронирования.</param>
-		Task ConfirmBookingAsync(Guid id);
+		Task ConfirmBookingAsync(BookingModel bookingModel);
 
 		/// <summary>
 		/// Отклоненение бронирования.

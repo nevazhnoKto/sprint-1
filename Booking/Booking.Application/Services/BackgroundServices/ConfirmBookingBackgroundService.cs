@@ -72,26 +72,18 @@ namespace Booking.Application.Services.BackgroundServices
 		private async Task ProcessBookingAsync(BookingModel booking, CancellationToken stoppingToken)
 		{
 
-			/*using (var scope = _serviceScope.CreateScope())
+			using (var scope = _serviceScope.CreateScope())
 			{
 				var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
-				var eventService = scope.ServiceProvider.GetRequiredService<IEventService>();
-				var eventInfo = await eventService.GetById(booking.EventId);
 				try
 				{
-					if (eventInfo != null)
-						await bookingService.ConfirmBookingAsync(booking.Id);
-					else
-					{
-						await bookingService.RejectedBookingAsync(booking.Id);
-						_logger.LogWarning($"Событие №{booking.EventId} удалено , бронь отклонена");
-					}
+					await bookingService.ConfirmBookingAsync(booking);
 				}
 				catch
 				{
 					await bookingService.RejectedBookingAsync(booking.Id, booking.EventId);
 				}
-			}*/
+			}
 		}
 	}
 }

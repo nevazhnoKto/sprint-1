@@ -90,11 +90,6 @@ namespace Booking.Application.Services
 			return await _bookingRepository.GetBookingsByStatus(BookingStatus.Pending);
 		}
 
-		public async Task ConfirmBookingAsync(Guid id)
-		{
-			await _bookingRepository.UpdateBooking(id, BookingStatus.Confirmed);
-		}
-
 		public async Task RejectedBookingAsync(Guid bookingId, Guid? eventId = default)
 		{
 			await _bookingRepository.UpdateBooking(bookingId, BookingStatus.Rejected);
@@ -128,12 +123,26 @@ namespace Booking.Application.Services
 			}
 			return true;
 		}*/
-		public Task<bool> CanceledBookingAsync(Guid bookingId, Guid userId)
+
+		private readonly ILogger<BookingService> _logger;
+		private readonly IBookingRepository _bookingRepository;
+		private readonly IMapper _mapping;
+		private readonly IKafkaIntegration _kafka;
+
+		public BookingService(ILogger<BookingService> logger, IBookingRepository bookingRepository, IMapper mapping, IKafkaIntegration kafka)
 		{
-			throw new NotImplementedException();
+			_logger = logger;
+			_bookingRepository = bookingRepository;
+			_mapping = mapping;
+			_kafka = kafka;
 		}
 
-		public Task ConfirmBookingAsync(Guid id)
+		public async Task ConfirmBookingAsync(BookingModel bookingModel)
+		{
+			await _bookingRepository.UpdateBooking(bookingModel.Id, BookingStatus.Confirmed);
+			await _kafka.SendBookingConfirmedKafka(bookingModel);
+		}
+		public Task<bool> CanceledBookingAsync(Guid bookingId, Guid userId)
 		{
 			throw new NotImplementedException();
 		}

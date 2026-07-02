@@ -23,9 +23,7 @@
 	public record BookingConfirmedEvent(
 		Guid BookingId,
 		Guid EventId,
-		Guid UserId,
-		int SeatsCount,
-		DateTimeOffset ConfirmedAt);
+		Guid UserId);
 
 	/// <summary>
 	/// Неизменяемый контракт события отмены бронирования.
@@ -34,6 +32,5 @@
 		Guid BookingId,
 		Guid EventId,
 		Guid UserId,
-		string Reason,
-		DateTimeOffset CanceledAt);
+		string Reason);
 }

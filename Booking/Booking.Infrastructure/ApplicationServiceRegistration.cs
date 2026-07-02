@@ -1,5 +1,6 @@
 ﻿using Booking.Application.Interfaces;
 using Booking.Infrastructure.DataAccess;
+using Booking.Infrastructure.KafkaIntegration;
 using Booking.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ namespace Booking.Infrastructure
 		public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
 		{
 			services.AddScoped<IBookingRepository, BookingRepository>();
+			services.AddSingleton<IKafkaIntegration, KafkaIntegrationService>();
 
 			var connectionString = configuration.GetConnectionString("DefaultConnection");
 			if (string.IsNullOrEmpty(connectionString))
