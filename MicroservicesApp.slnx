@@ -17,4 +17,5 @@
     <Project Path="User/User.Infrastructure/User.Infrastructure.csproj" />
     <Project Path="User/User.Presentation/User.Presentation.csproj" />
   </Folder>
+  <Project Path="SharedContract/SharedContract/SharedContract.csproj" Id="b8d79af5-018a-4507-8ab8-e8b164a9db9d" />
 </Solution>
