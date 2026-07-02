@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.ExceptionExtension;
+using Booking.Domain.ExceptionExtension;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Middleware
+namespace Booking.Presentation.Middleware
 {
 
 	/// <summary>

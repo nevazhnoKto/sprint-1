@@ -1,8 +1,8 @@
-﻿using Application.Models;
-using Domain.Models;
+﻿using Booking.Application.Models;
+using Booking.Domain.Models;
 using Mapster;
 
-namespace Application.Mappings
+namespace Booking.Application.Mappings
 {
 	/// <summary>
 	/// Маппинг Booking и BookingDto.
@@ -15,7 +15,7 @@ namespace Application.Mappings
 		public void Register(TypeAdapterConfig config)
 		{
 			// Базовый маппинг Event <-> EventResponseDto
-			config.NewConfig<Booking, BookingDto>()
+			config.NewConfig<BookingModel, BookingDto>()
 				.TwoWays();
 		}
 	}

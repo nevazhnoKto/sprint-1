@@ -1,13 +1,13 @@
-﻿using Application.Interfaces;
-using Application.Services;
-using Application.Validators;
+﻿using Event.Application.Interfaces;
+using Event.Application.Services;
+using Event.Application.Validators;
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
-namespace Application
+namespace Event.Application
 {
 	public static class ApplicationServiceRegistration
 	{

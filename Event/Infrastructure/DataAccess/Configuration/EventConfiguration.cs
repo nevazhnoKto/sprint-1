@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Event.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Domain.Models;
 
-namespace Infrastructure.DataAccess.Configuration
+namespace Event.Infrastructure.DataAccess.Configuration
 {
 #pragma warning disable CS1591
-	public class EventConfiguration : IEntityTypeConfiguration<Event>
+	public class EventConfiguration : IEntityTypeConfiguration<EventModel>
 	{
-		public void Configure(EntityTypeBuilder<Event> builder)
+		public void Configure(EntityTypeBuilder<EventModel> builder)
 		{
 			builder.ToTable("events");
 

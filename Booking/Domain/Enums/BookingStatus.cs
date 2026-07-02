@@ -1,4 +1,4 @@
-﻿namespace Domain.Enums
+﻿namespace Booking.Domain.Enums
 {
 	/// <summary>
 	/// Nекущий статус брони.

@@ -2,14 +2,14 @@
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using Domain.Enums;
-using Application.Interfaces;
-using Domain.Models;
+using Booking.Domain.Enums;
+using Booking.Application.Interfaces;
+using Booking.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Application.Services.BackgroundServices
+namespace Booking.Application.Services.BackgroundServices
 {
 	/// <summary>
 	/// Фоновая обработка бронирования.
@@ -41,7 +41,7 @@ namespace Application.Services.BackgroundServices
 			{
 				try
 				{
-					List<Booking> pendingBookings;
+					List<BookingModel> pendingBookings;
 					using (var scope = _serviceScope.CreateScope())
 					{
 						var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
@@ -69,7 +69,7 @@ namespace Application.Services.BackgroundServices
 			_logger.LogInformation("ConfirmBookingBackgroundService остановлен");
 		}
 
-		private async Task ProcessBookingAsync(Booking booking, CancellationToken stoppingToken)
+		private async Task ProcessBookingAsync(BookingModel booking, CancellationToken stoppingToken)
 		{
 
 			/*using (var scope = _serviceScope.CreateScope())

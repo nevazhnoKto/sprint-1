@@ -1,14 +1,13 @@
-using Application.Interfaces;
-using Application.Models;
-using Domain.Enums;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Models;
+using Booking.Presentation.Models;
 using System.Net;
 using System.Security.Claims;
+using Booking.Application.Interfaces;
+using Booking.Application.Models;
 
-namespace Presentation.Controllers
+namespace Booking.Presentation.Controllers
 {
 	/// <summary>
 	/// Api контроллер для работы с Событиями.

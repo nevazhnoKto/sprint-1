@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Common
+namespace Booking.Domain.Common
 {
 	public static class CommonConst
 	{

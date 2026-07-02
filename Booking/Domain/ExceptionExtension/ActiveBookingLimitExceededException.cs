@@ -1,6 +1,6 @@
-﻿using Domain.Common;
+﻿using Booking.Domain.Common;
 
-namespace Domain.ExceptionExtension
+namespace Booking.Domain.ExceptionExtension
 {
 	/// <summary>
 	/// Исключение при достижения лимита бронирования

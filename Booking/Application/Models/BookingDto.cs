@@ -1,6 +1,6 @@
-﻿using Domain.Enums;
+﻿using Booking.Domain.Enums;
 
-namespace Application.Models
+namespace Booking.Application.Models
 {
 	/// <summary>
 	/// Модель бронирования.

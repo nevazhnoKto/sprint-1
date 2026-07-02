@@ -1,7 +1,6 @@
-﻿using Application.Models;
-using Domain.Models;
+﻿using Event.Application.Models;
 
-namespace Application.Interfaces
+namespace Event.Application.Interfaces
 {
 	/// <summary>
 	/// Интерфейс сервиса обработки событий.

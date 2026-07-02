@@ -1,16 +1,16 @@
-﻿namespace Domain.Models
+﻿namespace Event.Domain.Models
 {
 	/// <summary>
 	/// Модель Event.
 	/// </summary>
-	public class Event
+	public class EventModel
 	{
 		private readonly SemaphoreSlim _processingSemaphore = new(1, 1);
 
 		/// <summary>
 		/// Пустой конструктор для EF Core.
 		/// </summary>
-		private Event()
+		private EventModel()
 		{
 
 		}
@@ -18,7 +18,7 @@
 		/// <summary>
 		/// Конструктор Event.
 		/// </summary>
-		public Event(Guid id, string? title, string? description, DateTime startAt, DateTime endAt, int totalSeats)
+		public EventModel(Guid id, string? title, string? description, DateTime startAt, DateTime endAt, int totalSeats)
 		{
 			Id = id;
 			Title = title;

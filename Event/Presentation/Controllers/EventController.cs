@@ -1,12 +1,12 @@
-using Application.Interfaces;
-using Application.Models;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.Models;
+using Event.Presentation.Models;
 using System.Net;
+using Event.Application.Interfaces;
+using Event.Application.Models;
 
-namespace Presentation.Controllers
+namespace Event.Presentation.Controllers
 {
 	/// <summary>
 	/// Api контроллер для работы с Событиями.

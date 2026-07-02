@@ -1,7 +1,7 @@
-﻿using Application.Models;
+﻿using Event.Application.Models;
 using FluentValidation;
 
-namespace Application.Validators
+namespace Event.Application.Validators
 {
 	/// <summary>
 	/// Валидация EventDto.

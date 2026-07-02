@@ -1,12 +1,12 @@
-﻿using Application.Interfaces;
-using Application.Models;
-using Domain.ExceptionExtension;
-using Domain.Models;
+﻿using Event.Application.Interfaces;
+using Event.Application.Models;
+using Event.Domain.ExceptionExtension;
+using Event.Domain.Models;
 using MapsterMapper;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.Services
+namespace Event.Application.Services
 {
 #pragma warning disable CS1591
 
@@ -46,7 +46,7 @@ namespace Application.Services
 			return paginatedResult;
 		}
 
-		private IEnumerable<Event> GetPage(IEnumerable<Event> events, int page, int pageSize)
+		private IEnumerable<EventModel> GetPage(IEnumerable<EventModel> events, int page, int pageSize)
 		{
 			return events.OrderByDescending(e => e.StartAt)
 						 .Skip((page - 1) * pageSize)
@@ -68,7 +68,7 @@ namespace Application.Services
 
 		public async Task<bool> Create(CreateEventRequestDto eventCustomDto)
 		{
-			var eventCustom = _mapper.Map<Event>(eventCustomDto);
+			var eventCustom = _mapper.Map<EventModel>(eventCustomDto);
 			if (eventCustom.TotalSeats <= 0)
 			{
 				throw new ValidationException($"TotalSeats должно быть больше нуля. Указано значение: {eventCustom.TotalSeats}");
@@ -93,7 +93,7 @@ namespace Application.Services
 
 		public async Task<bool> Update(Guid id, UpdateEventRequestDto updateCustomDto)
 		{
-			var eventCustom = _mapper.Map<Event>(updateCustomDto);
+			var eventCustom = _mapper.Map<EventModel>(updateCustomDto);
 			if (!ValidateDate(eventCustom.StartAt, eventCustom.EndAt))
 			{
 				return false;

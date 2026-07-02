@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Infrastructure.DataAccess;
-using Application.Interfaces;
-using Domain.Models;
+﻿
+using Event.Application.Interfaces;
+using Event.Domain.Models;
+using Event.Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories
+namespace Event.Infrastructure.Repositories
 {
 #pragma warning disable CS1591
 	public class EventRepository : IEventRepository
@@ -14,7 +15,7 @@ namespace Infrastructure.Repositories
 		{
 			_context = context;
 		}
-		public async Task AddEvent(Event newEvent)
+		public async Task AddEvent(EventModel newEvent)
 		{
 			_context.Events.Add(newEvent);
 			await _context.SaveChangesAsync();
@@ -30,25 +31,25 @@ namespace Infrastructure.Repositories
 			}
 		}
 
-		public async Task<Event?> GetEventById(Guid id)
+		public async Task<EventModel?> GetEventById(Guid id)
 		{
 			return await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
 		}
-		public async Task UpdateAsync(Event eventCustom)
+		public async Task UpdateAsync(EventModel eventCustom)
 		{
 			_context.Events.Update(eventCustom);
 			await _context.SaveChangesAsync();
 		}
 
-		public async Task<List<Event>> GetEvents()
+		public async Task<List<EventModel>> GetEvents()
 		{
 			return await _context.Events.ToListAsync();
 		}
 
 
-		public async Task<List<Event>> GetEventsFiltered(string? title, DateTime? from, DateTime? to)
+		public async Task<List<EventModel>> GetEventsFiltered(string? title, DateTime? from, DateTime? to)
 		{
-			IQueryable<Event> query = _context.Events.AsQueryable();  // Начинаем с IQueryable
+			IQueryable<EventModel> query = _context.Events.AsQueryable();  // Начинаем с IQueryable
 
 			if (!string.IsNullOrEmpty(title))
 			{
@@ -72,7 +73,7 @@ namespace Infrastructure.Repositories
 			return result;
 		}
 
-		public async Task<bool> UpdateEventByIndex(Guid index, Event eventCustom)
+		public async Task<bool> UpdateEventByIndex(Guid index, EventModel eventCustom)
 		{
 			var existingEvent = _context.Events.FirstOrDefault(e => e.Id == index);
 			

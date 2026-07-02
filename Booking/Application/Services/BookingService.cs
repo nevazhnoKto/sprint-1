@@ -1,16 +1,16 @@
-﻿using Application.Interfaces;
-using Application.Models;
-using Domain.Common;
-using Domain.Enums;
-using Domain.ExceptionExtension;
-using Domain.Models;
+﻿using Booking.Application.Interfaces;
+using Booking.Application.Models;
+using Booking.Domain.Common;
+using Booking.Domain.Enums;
+using Booking.Domain.ExceptionExtension;
+using Booking.Domain.Models;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Data;
 using System.Security.Claims;
 
-namespace Application.Services
+namespace Booking.Application.Services
 {
 
 #pragma warning disable CS1591
@@ -143,7 +143,7 @@ namespace Application.Services
 			throw new NotImplementedException();
 		}
 
-		public Task<List<Booking>> GetAllPendingStatusBookingAsync()
+		public Task<List<BookingModel>> GetAllPendingStatusBookingAsync()
 		{
 			throw new NotImplementedException();
 		}

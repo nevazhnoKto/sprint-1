@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.ExceptionExtension;
+using Event.Domain.ExceptionExtension;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Middleware
+namespace Event.Presentation.Middleware
 {
 
 	/// <summary>

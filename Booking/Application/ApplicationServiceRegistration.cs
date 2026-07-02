@@ -1,11 +1,11 @@
-﻿using Application.Interfaces;
-using Application.Services;
-using Application.Services.BackgroundServices;
+﻿using Booking.Application.Interfaces;
+using Booking.Application.Services;
+using Booking.Application.Services.BackgroundServices;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Application
+namespace Booking.Application
 {
 	public static class ApplicationServiceRegistration
 	{

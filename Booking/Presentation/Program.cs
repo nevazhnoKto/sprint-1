@@ -1,11 +1,11 @@
-using Application;
 using FluentValidation;
-using Infrastructure;
-using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Presentation.Middleware;
+using Booking.Presentation.Middleware;
 using System.Reflection;
+using Booking.Application;
+using Booking.Infrastructure;
+using Booking.Infrastructure.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 

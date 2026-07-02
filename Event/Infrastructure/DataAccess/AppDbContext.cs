@@ -1,8 +1,7 @@
-﻿using Domain.Models;
+﻿using Event.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
-namespace Infrastructure.DataAccess
+namespace Event.Infrastructure.DataAccess
 {
 	/// <summary>
 	/// Контекст базы данных для работы с событиями и бронированиями.
@@ -20,7 +19,7 @@ namespace Infrastructure.DataAccess
 		/// Получает набор сущностей Event (событий).
 		/// Используется для выполнения CRUD операций над событиями.
 		/// </summary>
-		public DbSet<Event> Events => Set<Event>();
+		public DbSet<EventModel> Events => Set<EventModel>();
 
 		/// <summary>
 		/// Настраивает модели и их связи при создании модели базы данных.

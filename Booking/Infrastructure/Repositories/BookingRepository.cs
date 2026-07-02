@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Infrastructure.DataAccess;
-using Domain.Enums;
-using Application.Interfaces;
-using Domain.Models;
+using Booking.Infrastructure.DataAccess;
+using Booking.Domain.Enums;
+using Booking.Application.Interfaces;
+using Booking.Domain.Models;
 
-namespace Infrastructure.Repositories
+namespace Booking.Infrastructure.Repositories
 {
 #pragma warning disable CS1591
 
@@ -15,9 +15,9 @@ namespace Infrastructure.Repositories
 		{
 			_context = context;
 		}
-		public async Task<Booking> AddBooking(Guid eventId, Guid userId)
+		public async Task<BookingModel> AddBooking(Guid eventId, Guid userId)
 		{
-			var booking = new Booking(eventId, userId);
+			var booking = new BookingModel(eventId, userId);
 			_context.Bookings.Add(booking);
 			await _context.SaveChangesAsync();
 			return booking;
@@ -33,16 +33,16 @@ namespace Infrastructure.Repositories
 			}
 		}
 
-		public async Task<Booking?> GetBookingById(Guid bookingId)
+		public async Task<BookingModel?> GetBookingById(Guid bookingId)
 		{
 			return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
 		}
-		public async Task<Booking?> GetBookingById(Guid bookingId, Guid userId)
+		public async Task<BookingModel?> GetBookingById(Guid bookingId, Guid userId)
 		{
 			return await _context.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == userId);
 		}
 
-		public async Task<List<Booking>> GetBookingsByStatus(BookingStatus status)
+		public async Task<List<BookingModel>> GetBookingsByStatus(BookingStatus status)
 		{
 			return await _context.Bookings.Where(b => b.Status == status).ToListAsync();
 		}

@@ -1,6 +1,6 @@
-﻿using Domain.Models;
+﻿using Event.Domain.Models;
 
-namespace Application.Models
+namespace Event.Application.Models
 {
 	/// <summary>
 	/// Результата пагинации для поиска событий

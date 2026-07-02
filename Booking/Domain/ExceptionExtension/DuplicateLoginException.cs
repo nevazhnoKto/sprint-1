@@ -1,4 +1,4 @@
-﻿namespace Domain.ExceptionExtension
+﻿namespace Booking.Domain.ExceptionExtension
 {
 	/// <summary>
 	/// Исключение при отсутствии прав.

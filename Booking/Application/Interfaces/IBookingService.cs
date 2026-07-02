@@ -1,8 +1,8 @@
-﻿using Application.Models;
-using Domain.Enums;
-using Domain.Models;
+﻿using Booking.Application.Models;
+using Booking.Domain.Enums;
+using Booking.Domain.Models;
 
-namespace Application.Interfaces
+namespace Booking.Application.Interfaces
 {
 	/// <summary>
 	/// Сервис бронирования.
@@ -28,7 +28,7 @@ namespace Application.Interfaces
 		/// Получить все брони со статусом "В ожидании".
 		/// </summary>
 		/// <returns>Список всех броней со статусом "В ожидании".</returns>
-		Task<List<Booking>> GetAllPendingStatusBookingAsync();
+		Task<List<BookingModel>> GetAllPendingStatusBookingAsync();
 
 		/// <summary>
 		/// Подтверждение бронирования.

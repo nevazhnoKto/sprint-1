@@ -1,11 +1,11 @@
-using Application;
 using FluentValidation;
-using Infrastructure;
-using Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Presentation.Middleware;
+using Event.Presentation.Middleware;
 using System.Reflection;
+using Event.Infrastructure.DataAccess;
+using Event.Application;
+using Event.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

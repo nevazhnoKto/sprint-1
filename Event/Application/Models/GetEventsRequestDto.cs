@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 
-namespace Application.Models
+namespace Event.Application.Models
 {
 	/// <summary>
 	/// Query параметры для получения событий.

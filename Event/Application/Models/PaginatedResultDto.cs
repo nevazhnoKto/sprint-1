@@ -1,4 +1,4 @@
-﻿namespace Application.Models
+﻿namespace Event.Application.Models
 {
 	/// <summary>
 	/// Результата пагинации для ответа в контроллере

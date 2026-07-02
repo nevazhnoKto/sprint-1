@@ -1,11 +1,11 @@
-﻿using Application.Interfaces;
-using Infrastructure.DataAccess;
-using Infrastructure.Repositories;
+﻿using Event.Application.Interfaces;
+using Event.Infrastructure.DataAccess;
+using Event.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastructure
+namespace Event.Infrastructure
 {
 	public static class InfrastructureServiceRegistration
 	{

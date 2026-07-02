@@ -1,11 +1,11 @@
-﻿using Application.Interfaces;
-using Infrastructure.DataAccess;
-using Infrastructure.Repositories;
+﻿using Booking.Application.Interfaces;
+using Booking.Infrastructure.DataAccess;
+using Booking.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastructure
+namespace Booking.Infrastructure
 {
 	public static class InfrastructureServiceRegistration
 	{

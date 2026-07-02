@@ -1,7 +1,7 @@
-﻿using Domain.Enums;
-using Domain.Models;
+﻿using Booking.Domain.Models;
+using Booking.Domain.Enums;
 
-namespace Application.Interfaces
+namespace Booking.Application.Interfaces
 {
 	/// <summary>
 	/// Интерфейс репозитория для работы с бронированиями.
@@ -12,13 +12,13 @@ namespace Application.Interfaces
 		/// Создаёт новое бронирование для указанного события.
 		/// </summary>
 		/// <param name="eventId">Идентификатор события.</param>
-		Task<Booking> AddBooking(Guid eventId, Guid userId);
+		Task<BookingModel> AddBooking(Guid eventId, Guid userId);
 
 		/// <summary>
 		/// Возвращает бронирование по его идентификатору.
 		/// </summary>
 		/// <param name="bookingId">Идентификатор бронирования.</param>
-		Task<Booking?> GetBookingById(Guid bookingId);
+		Task<BookingModel?> GetBookingById(Guid bookingId);
 
 		/// <summary>
 		/// Удаляет бронирование по идентификатору.
@@ -30,7 +30,7 @@ namespace Application.Interfaces
 		/// Возвращает список бронирований с указанным статусом.
 		/// </summary>
 		/// <param name="status">Статус бронирования (например, Active, Cancelled).</param>
-		Task<List<Booking>> GetBookingsByStatus(BookingStatus status);
+		Task<List<BookingModel>> GetBookingsByStatus(BookingStatus status);
 
 		/// <summary>
 		/// Обновляет статус существующего бронирования.
@@ -51,6 +51,6 @@ namespace Application.Interfaces
 		/// <param name="bookingId"></param>
 		/// <param name="userId"></param>
 		/// <returns></returns>
-		Task<Booking?> GetBookingById(Guid bookingId, Guid userId);
+		Task<BookingModel?> GetBookingById(Guid bookingId, Guid userId);
 	}
 }

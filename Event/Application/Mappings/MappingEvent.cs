@@ -1,8 +1,8 @@
-﻿using Application.Models;
-using Domain.Models;
+﻿using Event.Application.Models;
+using Event.Domain.Models;
 using Mapster;
 
-namespace Application.Mappings
+namespace Event.Application.Mappings
 {
 	/// <summary>
 	/// Маппинг Event
@@ -15,12 +15,12 @@ namespace Application.Mappings
 		public void Register(TypeAdapterConfig config)
 		{
 			// Базовый маппинг Event <-> EventResponseDto
-			config.NewConfig<Event, EventDto>()
+			config.NewConfig<EventModel, EventDto>()
 				.TwoWays(); // ReverseMap аналог
 
 			// Маппинг для создания события (CreateEventRequestDto -> Event)
-			config.NewConfig<CreateEventRequestDto, Event>()
-				 .MapWith(src => new Event(Guid.NewGuid(),
+			config.NewConfig<CreateEventRequestDto, EventModel>()
+				 .MapWith(src => new EventModel(Guid.NewGuid(),
 											src.Title,
 											src.Description,
 											src.StartAt,
@@ -29,7 +29,7 @@ namespace Application.Mappings
 				));
 
 			// Маппинг для обновления события (UpdateEventRequestDto -> Event)
-			config.NewConfig<UpdateEventRequestDto, Event>();
+			config.NewConfig<UpdateEventRequestDto, EventModel>();
 		}
 	}
 }

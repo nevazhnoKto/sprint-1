@@ -1,8 +1,7 @@
-﻿using Domain.Models;
+﻿using Booking.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
-namespace Infrastructure.DataAccess
+namespace Booking.Infrastructure.DataAccess
 {
 	/// <summary>
 	/// Контекст базы данных для работы с событиями и бронированиями.
@@ -20,7 +19,7 @@ namespace Infrastructure.DataAccess
 		/// Получает набор сущностей Booking (бронирований).
 		/// Используется для выполнения CRUD операций над бронированиями.
 		/// </summary>
-		public DbSet<Booking> Bookings => Set<Booking>();
+		public DbSet<BookingModel> Bookings => Set<BookingModel>();
 
 		/// <summary>
 		/// Настраивает модели и их связи при создании модели базы данных.

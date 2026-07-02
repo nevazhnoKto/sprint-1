@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Presentation.Models
+namespace Booking.Presentation.Models
 {
 	/// <summary>
 	/// Класс с основными параметрами.

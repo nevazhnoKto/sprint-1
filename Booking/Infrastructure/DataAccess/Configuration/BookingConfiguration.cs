@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Domain.Models;
+using Booking.Domain.Models;
 
-namespace Infrastructure.DataAccess.Configuration
+namespace Booking.Infrastructure.DataAccess.Configuration
 {
 #pragma warning disable CS1591
-	public class BookingConfiguration : IEntityTypeConfiguration<Booking>
+	public class BookingConfiguration : IEntityTypeConfiguration<BookingModel>
 	{
-		public void Configure(EntityTypeBuilder<Booking> builder)
+		public void Configure(EntityTypeBuilder<BookingModel> builder)
 		{
 			builder.ToTable("bookings");
 

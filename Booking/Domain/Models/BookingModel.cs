@@ -1,16 +1,16 @@
-﻿using Domain.Enums;
+﻿using Booking.Domain.Enums;
 
-namespace Domain.Models
+namespace Booking.Domain.Models
 {
 	/// <summary>
 	/// Модель бронирования.
 	/// </summary>
-	public class Booking
+	public class BookingModel
 	{
 		/// <summary>
 		/// Пустой конструктор для EF Core.
 		/// </summary>
-		private Booking()
+		private BookingModel()
 		{
 			Id = Guid.NewGuid();
 			UserId = Guid.Empty;
@@ -22,7 +22,7 @@ namespace Domain.Models
 		/// <summary>
 		/// Конструктор для создания новой брони
 		/// </summary>
-		public Booking(Guid eventId, Guid userId)
+		public BookingModel(Guid eventId, Guid userId)
 		{
 			Id = Guid.NewGuid();
 			UserId = userId;
