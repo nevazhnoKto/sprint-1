@@ -2,6 +2,7 @@
 using Booking.Domain.Models;
 using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SharedContract;
 using System.Text.Json;
@@ -12,7 +13,7 @@ namespace Booking.Infrastructure.KafkaIntegration
 	{
 		private readonly ILogger<KafkaIntegrationService> _logger;
 		private readonly IProducer<string, string> _producer;
-		public KafkaIntegrationService(IConfiguration configuration, ILogger<KafkaIntegrationService> logger)
+		public KafkaIntegrationService(IConfiguration configuration, IHostApplicationLifetime appLifetime, ILogger<KafkaIntegrationService> logger)
 		{
 			_logger = logger;
 			var bootstrapServers = configuration["Kafka:BootstrapServers"]
@@ -23,10 +24,13 @@ namespace Booking.Infrastructure.KafkaIntegration
 				Acks = Acks.All
 			};
 			_producer = new ProducerBuilder<string, string>(config).Build();
+
+			// Привязываем хук к моменту остановки приложения
+			appLifetime.ApplicationStopping.Register(OnApplicationStopping);
 		}
 		public async Task SendBookingConfirmedKafka(BookingModel bookingModel)
 		{
-			var request = new BookingConfirmedEvent(bookingModel.Id, bookingModel.EventId, bookingModel.UserId);
+			var request = new BookingConfirmedEvent(bookingModel.Id, bookingModel.EventId, bookingModel.UserId, 1, DateTime.Now);
 			var kafkaMessage = new Message<string, string>
 			{
 				Key = bookingModel.EventId.ToString(),
@@ -52,12 +56,16 @@ namespace Booking.Infrastructure.KafkaIntegration
 			_logger.LogInformation($"Доставлено: {result.TopicPartitionOffset}");
 		}
 
-		public void Dispose()
+		private void OnApplicationStopping()
 		{
-			// Освобождаем тяжелые ресурсы продюсера (флашит оставшиеся сообщения и закрывает соединения)
-			_producer.Flush(TimeSpan.FromSeconds(10));
-			_producer.Dispose();
+			_logger.LogInformation("IHostApplicationLifetime: Вызывается Flush для продюсера Kafka...");
+			_producer.Flush(TimeSpan.FromSeconds(5));
 		}
 
+		public void Dispose()
+		{
+			_logger.LogInformation("Освобождение ресурсов продюсера Kafka (Dispose).");
+			_producer.Dispose();
+		}
 	}
 }
