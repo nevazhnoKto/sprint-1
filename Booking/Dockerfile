@@ -1,11 +1,10 @@
-FROM ://microsoft.com AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
 
-FROM ://microsoft.com AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Копируем проекты для кэширования слоев
 COPY ["SharedContract/SharedContract/SharedContract.csproj", "SharedContract/SharedContract/"]
 COPY ["Booking/Booking.Presentation/Booking.Presentation.csproj", "Booking/Booking.Presentation/"]
 COPY ["Booking/Booking.Application/Booking.Application.csproj", "Booking/Booking.Application/"]
@@ -15,13 +14,16 @@ COPY ["Booking/Booking.Infrastructure/Booking.Infrastructure.csproj", "Booking/B
 RUN dotnet restore "Booking/Booking.Presentation/Booking.Presentation.csproj"
 
 COPY . .
+
 WORKDIR "/src/Booking/Booking.Presentation"
 RUN dotnet build "Booking.Presentation.csproj" -c Release -o /app/build
 
 FROM build AS publish
+WORKDIR "/src/Booking/Booking.Presentation"
 RUN dotnet publish "Booking.Presentation.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Booking.Presentation.dll"]
+# ИСПРАВЛЕНО: используем Presentation.dll вместо Booking.Presentation.dll
+ENTRYPOINT ["dotnet", "Presentation.dll"]
