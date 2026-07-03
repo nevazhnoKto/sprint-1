@@ -87,6 +87,62 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    
+  # ─────────────────────────── .NET Микросервисы ───────────────────────────
+  users-service:
+    container_name: eventapi-users-service
+    build:
+      context: .
+      dockerfile: User/Dockerfile
+    ports:
+      - "5001:8080"
+    depends_on:
+      users-db:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=users-db;Port=5432;Database=users;Username=postgres;Password=postgres
+      - JwtSettings__SecretKey=SuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=YourUsersService
+      - JwtSettings__Audience=YourMicroservicesApp
+
+  events-service:
+    container_name: eventapi-events-service
+    build:
+      context: .
+      dockerfile: Event/Dockerfile
+    ports:
+      - "5002:8080"
+    depends_on:
+      events-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=events-db;Port=5432;Database=events;Username=postgres;Password=postgres
+      - Kafka__BootstrapServers=kafka:29092
+      - Kafka__ConsumerGroup=events-service-group
+      - JwtSettings__SecretKey=SuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=YourUsersService
+      - JwtSettings__Audience=YourMicroservicesApp
+
+  bookings-service:
+    container_name: eventapi-bookings-service
+    build:
+      context: .
+      dockerfile: Booking/Dockerfile
+    ports:
+      - "5003:8080"
+    depends_on:
+      bookings-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=bookings-db;Port=5432;Database=bookings;Username=postgres;Password=postgres
+      - Kafka__BootstrapServers=kafka:29092
+      - JwtSettings__SecretKey=SuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=YourUsersService
+      - JwtSettings__Audience=YourMicroservicesApp
 
 volumes:
   users-db-data:
