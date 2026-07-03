@@ -23,7 +23,9 @@
 	public record BookingConfirmedEvent(
 		Guid BookingId,
 		Guid EventId,
-		Guid UserId);
+		Guid UserId,
+		int SeatsCount,
+		DateTime ConfirmedAt);
 
 	/// <summary>
 	/// Неизменяемый контракт события отмены бронирования.
