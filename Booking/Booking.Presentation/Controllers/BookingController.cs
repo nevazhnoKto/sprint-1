@@ -10,7 +10,7 @@ using Booking.Application.Models;
 namespace Booking.Presentation.Controllers
 {
 	/// <summary>
-	/// Api контроллер для работы с Событиями.
+	/// Api контроллер для работы с бронированием.
 	/// </summary>
 	[ApiController]
 	[Authorize]
@@ -20,7 +20,7 @@ namespace Booking.Presentation.Controllers
 		private readonly IBookingService _bookingService;
 		private readonly IMapper _mapper;
 		/// <summary>
-		/// Api контроллер для работы с Событиями.
+		/// Api контроллер для работы с бронированием.
 		/// </summary>
 		/// <param name="mapper">Маппер.</param>
 		/// <param name="bookingService">Сервис для работы с бронированием.</param>
