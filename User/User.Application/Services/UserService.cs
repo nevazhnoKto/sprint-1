@@ -1,0 +1,49 @@
+﻿using User.Domain.Models;
+using User.Application.Interfaces;
+using User.Domain.Enums;
+using User.Domain.ExceptionExtension;
+
+namespace User.Application.Services
+{
+	internal class UserService : IUserService
+	{
+		private readonly ITokenGenerator _tokenGenerator;
+		private readonly IPasswordHasher _passwordHasher;
+		private readonly IUserRepository _userRepository;
+
+		public UserService(ITokenGenerator tokenGenerator, IPasswordHasher passwordHasher, IUserRepository userRepository)
+		{
+			_tokenGenerator = tokenGenerator;
+			_passwordHasher = passwordHasher;
+			_userRepository = userRepository;
+		}
+		public async Task<string> RegistrationUser(string login, string password, Roles role)
+		{
+			var user = await _userRepository.GetUserByLogin(login);
+
+			if (user != null)
+				throw new DuplicateLoginException(login);
+
+			var hashPassword = _passwordHasher.HashPassword(password);
+			user = new UserModel(login, hashPassword, role);
+			await _userRepository.AddUser(user);
+			
+			var token = _tokenGenerator.GenerateToken(user);
+			return token;
+		}
+
+		public async Task<string> LoginUser(string login, string password)
+		{
+			// Найти в БД.
+			var user = await _userRepository.GetUserByLogin(login);
+			if (user == null || !_passwordHasher.VerifyPassword(user.HashPassword, password))
+				throw new UnauthorizedAccessException("Invalid login or password");
+
+			// Сгенерировать токен
+			var token = _tokenGenerator.GenerateToken(user);
+			return token;
+		}
+
+		
+	}
+}
