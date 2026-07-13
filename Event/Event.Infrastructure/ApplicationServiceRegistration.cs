@@ -21,7 +21,7 @@ namespace Event.Infrastructure
 
 			services.AddScoped<IEventRepository, EventRepository>();
 			services.AddScoped<IInboxRepository, InboxRepository>();
-			services.AddScoped<IRedisService, RedisService>();
+			services.AddSingleton<IRedisService, RedisService>();
 
 			var connectionString = configuration.GetConnectionString("DefaultConnection");
 			if (string.IsNullOrEmpty(connectionString))

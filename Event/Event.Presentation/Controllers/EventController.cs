@@ -58,7 +58,7 @@ namespace Event.Presentation.Controllers
 		/// Возвращает 10 событий с наибольшим процентом проданных мест.
 		/// </summary>
 		/// <returns>Список событий.</returns>
-		[HttpGet]
+		[HttpGet("top")]
 		[ProducesResponseType(typeof(List<EventDto>), StatusCodes.Status200OK)]
 		[Produces("application/json")]
 		public async Task<IActionResult> GetTop10Events()

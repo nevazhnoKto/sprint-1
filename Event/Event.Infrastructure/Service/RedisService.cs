@@ -59,7 +59,7 @@ namespace Event.Infrastructure.Service
 			try
 			{
 				var cacheKey = GetCacheKeyByEventId(eventId);
-				return await _redis.StringSetAsync(cacheKey, JsonSerializer.Serialize(value), TimeSpan.FromMinutes(10));
+				return await _redis.StringSetAsync(cacheKey, JsonSerializer.Serialize(value), TimeSpan.FromMinutes(5));
 			}
 			catch(Exception ex)
 			{

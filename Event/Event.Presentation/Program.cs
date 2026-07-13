@@ -46,6 +46,7 @@ builder.Services.AddSwaggerGen(options =>
 			Array.Empty<string>()
 		}
 	});
+	options.CustomSchemaIds(type => type.FullName);
 });
 
 // Регистрация всех валидаторов.
@@ -81,6 +82,7 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
+
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
