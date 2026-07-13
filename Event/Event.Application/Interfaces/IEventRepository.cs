@@ -51,5 +51,11 @@ namespace Event.Application.Interfaces
 		/// <param name="eventCustom">Обновленное событие.</param>
 		/// <returns></returns>
 		Task UpdateAsync(EventModel eventCustom);
+
+		/// <summary>
+		/// Получить 10 событий с наибольшим процентом проданных мест из БД.
+		/// </summary>
+		/// <returns>Список событий.</returns>
+		Task<List<EventModel>> GetTop10EventsAsync();
 	}
 }

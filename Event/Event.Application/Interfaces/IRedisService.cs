@@ -28,5 +28,18 @@ namespace Event.Application.Interfaces
 		/// <param name="eventId">ИД события.</param>
 		/// <returns>Boolean</returns>
 		Task<bool> DeleteCacheAsync(Guid eventId);
+
+		/// <summary>
+		/// Возвращает 10 событий с наибольшим процентом проданных мест.
+		/// </summary>
+		/// <returns>Список событий.</returns>
+		Task<List<EventModel>?> GetTop10EventsAsync();
+
+		/// <summary>
+		///  Заполняет в кэш 10 событий с наибольшим процентом проданных мест.
+		/// </summary>
+		/// <param name="topEvents">Список событий.</param>
+		/// <returns>Удачное обновление кэша.</returns>
+		Task<bool> SetTop10EventsAsync(List<EventModel> topEvents);
 	}
 }

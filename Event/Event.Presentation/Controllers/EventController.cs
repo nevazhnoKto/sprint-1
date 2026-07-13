@@ -50,7 +50,27 @@ namespace Event.Presentation.Controllers
 				Success = true,
 				Data = eventsDto,
 				StatusCode = HttpStatusCode.OK,
-				Message = "Вернул все Events с заданными фильтрамиы"
+				Message = "Вернул все Events с заданными фильтрамиы."
+			});
+		}
+
+		/// <summary>
+		/// Возвращает 10 событий с наибольшим процентом проданных мест.
+		/// </summary>
+		/// <returns>Список событий.</returns>
+		[HttpGet]
+		[ProducesResponseType(typeof(List<EventDto>), StatusCodes.Status200OK)]
+		[Produces("application/json")]
+		public async Task<IActionResult> GetTop10Events()
+		{
+			var listEvents = await _eventService.GetTop10Events();
+
+			return Ok(new ApiResult<List<EventDto>>()
+			{
+				Success = true,
+				Data = listEvents!,
+				StatusCode = HttpStatusCode.OK,
+				Message = listEvents.Any() ? "Вернул 10 событий с наибольшим процентом проданных мест." : "Список событий пуст!"
 			});
 		}
 
@@ -74,7 +94,7 @@ namespace Event.Presentation.Controllers
 					Success = true,
 					Data = eventById,
 					StatusCode = HttpStatusCode.OK,
-					Message = $"Вернул Event по id = {id}"
+					Message = $"Вернул Event по id = {id}."
 				});
 			}
 
@@ -82,7 +102,7 @@ namespace Event.Presentation.Controllers
 			{
 				Success = false,
 				StatusCode = HttpStatusCode.NotFound,
-				Message = $"Event по id = {id} не существует"
+				Message = $"Event по id = {id} не существует."
 			});
 		}
 
@@ -104,7 +124,7 @@ namespace Event.Presentation.Controllers
 					Success = true,
 					Data = newEventDto,
 					StatusCode = HttpStatusCode.Created,
-					Message = $"Создался Event по id = {newEventDto.Id}"
+					Message = $"Создался Event по id = {newEventDto.Id}."
 				};
 				return CreatedAtAction(nameof(GetByIdEvent), new { id = newEventDto.Id }, response);
 			}
@@ -113,7 +133,7 @@ namespace Event.Presentation.Controllers
 			{
 				Success = false,
 				StatusCode = HttpStatusCode.BadRequest,
-				Message = $"Event по id = {newEventDto.Id} уже существует"
+				Message = $"Event по id = {newEventDto.Id} уже существует."
 			});
 		}
 
@@ -139,7 +159,7 @@ namespace Event.Presentation.Controllers
 			{
 				Success = false,
 				StatusCode = HttpStatusCode.NotFound,
-				Message = $"Event с id = {id} не найден"
+				Message = $"Event с id = {id} не найден."
 			});
 		}
 
@@ -164,7 +184,7 @@ namespace Event.Presentation.Controllers
 			{
 				Success = false,
 				StatusCode = HttpStatusCode.NotFound,
-				Message = $"Event с id = {id} не найден"
+				Message = $"Event с id = {id} не найден."
 			});
 		}
 	}

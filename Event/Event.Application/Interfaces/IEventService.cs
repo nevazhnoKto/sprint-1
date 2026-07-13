@@ -1,4 +1,5 @@
 ﻿using Event.Application.Models;
+using Event.Domain.Models;
 
 namespace Event.Application.Interfaces
 {
@@ -63,5 +64,11 @@ namespace Event.Application.Interfaces
 		/// <param name="count">Количество мест для отмены.</param>
 		/// <returns></returns>
 		Task<bool> ReleaseSeats(Guid id, int count = 1);
+
+		/// <summary>
+		/// Возвращает 10 событий с наибольшим процентом проданных мест
+		/// </summary>
+		/// <returns>Список событий.</returns>
+		Task<List<EventDto?>> GetTop10Events();
 	}
 }

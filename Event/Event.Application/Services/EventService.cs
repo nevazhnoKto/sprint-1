@@ -212,6 +212,21 @@ namespace Event.Application.Services
 
 			return result;
 		}
+
+		public async Task<List<EventDto?>> GetTop10Events()
+		{
+			var eventsList = await _redis.GetTop10EventsAsync();
+			if (eventsList == null)
+			{
+				eventsList = await _eventRepository.GetTop10EventsAsync();
+				if(eventsList == null)
+				{
+					var message = $"Список событий пуст!";
+					_logger.LogInformation(message);
+				}
+			}
+			return _mapper.Map<List<EventDto>>(eventsList!)!;
+		}
 	}
 #pragma warning restore CS1591
 }
