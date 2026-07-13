@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
 
@@ -71,9 +72,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(builder.Configuration);
+await builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAuthorization();
-
 
 var app = builder.Build();
 

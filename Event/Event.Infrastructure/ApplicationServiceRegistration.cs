@@ -5,12 +5,13 @@ using Event.Infrastructure.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace Event.Infrastructure
 {
 	public static class InfrastructureServiceRegistration
 	{
-		public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+		public async static Task<IServiceCollection> AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
 		{
 			// 1. Инициализатор топика (отработает самым первым)
 			services.AddHostedService<KafkaInitializer>();
@@ -27,6 +28,11 @@ namespace Event.Infrastructure
 				throw new InvalidOperationException(
 					"Connection string 'DefaultConnection' not found in appsettings.json or environment variables.");
 			}
+
+			// Подключение Redis с настройками из appsettings.
+			var connectionStringRedis = configuration.GetConnectionString("Redis");
+			var options = ConfigurationOptions.Parse(connectionStringRedis!);
+			services.AddSingleton<IConnectionMultiplexer>(await ConnectionMultiplexer.ConnectAsync(options));
 
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseNpgsql(connectionString),
