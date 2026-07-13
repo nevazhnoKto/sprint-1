@@ -40,6 +40,6 @@ namespace Event.Application.Interfaces
 		/// </summary>
 		/// <param name="topEvents">Список событий.</param>
 		/// <returns>Удачное обновление кэша.</returns>
-		Task<bool> SetTop10EventsAsync(List<EventModel> topEvents);
+		Task<bool> SetTop10EventsAsync(List<EventModel?> topEvents);
 	}
 }

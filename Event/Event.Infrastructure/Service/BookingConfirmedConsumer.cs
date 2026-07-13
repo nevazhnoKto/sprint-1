@@ -15,11 +15,13 @@ namespace Event.Infrastructure.Service
 		private readonly ILogger<BookingConfirmedConsumer> _logger;
 		private readonly IServiceProvider _serviceProvider;
 		private readonly IConfiguration _configuration;
-		public BookingConfirmedConsumer(IServiceProvider serviceProvider, IConfiguration configuration, ILogger<BookingConfirmedConsumer> logger)
+		private readonly IRedisService _redis;
+		public BookingConfirmedConsumer(IServiceProvider serviceProvider, IConfiguration configuration, ILogger<BookingConfirmedConsumer> logger, IRedisService redis)
 		{
 			_logger = logger;
 			_serviceProvider = serviceProvider;
 			_configuration = configuration;
+			_redis = redis;
 		}
 
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)

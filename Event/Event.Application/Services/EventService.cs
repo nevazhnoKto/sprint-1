@@ -224,6 +224,8 @@ namespace Event.Application.Services
 					var message = $"Список событий пуст!";
 					_logger.LogInformation(message);
 				}
+				// Прогреть кэш.
+				await _redis.SetTop10EventsAsync(eventsList);
 			}
 			return _mapper.Map<List<EventDto>>(eventsList!)!;
 		}

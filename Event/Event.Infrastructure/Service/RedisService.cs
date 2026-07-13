@@ -1,6 +1,7 @@
 ﻿using Event.Application.Interfaces;
 using Event.Domain.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -53,6 +54,8 @@ namespace Event.Infrastructure.Service
 
 		public async Task<bool> SetCacheAsync(Guid eventId, EventModel value)
 		{
+			if (value == null)
+				return false;
 			try
 			{
 				var cacheKey = GetCacheKeyByEventId(eventId);
@@ -83,8 +86,10 @@ namespace Event.Infrastructure.Service
 			return null;
 		}
 
-		public async Task<bool> SetTop10EventsAsync(List<EventModel> topEvents)
+		public async Task<bool> SetTop10EventsAsync(List<EventModel?> topEvents)
 		{
+			if (topEvents == null)
+				return false;
 			try
 			{
 				var key = GetCacheKeyByTop10();
