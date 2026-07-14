@@ -104,6 +104,20 @@ namespace Event.ServiceTests
 			_redisService.Verify(redis => redis.SetCacheAsync(_defaultEventGuid, It.IsAny<EventModel>()), Times.Once);
 		}
 
+		[Fact]
+		public void Delete_DeleteEvent_CallSetCache()
+		{
+			//Arrange
+			_eventRepository.Setup(x => x.GetEventById(_defaultEventGuid)).ReturnsAsync(GetNewEventModel());
+
+			//Act
+			_eventService.Delete(_defaultEventGuid);
+
+			//Assert
+			_eventRepository.Verify(repo => repo.GetEventById(_defaultEventGuid), Times.Once);
+			_redisService.Verify(redis => redis.DeleteCacheAsync(_defaultEventGuid), Times.Once);
+		}
+
 		public void Dispose()
 		{
 			_serviceProvider.Dispose();

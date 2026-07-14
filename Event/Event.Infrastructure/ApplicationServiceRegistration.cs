@@ -1,5 +1,6 @@
 ﻿using Event.Application.Interfaces;
 using Event.Infrastructure.DataAccess;
+using Event.Infrastructure.Models;
 using Event.Infrastructure.Repositories;
 using Event.Infrastructure.Service;
 using Microsoft.EntityFrameworkCore;
@@ -31,8 +32,13 @@ namespace Event.Infrastructure
 			}
 
 			// Подключение Redis с настройками из appsettings.
-			var connectionStringRedis = configuration.GetConnectionString("Redis");
+			var redisSection = configuration.GetSection("Redis");
+			services.Configure<RedisSettings>(redisSection);
+
+			var connectionStringRedis = redisSection.Get<RedisSettings>()?.ConnectionString;
+			
 			var options = ConfigurationOptions.Parse(connectionStringRedis!);
+
 			services.AddSingleton<IConnectionMultiplexer>(await ConnectionMultiplexer.ConnectAsync(options));
 
 			services.AddDbContext<AppDbContext>(options =>

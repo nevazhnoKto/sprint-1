@@ -1,6 +1,8 @@
 ﻿using Event.Application.Interfaces;
 using Event.Domain.Models;
+using Event.Infrastructure.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using StackExchange.Redis;
 using System.Text.Json;
@@ -13,11 +15,13 @@ namespace Event.Infrastructure.Service
 	{
 		private readonly IDatabase _redis;
 		private readonly ILogger<RedisService> _logger;
+		private readonly RedisSettings _options;
 
-		public RedisService(IConnectionMultiplexer multiplexer, ILogger<RedisService> logger)
+		public RedisService(IConnectionMultiplexer multiplexer, IOptions<RedisSettings> options, ILogger<RedisService> logger)
 		{
 			_redis = multiplexer.GetDatabase();
 			_logger = logger;
+			_options = options.Value;
 		}
 
 		public async Task<bool> DeleteCacheAsync(Guid eventId)
@@ -59,7 +63,7 @@ namespace Event.Infrastructure.Service
 			try
 			{
 				var cacheKey = GetCacheKeyByEventId(eventId);
-				return await _redis.StringSetAsync(cacheKey, JsonSerializer.Serialize(value), TimeSpan.FromMinutes(5));
+				return await _redis.StringSetAsync(cacheKey, JsonSerializer.Serialize(value), TimeSpan.FromMinutes(_options.EventCacheTtlMinutes));
 			}
 			catch(Exception ex)
 			{
@@ -93,7 +97,7 @@ namespace Event.Infrastructure.Service
 			try
 			{
 				var key = GetCacheKeyByTop10();
-				return await _redis.StringSetAsync(key, JsonSerializer.Serialize(topEvents), TimeSpan.FromMinutes(15));
+				return await _redis.StringSetAsync(key, JsonSerializer.Serialize(topEvents), TimeSpan.FromMinutes(_options.TopEventsCacheTtlMinutes));
 			}
 			catch (Exception ex)
 			{
