@@ -18,12 +18,14 @@ namespace Event.Application.Services
 		private readonly ILogger<EventService> _logger;
 		private readonly IEventRepository _eventRepository;
 		private readonly IMapper _mapper;
+		private readonly IRedisService _redis;
 
-		public EventService(ILogger<EventService> logger, IEventRepository eventRepository, IMapper mapper)
+		public EventService(ILogger<EventService> logger, IEventRepository eventRepository, IMapper mapper, IRedisService redis)
 		{
 			_logger = logger;
 			_eventRepository = eventRepository;
 			_mapper = mapper;
+			_redis = redis;
 		}
 
 		public async Task<PaginatedResult> GetAll(string? title, DateTime? from, DateTime? to, int page = 1, int pageSize = 10)
@@ -55,13 +57,22 @@ namespace Event.Application.Services
 
 		public async Task<EventDto?> GetById(Guid id)
 		{
-			var eventCustom = await _eventRepository.GetEventById(id);
-			if (eventCustom == null)
+			// Получить из кэша.
+			var eventCustom = await _redis.GetCacheForIdAsync(id);
+			if(eventCustom == null)
 			{
-				var message = $"Cобытия с {id} не существует!";
-				_logger.LogInformation(message);
-				return default;
+				eventCustom = await _eventRepository.GetEventById(id);
+				if (eventCustom == null)
+				{
+					var message = $"Cобытия с {id} не существует!";
+					_logger.LogInformation(message);
+					return default;
+				}
+
+				// Прогреть кэш.
+				await _redis.SetCacheAsync(id, eventCustom);
 			}
+
 			_logger.LogInformation($"Найдено событие с id = {id}");
 			return _mapper.Map<EventDto>(eventCustom);
 		}
@@ -88,6 +99,9 @@ namespace Event.Application.Services
 			}
 			await _eventRepository.AddEvent(eventCustom);
 			_logger.LogInformation($"Cобытие с id = {eventCustom.Id} успешно добавлено в список событий");
+
+			// Прогреть кэш.
+			await _redis.SetCacheAsync(eventCustom.Id, eventCustom);
 			return true;
 		}
 
@@ -109,6 +123,9 @@ namespace Event.Application.Services
 			}
 
 			_logger.LogInformation($"Cобытие с id = {eventCustom.Id} успешно обновлено");
+
+			// Прогреть кэш.
+			await _redis.SetCacheAsync(eventCustom.Id, eventCustom);
 			return true;
 		}
 
@@ -119,15 +136,24 @@ namespace Event.Application.Services
 		/// <returns>True - если удаление прошло успешно.</returns>
 		public async Task<bool> Delete(Guid id)
 		{
-			var eventCustom = await _eventRepository.GetEventById(id);
+			// Получить из кэша.
+			var eventCustom = await _redis.GetCacheForIdAsync(id);
 			if (eventCustom == null)
 			{
-				var message = $"Невозможно удалить событие с {id}, т.к его не существует!";
-				_logger.LogError(message);
-				return false;
+				eventCustom = await _eventRepository.GetEventById(id);
+				if (eventCustom == null)
+				{
+					var message = $"Невозможно удалить событие с {id}, т.к его не существует!";
+					_logger.LogError(message);
+					return false;
+				}
 			}
+
 			await _eventRepository.DeleteEventById(eventCustom.Id);
 			_logger.LogInformation($"Cобытие с {id} успешно удалено");
+
+			// Удалить из кэша.
+			await _redis.DeleteCacheAsync(id);
 			return true;
 		}
 
@@ -143,32 +169,65 @@ namespace Event.Application.Services
 
 		public async Task<bool> TryReserveSeats(Guid id, int count = 1)
 		{
-			var eventCustom = await _eventRepository.GetEventById(id);
+			var eventCustom = await _redis.GetCacheForIdAsync(id);
 			if (eventCustom == null)
 			{
-				throw new EventDoesNotExist($"События {id} не существует!");
+				eventCustom = await _eventRepository.GetEventById(id);
+				if (eventCustom == null)
+				{
+					throw new EventDoesNotExist($"События {id} не существует!");
+				}
 			}
 
 			var result = await eventCustom.TryReserveSeats(count);
 			if (result)
+			{
 				await _eventRepository.UpdateAsync(eventCustom);
+				// Прогреть кэш.
+				await _redis.SetCacheAsync(id, eventCustom);
+			}
 
 			return result;
 		}
 
 		public async Task<bool> ReleaseSeats(Guid id, int count = 1)
 		{
-			var eventCustom = await _eventRepository.GetEventById(id);
+			var eventCustom = await _redis.GetCacheForIdAsync(id);
 			if (eventCustom == null)
 			{
-				throw new EventDoesNotExist($"События {id} не существует!");
+				eventCustom = await _eventRepository.GetEventById(id);
+				if (eventCustom == null)
+				{
+					throw new EventDoesNotExist($"События {id} не существует!");
+				}
 			}
 
 			var result = await eventCustom.ReleaseSeats(count);
 			if (result)
+			{
 				await _eventRepository.UpdateAsync(eventCustom);
+				// Прогреть кэш.
+				await _redis.SetCacheAsync(id, eventCustom);
+			}
 
 			return result;
+		}
+
+		public async Task<List<EventDto?>> GetTop10Events()
+		{
+			var eventsList = await _redis.GetTop10EventsAsync();
+			if (eventsList == null)
+			{
+				eventsList = await _eventRepository.GetTop10EventsAsync();
+				if(eventsList == null)
+				{
+					var message = $"Список событий пуст!";
+					_logger.LogInformation(message);
+				}
+				// Прогреть кэш.
+				await _redis.SetTop10EventsAsync(eventsList);
+			}
+			return _mapper.Map<List<EventDto>>(eventsList!)!;
 		}
 	}
 #pragma warning restore CS1591

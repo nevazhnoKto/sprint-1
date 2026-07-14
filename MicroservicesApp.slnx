@@ -11,6 +11,9 @@
     <Project Path="Event/Event.Infrastructure/Event.Infrastructure.csproj" />
     <Project Path="Event/Event.Presentation/Event.Presentation.csproj" />
   </Folder>
+  <Folder Name="/Event/Tests/">
+    <Project Path="Event/Tests/Event.ServiceTests/Event.ServiceTests.csproj" Id="84ae5ee4-3d41-4b18-ab89-f4b693c1b79a" />
+  </Folder>
   <Folder Name="/User/">
     <Project Path="User/User.Application/User.Application.csproj" />
     <Project Path="User/User.Domain/User.Domain.csproj" />

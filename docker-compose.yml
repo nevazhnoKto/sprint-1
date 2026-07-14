@@ -121,9 +121,12 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=events-db;Port=5432;Database=events;Username=postgres;Password=postgres
+      - ConnectionStrings__Redis=redis:6379,connectTimeout=5000,syncTimeout=5000,abortConnect=false
       - Kafka__BootstrapServers=kafka:29092
       - Kafka__ConsumerGroup=events-service-group
       - JwtSettings__SecretKey=SuperSecretKeyThatIsAtLeast32CharactersLong!
@@ -151,6 +154,17 @@ services:
       - JwtSettings__Issuer=YourUsersService
       - JwtSettings__Audience=YourMicroservicesApp
     restart: unless-stopped
+    
+  redis:
+    image: redis:7.2-alpine
+    container_name: eventapi-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   users-db-data:

@@ -90,6 +90,11 @@ namespace Event.Infrastructure.Repositories
 			}
 			return false;
 		}
+
+		public async  Task<List<EventModel>> GetTop10EventsAsync()
+		{
+			return await _context.Events.OrderByDescending(e => (double)(e.TotalSeats - e.AvailableSeats) / e.TotalSeats).Take(10).ToListAsync();
+		}
 	}
 #pragma warning restore CS1591
 }
