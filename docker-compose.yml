@@ -95,7 +95,7 @@ services:
     container_name: eventapi-users-service
     build:
       context: .
-      dockerfile: User/Dockerfile  # Путь к Dockerfile в папке User
+      dockerfile: User/Dockerfile
     ports:
       - "5001:8080"
     depends_on:
@@ -107,13 +107,14 @@ services:
       - JwtSettings__SecretKey=SuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=YourUsersService
       - JwtSettings__Audience=YourMicroservicesApp
+      - Otlp__Endpoint=http://jaeger:4317
     restart: unless-stopped
 
   events-service:
     container_name: eventapi-events-service
     build:
       context: .
-      dockerfile: Event/Dockerfile  # Путь к Dockerfile в папке Event
+      dockerfile: Event/Dockerfile
     ports:
       - "5002:8080"
     depends_on:
@@ -132,13 +133,14 @@ services:
       - JwtSettings__SecretKey=SuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=YourUsersService
       - JwtSettings__Audience=YourMicroservicesApp
+      - Otlp__Endpoint=http://jaeger:4317
     restart: unless-stopped
 
   bookings-service:
     container_name: eventapi-bookings-service
     build:
       context: .
-      dockerfile: Booking/Dockerfile  # Путь к Dockerfile в папке Booking
+      dockerfile: Booking/Dockerfile
     ports:
       - "5003:8080"
     depends_on:
@@ -153,13 +155,14 @@ services:
       - JwtSettings__SecretKey=SuperSecretKeyThatIsAtLeast32CharactersLong!
       - JwtSettings__Issuer=YourUsersService
       - JwtSettings__Audience=YourMicroservicesApp
+      - Otlp__Endpoint=http://jaeger:4317
     restart: unless-stopped
     
   redis:
     image: redis:7.2-alpine
     container_name: eventapi-redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -178,8 +181,8 @@ services:
     image: jaegertracing/all-in-one:1.56
     container_name: eventapi-jaeger
     ports:
-      - "16686:16686"   # UI
-      - "4317:4317"     # OTLP gRPC
+      - "16686:16686"
+      - "4317:4317"
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
 
@@ -197,4 +200,4 @@ volumes:
   users-db-data:
   events-db-data:
   bookings-db-data:
-  grafana-data: 
+  grafana-data:

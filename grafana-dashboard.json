@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -304,8 +304,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "EventAPI Dashboard",
-  "uid": "fftkqivnc8zy8c",
-  "version": 2,
+  "title": "grafana-dashboard Copy",
+  "uid": "fftkx7whmcrggd",
+  "version": 1,
   "weekStart": ""
 }
