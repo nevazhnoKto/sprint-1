@@ -166,7 +166,7 @@ services:
       timeout: 5s
       retries: 10
       
-   prometheus:
+  prometheus:
     image: prom/prometheus:v2.51.0
     container_name: eventapi-prometheus
     volumes:
