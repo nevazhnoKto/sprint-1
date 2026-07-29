@@ -72,9 +72,7 @@ builder.Services.AddOpenTelemetry()
 
 builder.Host.UseSerilog((ctx, cfg) =>
 	cfg.ReadFrom.Configuration(ctx.Configuration)
-	   .WriteTo.Console(new CompactJsonFormatter()));
-
-
+		.WriteTo.Console(new CompactJsonFormatter()));
 
 var app = builder.Build();
 
