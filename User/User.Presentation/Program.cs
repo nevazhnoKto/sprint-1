@@ -1,6 +1,11 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
+using Serilog.Formatting.Compact;
 using System.Reflection;
 using User.Application;
 using User.Infrastructure;
@@ -51,6 +56,23 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAuthorization();
 
+const string serviceName = "users-service";
+
+builder.Services.AddOpenTelemetry()
+	.ConfigureResource(resource => resource.AddService(serviceName))
+	.WithTracing(tracing => tracing
+		.AddAspNetCoreInstrumentation()
+		.AddHttpClientInstrumentation()
+		.AddEntityFrameworkCoreInstrumentation()
+		.AddOtlpExporter(o => o.Endpoint = new Uri(builder.Configuration["Otlp:Endpoint"]!)))
+	.WithMetrics(metrics => metrics
+		.AddAspNetCoreInstrumentation()
+		.AddRuntimeInstrumentation()
+		.AddPrometheusExporter());
+
+builder.Host.UseSerilog((ctx, cfg) =>
+	cfg.ReadFrom.Configuration(ctx.Configuration)
+		.WriteTo.Console(new CompactJsonFormatter()));
 
 var app = builder.Build();
 
@@ -62,10 +84,10 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapPrometheusScrapingEndpoint();
 
 using (var scope = app.Services.CreateScope())
 {
